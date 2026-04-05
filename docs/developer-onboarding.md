@@ -6,17 +6,19 @@ Step-by-step setup for a new developer using **[Cursor](https://cursor.com)** as
 
 ## Before you start
 
-Install and sign into **Cursor** on your machine. Confirm you also have:
+Install and sign into **Cursor** on your machine. This guide applies to **Windows and macOS** (Linux is fine too if Docker runs there). Confirm you also have:
 
 | Requirement | Notes |
 |-------------|--------|
-| **Git** | Used from a terminal (Cursor’s integrated terminal or any other) for clone, pull, and branches. |
-| **Docker Desktop** (or compatible engine) | Running before `docker compose`. On Windows, prefer the WSL2 backend if Docker prompts you. |
+| **Git** | Used from a terminal (Cursor’s integrated terminal or any other) for clone, pull, and branches. For a **private** repo, set up GitHub auth first (HTTPS with a [credential helper / PAT](https://docs.github.com/en/get-started/git-basics/set-up-git), **SSH** with a key added to GitHub, or `gh auth login`). **Clone repo** in Cursor still uses your normal Git credentials. |
+| **Docker Desktop** (or compatible engine) | Install it, start it, and wait until it reports **running** before `docker compose`. If `docker compose` errors with *Cannot connect to the Docker daemon* (or similar), the engine isn’t running yet. **Windows:** prefer the **WSL2** backend if Docker prompts you. **macOS:** use Docker Desktop for Mac (Apple Silicon or Intel per Docker’s install page). |
 
 Optional:
 
 - **OpenClaw** and an **OpenAI API key** if you use that workflow alongside Cursor.
 - **GitHub CLI (`gh`)** in a terminal for auth and PRs.
+
+On **macOS**, install **`make`** if you use the `make up` / `make init-db` shortcuts (e.g. `xcode-select --install` for Apple’s build tools, or `brew install make` and use `gmake` if your PATH differs).
 
 ---
 
@@ -38,7 +40,7 @@ Pick any of these; the goal is the same: the opened folder should be the repo **
 
 ### Option B — Clone from Cursor’s integrated terminal
 
-1. In Cursor: **Terminal → New Terminal** (or `` Ctrl+` `` / **View → Terminal**).
+1. In Cursor: **Terminal → New Terminal** (or **Ctrl+`** on Windows/Linux, **Cmd+`** on macOS, or **View → Terminal**).
 2. `cd` to where you keep projects, then clone:
 
    ```bash
@@ -52,7 +54,7 @@ Pick any of these; the goal is the same: the opened folder should be the repo **
 ### Option C — Clone outside Cursor, then open the folder
 
 1. Clone wherever you prefer (examples):
-   - **PowerShell or Git Bash** (any directory): same `git clone` / `cd` commands as in Option B.
+   - **macOS Terminal**, **Linux shell**, **PowerShell**, or **Git Bash** (any directory): same `git clone` / `cd` commands as in Option B.
    - **GitHub Desktop** or another GUI: clone the repo to disk as you usually would.
 2. In Cursor: **File → Open Folder…** → choose the repo root (`adventure-pos-odoo`, the folder that contains `docker-compose.yml`).
 
@@ -65,6 +67,8 @@ git checkout develop
 git pull origin develop
 git checkout -b feature/your-short-description
 ```
+
+If **`develop` does not exist** on the remote (e.g. the team uses only `main`), run `git branch -r` to see remote branches, check with the team which branch to branch from, then `git checkout <that-branch>` and `git pull` before creating your feature branch.
 
 Don’t commit directly to `main`. Conventions: [agent-rules.md — Git workflow](agent-rules.md#git-workflow).
 
@@ -102,7 +106,7 @@ Don’t commit directly to `main`. Conventions: [agent-rules.md — Git workflow
 
    Get keys from [OpenAI API keys](https://platform.openai.com/api-keys).
 
-3. Save the file (**Ctrl+S**). Other tools (OpenClaw, some extensions) often load `.env` from the **project root** when their process starts from that folder—restart terminals or the gateway after changing `.env` if something doesn’t pick up the new value.
+3. Save the file (**Ctrl+S** on Windows/Linux, **Cmd+S** on macOS). Other tools (OpenClaw, some extensions) often load `.env` from the **project root** when their process starts from that folder—restart terminals or the gateway after changing `.env` if something doesn’t pick up the new value.
 
 ### Keep secrets off git (use Source Control)
 
@@ -115,15 +119,21 @@ Don’t commit directly to `main`. Conventions: [agent-rules.md — Git workflow
 - **Do not paste real API keys** into Cursor chat if your workspace or logging might sync or be shared. Prefer editing `.env` locally and describing the *step* (“I set `OPENAI_API_KEY` in `.env`”) without the secret.
 - If you use **Agent** mode for setup help, you can reference **`.env.example`** and **`docker-compose.yml`** with **`@`** in the prompt so the model sees the shape of config, not your actual `.env`.
 
-### Optional: Windows user env (`setx`)
+### Optional: OS user environment for API keys
 
-For tools that only read the OS user environment (not `.env`), run in **PowerShell** (outside or inside Cursor):
+**Windows (PowerShell)** — persistent user variable:
 
 ```powershell
 setx OPENAI_API_KEY "your-key-here"
 ```
 
-Open a **new** terminal (or restart Cursor) so new processes see it.
+**macOS / Linux** — add to `~/.zshrc` or `~/.bashrc` (example):
+
+```bash
+export OPENAI_API_KEY="your-key-here"
+```
+
+Open a **new** terminal (or restart Cursor) so new processes see the variable.
 
 ---
 
@@ -148,7 +158,12 @@ Always open the terminal **in the repo root** (Cursor usually does this for new 
 
 You should see **`db`** (Postgres 16) and **`odoo`** (`odoo:18.0`).
 
-**Ports:** **8069** (Odoo), **5432** (Postgres on the host). Free those ports or adjust compose with the team.
+**Ports:** **8069** (Odoo), **5432** (Postgres on the host). If something else is using them, stop that process or change ports with the team.
+
+To see **what is listening** (examples):
+
+- **macOS / Linux:** `lsof -i :8069` and `lsof -i :5432` (or `sudo` if nothing shows and you expect a listener).
+- **Windows (PowerShell or cmd):** `netstat -ano | findstr :8069` and the same with `:5432` (or **Resource Monitor → Network**).
 
 **Logs / stop:**
 
@@ -181,7 +196,7 @@ To confirm in logs: `docker compose logs odoo` should no longer show `Database o
 
 ## 4. First-time Odoo setup
 
-1. Complete **§3** (Docker up) and, if needed, **`make init-db`** from the note above.
+1. Complete **section 3** (Docker up) and, if needed, **`make init-db`** from the note above.
 2. Open **http://localhost:8069** in your normal browser (or Cursor’s Simple Browser if you use it).
 3. **Sign in** to database **`odoo`** (credentials set when `base` was installed; the default internal user is often **Login:** `admin` / **Password:** `admin` until you change it under **Settings → Users**). If login fails, use **Manage databases** (`/web/database/manager`) or ask the team—do not commit real passwords to the repo.
 4. Enable **Developer Mode** when available (Settings → Developer Tools) for easier technical menus.
@@ -194,7 +209,23 @@ Custom addons: **`./addons`** in the repo → **`/mnt/extra-addons`** in the con
 
 ---
 
-## 5. Daily work in Cursor
+## 5. Configuration as code (repeatable Odoo settings)
+
+Anything you change in the Odoo UI that the team **intends to keep** for **every** environment (local, test, staging, production) or for **every new developer** after install should not live only in one database.
+
+**Default workflow**
+
+1. Decide the setting or master data in the UI if that helps you learn Odoo.
+2. **Replicate it in git**: add or update **module `data/`** (XML/CSV), hooks in `__manifest__.py`, or a **checked-in script** under `scripts/` (or similar) if XML is impractical.
+3. Open a PR that includes those files so the next `docker compose` + module install/upgrade or Odoo.sh deploy reproduces the same result.
+
+Spikes and one-off experiments are fine on a throwaway database; before the work is **merged** or called “official,” capture the agreed configuration in the repo. **Agents** follow the same rule: see [agent-rules.md — Configuration as code](agent-rules.md#4-configuration-as-code-mandatory-for-agreed-odoo-settings).
+
+**Why:** Manual-only configuration drifts between machines, blocks onboarding, and cannot be applied consistently to test/stage/prod.
+
+---
+
+## 6. Daily work in Cursor
 
 | Topic | What to use |
 |--------|-------------|
@@ -205,22 +236,23 @@ Custom addons: **`./addons`** in the repo → **`/mnt/extra-addons`** in the con
 
 ---
 
-## 6. OpenClaw (optional, beside Cursor)
+## 7. OpenClaw (optional, beside Cursor)
 
 - **Cursor** uses repo rules and your chosen models in the product settings.
-- **OpenClaw** uses global config under `%USERPROFILE%\.openclaw\` by default. Point its **workspace** at this **repo root** so file tools match your tree; align model config with **`config/openclaw.json5`** if your team uses that snippet.
+- **OpenClaw** stores global config under **`~/.openclaw/`** (macOS/Linux) or **`%USERPROFILE%\.openclaw\`** (Windows) by default. Point its **workspace** at this **repo root** so file tools match your tree; align model config with **`config/openclaw.json5`** if your team uses that snippet.
 
 Never store keys in tracked files—**`.env`** or OS env only.
 
 ---
 
-## 7. Verify you are ready
+## 8. Verify you are ready
 
 - [ ] Repo opened in Cursor as a **folder** (root contains `docker-compose.yml`).
 - [ ] **`.env`** exists, keys filled as needed, and **`.env` is not** staged in Source Control.
 - [ ] `docker compose ps` in Cursor’s terminal shows **`db`** and **`odoo`**.
 - [ ] http://localhost:8069 works; **Adventure Base** and **Adventure POS** installed (or you know how to install them).
-- [ ] You’re on a **feature branch** from **`develop`** for product changes.
+- [ ] You’re on a **feature branch** from the team’s integration branch (**`develop`** if your remote has it—see **Git branches** above) for product changes.
+- [ ] You understand **configuration as code** ([section 5](#5-configuration-as-code-repeatable-odoo-settings)): agreed Odoo settings belong in the repo, not only in your local DB.
 
 ---
 

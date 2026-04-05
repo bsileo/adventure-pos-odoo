@@ -25,6 +25,11 @@ Initial modules: `adventure_base`, `adventure_pos`, `adventure_inventory`, `adve
 - Preserve upgrade compatibility.
 - Avoid monkey patching, deleting core behavior, and fragile XPath in XML.
 
+## Configuration as code
+
+- When agreed Odoo configuration must exist in every environment (or every new dev DB), encode it in git: module `data/` (XML/CSV), manifest hooks, or documented scripts—not UI-only on one machine.
+- Do not treat UI-only setup as complete without a repeatable artifact. See `docs/agent-rules.md` (Configuration as code).
+
 ## Coding standards
 
 - Python: Odoo conventions, small readable methods.
