@@ -4,11 +4,13 @@ Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code
 
 ## Quick start
 
+**New developer?** Use the step-by-step guide: [docs/developer-onboarding.md](docs/developer-onboarding.md).
+
 1. Copy `.env.example` to `.env` and set variables as needed.
 2. Start services: `docker compose up -d` (or `make up`).
 3. Open [http://localhost:8069](http://localhost:8069) and create a database.
 
-Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md](docs/setup.md).
+Original bootstrap and tooling notes: [docs/setup.md](docs/setup.md). Agent and Git conventions: [docs/agent-rules.md](docs/agent-rules.md).
 
 ## Layout
 

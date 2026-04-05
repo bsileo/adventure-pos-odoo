@@ -1,5 +1,7 @@
 # Adventure POS — Initial Setup Guide
 
+> **Cloning the repo?** Use [developer-onboarding.md](developer-onboarding.md) for step-by-step directions. This page is the original greenfield/bootstrap checklist.
+
 This guide walks through setting up the local development environment using:
 
 * Cursor (IDE + agent)
