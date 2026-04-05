@@ -1,0 +1,50 @@
+---
+description: Odoo architecture, modules, and coding standards for Adventure POS
+globs:
+  - "addons/**/*.py"
+  - "addons/**/*.xml"
+alwaysApply: false
+---
+
+# Adventure POS — Odoo rules
+
+Derived from `docs/agent-rules.md`. Custom Odoo system: retail POS, inventory, customers, purchasing, reporting.
+
+## Architecture
+
+- All business logic MUST live in Odoo modules under `/addons/`.
+- Do NOT modify Odoo core, place logic outside modules, or duplicate logic across modules.
+
+## Module scope
+
+Initial modules: `adventure_base`, `adventure_pos`, `adventure_inventory`, `adventure_customers`, `adventure_purchase`, `adventure_reports`. Use consistent `adventure_*` prefixes.
+
+## Safe extension
+
+- Prefer model inheritance (`_inherit`) and extension patterns over overrides.
+- Preserve upgrade compatibility.
+- Avoid monkey patching, deleting core behavior, and fragile XPath in XML.
+
+## Coding standards
+
+- Python: Odoo conventions, small readable methods.
+- XML: clean structure, minimal XPath complexity; comment non-obvious logic.
+
+## Security
+
+- Do NOT change access rules or remove security constraints without explanation.
+- Changes to `ir.model.access` or record rules need PR explanation.
+
+## POS
+
+- Preserve checkout speed; avoid unnecessary UI friction; do not break barcode flow; consider offline compatibility.
+
+## Inventory
+
+- Do not break stock valuation or product variants; avoid modifying core stock moves unless necessary.
+
+## Guiding principle
+
+Build a clean retail POS first: **POS + inventory + customers** working well. Do not prematurely build rentals, service systems, or complex multi-location features.
+
+When unsure: ask, propose options, avoid assumptions.

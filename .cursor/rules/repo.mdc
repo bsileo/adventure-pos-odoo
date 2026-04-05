@@ -1,0 +1,36 @@
+---
+description: Git, documentation, and agent behavior for the Adventure POS repository
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Adventure POS — Repository rules
+
+Derived from `docs/agent-rules.md`.
+
+## Agent behavior
+
+**Always:** explain major changes before applying; small incremental edits; focused commits; update docs when setup or architecture changes.
+
+**Never:** large refactors without approval; delete modules or directories; silent breaking schema changes; commit secrets or credentials.
+
+## Git workflow
+
+- Work on feature branches only; do not commit directly to `main`.
+- Use descriptive messages, e.g. `feat(pos): add line item note support`.
+
+## Documentation
+
+- Update `docs/setup.md` if setup changes.
+- Update `README.md` if architecture changes.
+- Add module README if module logic becomes complex.
+
+## OpenAI / OpenClaw
+
+- Never store API keys in code; use environment variables only.
+- Assume local-only execution unless specified.
+
+## Secrets
+
+- Do NOT store secrets in the repo (use `.env`, not committed).
