@@ -10,7 +10,7 @@ Install and sign into **Cursor** on your machine. Confirm you also have:
 
 | Requirement | Notes |
 |-------------|--------|
-| **Git** | Used from Cursor’s integrated terminal for clone, pull, and branches. |
+| **Git** | Used from a terminal (Cursor’s integrated terminal or any other) for clone, pull, and branches. |
 | **Docker Desktop** (or compatible engine) | Running before `docker compose`. On Windows, prefer the WSL2 backend if Docker prompts you. |
 
 Optional:
@@ -22,7 +22,21 @@ Optional:
 
 ## 1. Open the repo in Cursor
 
-### Option A — Clone from Cursor’s terminal
+Pick any of these; the goal is the same: the opened folder should be the repo **root** (where `docker-compose.yml` lives). You do **not** have to use Cursor to clone—**Option C** is fine if you already use another Git client.
+
+### Option A — Welcome screen **Clone repo**
+
+1. Open Cursor (or **File → New Window** for a fresh welcome screen).
+2. Choose **Clone repo** (folder-with-download icon on the welcome page).
+3. When prompted for the URL, use:
+
+   `https://github.com/bsileo/adventure-pos-odoo.git`
+
+   (Use your fork’s URL if you develop from a fork.)
+4. Choose a parent directory when asked; Cursor clones and opens the project.
+5. If Cursor asks to **trust** the workspace, trust it so tasks, terminals, and rules behave normally.
+
+### Option B — Clone from Cursor’s integrated terminal
 
 1. In Cursor: **Terminal → New Terminal** (or `` Ctrl+` `` / **View → Terminal**).
 2. `cd` to where you keep projects, then clone:
@@ -35,9 +49,12 @@ Optional:
 3. **File → Open Folder…** and choose the `adventure-pos-odoo` folder you just cloned (the repo **root**, where `docker-compose.yml` lives).
 4. If Cursor asks to **trust** the workspace, trust it so tasks, terminals, and rules behave normally.
 
-### Option B — You already cloned outside Cursor
+### Option C — Clone outside Cursor, then open the folder
 
-**File → Open Folder…** → select the repo root (`adventure-pos-odoo`).
+1. Clone wherever you prefer (examples):
+   - **PowerShell or Git Bash** (any directory): same `git clone` / `cd` commands as in Option B.
+   - **GitHub Desktop** or another GUI: clone the repo to disk as you usually would.
+2. In Cursor: **File → Open Folder…** → choose the repo root (`adventure-pos-odoo`, the folder that contains `docker-compose.yml`).
 
 ### Git branches (in Cursor)
 
@@ -140,14 +157,37 @@ docker compose logs -f odoo
 docker compose down
 ```
 
+### First boot: `Internal Server Error` on http://localhost:8069/
+
+Postgres creates an empty database named **`odoo`**. The Odoo container connects to it before any modules are installed, so **`/`** can return **500** until the DB is initialized.
+
+**Fix (run once after the first `docker compose up -d`):**
+
+```bash
+make init-db
+```
+
+Or the same command without `make`:
+
+```bash
+docker compose exec odoo odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo -d odoo -i base --stop-after-init
+```
+
+That installs **`base`** (and core web stack) into database **`odoo`**. Then reload **http://localhost:8069/** — you should get the normal Odoo UI / login instead of 500.
+
+To confirm in logs: `docker compose logs odoo` should no longer show `Database odoo not initialized` or `relation "ir_module_module" does not exist`.
+
 ---
 
 ## 4. First-time Odoo setup
 
-1. Open **http://localhost:8069** in your normal browser (or Cursor’s Simple Browser if you use it).
-2. Create a **database** (e.g. `adventure_dev`), set the **master password**, language, country, and **admin** credentials.
-3. Enable **Developer Mode** when available (Settings → Developer Tools) for easier technical menus.
-4. **Apps → Update Apps List** → search **Adventure Base** → **Install** `adventure_base`.
+1. Complete **§3** (Docker up) and, if needed, **`make init-db`** from the note above.
+2. Open **http://localhost:8069** in your normal browser (or Cursor’s Simple Browser if you use it).
+3. **Sign in** to database **`odoo`** (credentials set when `base` was installed; the default internal user is often **Login:** `admin` / **Password:** `admin` until you change it under **Settings → Users**). If login fails, use **Manage databases** (`/web/database/manager`) or ask the team—do not commit real passwords to the repo.
+4. Enable **Developer Mode** when available (Settings → Developer Tools) for easier technical menus.
+5. **Apps → Update Apps List** → search **Adventure Base** → **Install** `adventure_base`.
+
+**Optional — extra database via the UI:** If you prefer a separate DB (e.g. `adventure_dev`), use **Manage databases** to create it; that flow sets master password and admin user in the browser. The default Postgres DB name in `docker-compose.yml` is still **`odoo`** unless you change team defaults.
 
 Custom addons: **`./addons`** in the repo → **`/mnt/extra-addons`** in the container. After Python/manifest changes, restart Odoo or **upgrade** the module from the UI.
 

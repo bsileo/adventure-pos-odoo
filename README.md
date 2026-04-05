@@ -8,7 +8,8 @@ Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code
 
 1. Copy `.env.example` to `.env` and set variables as needed.
 2. Start services: `docker compose up -d` (or `make up`).
-3. Open [http://localhost:8069](http://localhost:8069) and create a database.
+3. **Once**, initialize the default DB: `make init-db` (avoids HTTP 500 until `base` is installed).
+4. Open [http://localhost:8069](http://localhost:8069) and sign in; install **Adventure Base** from Apps if needed.
 
 Original bootstrap and tooling notes: [docs/setup.md](docs/setup.md). Agent and Git conventions: [docs/agent-rules.md](docs/agent-rules.md).
 
