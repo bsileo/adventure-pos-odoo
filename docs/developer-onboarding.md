@@ -186,6 +186,7 @@ To confirm in logs: `docker compose logs odoo` should no longer show `Database o
 3. **Sign in** to database **`odoo`** (credentials set when `base` was installed; the default internal user is often **Login:** `admin` / **Password:** `admin` until you change it under **Settings → Users**). If login fails, use **Manage databases** (`/web/database/manager`) or ask the team—do not commit real passwords to the repo.
 4. Enable **Developer Mode** when available (Settings → Developer Tools) for easier technical menus.
 5. **Apps → Update Apps List** → search **Adventure Base** → **Install** `adventure_base`.
+6. For MVP POS work: ensure **Point of Sale** is available (installed or will be pulled in as a dependency), then **Install** `adventure_pos` (**Adventure POS**).
 
 **Optional — extra database via the UI:** If you prefer a separate DB (e.g. `adventure_dev`), use **Manage databases** to create it; that flow sets master password and admin user in the browser. The default Postgres DB name in `docker-compose.yml` is still **`odoo`** unless you change team defaults.
 
@@ -218,7 +219,7 @@ Never store keys in tracked files—**`.env`** or OS env only.
 - [ ] Repo opened in Cursor as a **folder** (root contains `docker-compose.yml`).
 - [ ] **`.env`** exists, keys filled as needed, and **`.env` is not** staged in Source Control.
 - [ ] `docker compose ps` in Cursor’s terminal shows **`db`** and **`odoo`**.
-- [ ] http://localhost:8069 works; **Adventure Base** installed (or you know how to install it).
+- [ ] http://localhost:8069 works; **Adventure Base** and **Adventure POS** installed (or you know how to install them).
 - [ ] You’re on a **feature branch** from **`develop`** for product changes.
 
 ---
