@@ -1,114 +1,142 @@
-# Developer onboarding — Adventure POS
+# Developer onboarding — Adventure POS (Cursor)
 
-Step-by-step setup for a new developer joining this project. You will run **Odoo 18** and **PostgreSQL** with Docker, work from a local clone of the repo, and keep secrets out of git.
+Step-by-step setup for a new developer using **[Cursor](https://cursor.com)** as the IDE. You will run **Odoo 18** and **PostgreSQL** with Docker, work from a local clone in Cursor, and keep secrets (especially **`.env`**) off git and out of shared AI transcripts where possible.
 
 ---
 
 ## Before you start
 
-Confirm you have:
+Install and sign into **Cursor** on your machine. Confirm you also have:
 
 | Requirement | Notes |
 |-------------|--------|
-| **Git** | For clone, pull, and branches. |
-| **Docker Desktop** (or compatible engine) | Must be running before `docker compose`. On Windows, use WSL2 backend if prompted. |
-| **A code editor** | VS Code or Cursor; optional but recommended. |
+| **Git** | Used from Cursor’s integrated terminal for clone, pull, and branches. |
+| **Docker Desktop** (or compatible engine) | Running before `docker compose`. On Windows, prefer the WSL2 backend if Docker prompts you. |
 
-Optional, depending on your role:
+Optional:
 
-- **OpenClaw** and an **OpenAI API key** if you use the local assistant workflow.
-- **GitHub CLI (`gh`)** if you prefer it for auth and PRs.
+- **OpenClaw** and an **OpenAI API key** if you use that workflow alongside Cursor.
+- **GitHub CLI (`gh`)** in a terminal for auth and PRs.
 
 ---
 
-## 1. Clone the repository
+## 1. Open the repo in Cursor
 
-```bash
-git clone https://github.com/bsileo/adventure-pos-odoo.git
-cd adventure-pos-odoo
-```
+### Option A — Clone from Cursor’s terminal
 
-If you use SSH or a fork, use that remote URL instead.
+1. In Cursor: **Terminal → New Terminal** (or `` Ctrl+` `` / **View → Terminal**).
+2. `cd` to where you keep projects, then clone:
 
-Checkout the integration branch when starting feature work:
+   ```bash
+   git clone https://github.com/bsileo/adventure-pos-odoo.git
+   cd adventure-pos-odoo
+   ```
+
+3. **File → Open Folder…** and choose the `adventure-pos-odoo` folder you just cloned (the repo **root**, where `docker-compose.yml` lives).
+4. If Cursor asks to **trust** the workspace, trust it so tasks, terminals, and rules behave normally.
+
+### Option B — You already cloned outside Cursor
+
+**File → Open Folder…** → select the repo root (`adventure-pos-odoo`).
+
+### Git branches (in Cursor)
+
+Use the **Source Control** view (sidebar icon) or the terminal:
 
 ```bash
 git checkout develop
 git pull origin develop
-```
-
-Create a **feature branch** from `develop` (do not commit directly to `main`). Example:
-
-```bash
 git checkout -b feature/your-short-description
 ```
 
-See [Agent rules — Git workflow](agent-rules.md#git-workflow) for conventions.
+Don’t commit directly to `main`. Conventions: [agent-rules.md — Git workflow](agent-rules.md#git-workflow).
 
 ---
 
-## 2. Environment variables
+## 2. Environment variables — working with `.env` in Cursor
 
-1. Copy the example file:
+`.env` holds local secrets (e.g. **OpenAI**). It is **gitignored**; only **`.env.example`** is in the repo.
 
-   ```bash
-   cp .env.example .env
+### Create `.env` from the template
+
+1. In the **Explorer** sidebar, open **`.env.example`** and skim the comments.
+2. Copy it to **`.env`** using whichever you prefer:
+   - **Explorer:** Right-click `.env.example` → **Copy**, then paste in the same folder and rename to `.env`, **or**
+   - **Terminal** (repo root):
+
+     ```bash
+     cp .env.example .env
+     ```
+
+     Windows PowerShell:
+
+     ```powershell
+     Copy-Item .env.example .env
+     ```
+
+### Edit `.env` in the editor
+
+1. Open **`.env`** from Explorer (Cursor may hide some ignored files depending on settings; if you don’t see it, use **File → Open File…** and pick `.env`, or create it next to `.env.example`).
+2. Set values as plain **`KEY=...`** lines (no quotes unless your value needs them). Example:
+
+   ```env
+   OPENAI_API_KEY=sk-...
    ```
 
-   On Windows PowerShell (same folder):
+   Get keys from [OpenAI API keys](https://platform.openai.com/api-keys).
 
-   ```powershell
-   Copy-Item .env.example .env
-   ```
+3. Save the file (**Ctrl+S**). Other tools (OpenClaw, some extensions) often load `.env` from the **project root** when their process starts from that folder—restart terminals or the gateway after changing `.env` if something doesn’t pick up the new value.
 
-2. Edit `.env`:
+### Keep secrets off git (use Source Control)
 
-   - Set **`OPENAI_API_KEY`** if you use OpenAI-backed tools (OpenClaw, some editor integrations). Get a key from [OpenAI API keys](https://platform.openai.com/api-keys).
-   - Other variables match Docker Postgres and Odoo defaults used by `docker-compose.yml`; change them only if you are avoiding port conflicts or aligning with team standards.
+1. Open **Source Control** (sidebar).
+2. Confirm **`.env` never appears** in the “Changes” list to be staged. Only **`.env.example`** should be committed when you intentionally change the template.
+3. If `.env` ever shows as tracked, **do not commit it**—ask the team; you may need to remove it from the index once (`git rm --cached .env`) while keeping the local file.
 
-3. **Never commit `.env`.** It is listed in `.gitignore`.
+### Cursor Agent / chat and `.env`
 
-Optional — user-wide Windows environment (new terminals required after this):
+- **Do not paste real API keys** into Cursor chat if your workspace or logging might sync or be shared. Prefer editing `.env` locally and describing the *step* (“I set `OPENAI_API_KEY` in `.env`”) without the secret.
+- If you use **Agent** mode for setup help, you can reference **`.env.example`** and **`docker-compose.yml`** with **`@`** in the prompt so the model sees the shape of config, not your actual `.env`.
+
+### Optional: Windows user env (`setx`)
+
+For tools that only read the OS user environment (not `.env`), run in **PowerShell** (outside or inside Cursor):
 
 ```powershell
 setx OPENAI_API_KEY "your-key-here"
 ```
 
+Open a **new** terminal (or restart Cursor) so new processes see it.
+
 ---
 
-## 3. Start the stack with Docker
+## 3. Integrated terminal — Docker
 
-1. Start Docker Desktop (or your Docker daemon).
-2. From the **repository root** (where `docker-compose.yml` lives):
+Always open the terminal **in the repo root** (Cursor usually does this for new terminals; check the path in the prompt).
+
+1. Start **Docker Desktop** (or your daemon).
+2. In Cursor’s terminal:
 
    ```bash
    docker compose up -d
    ```
 
-   Or: `make up` if you have `make` available.
+   Or run **`make up`** if `make` is on your PATH.
 
-3. Check containers:
+3. Check services:
 
    ```bash
    docker compose ps
    ```
 
-You should see **`db`** (Postgres 16) and **`odoo`** (image `odoo:18.0`) running.
+You should see **`db`** (Postgres 16) and **`odoo`** (`odoo:18.0`).
 
-**Ports:**
+**Ports:** **8069** (Odoo), **5432** (Postgres on the host). Free those ports or adjust compose with the team.
 
-- **8069** — Odoo web UI  
-- **5432** — Postgres (exposed to the host; stop any local Postgres using the same port, or adjust the compose file with team agreement)
-
-To view logs:
+**Logs / stop:**
 
 ```bash
 docker compose logs -f odoo
-```
-
-To stop:
-
-```bash
 docker compose down
 ```
 
@@ -116,61 +144,49 @@ docker compose down
 
 ## 4. First-time Odoo setup
 
-1. Open **http://localhost:8069** in a browser.
+1. Open **http://localhost:8069** in your normal browser (or Cursor’s Simple Browser if you use it).
+2. Create a **database** (e.g. `adventure_dev`), set the **master password**, language, country, and **admin** credentials.
+3. Enable **Developer Mode** when available (Settings → Developer Tools) for easier technical menus.
+4. **Apps → Update Apps List** → search **Adventure Base** → **Install** `adventure_base`.
 
-2. On the database manager:
-
-   - Create a **database** (e.g. `adventure_dev`).
-   - Set **master password** (store it safely; used for database management).
-   - Choose **Language**, **Country**, and an **admin email/password** for the Odoo user.
-
-3. After login, enable **Developer Mode** (Settings → scroll to Developer Tools → Activate Developer Mode), if your Odoo build exposes it, so apps and technical menus are easier to find.
-
-4. Install the custom base module:
-
-   - **Apps** → **Update Apps List**
-   - Remove the “Apps” filter if needed, search for **Adventure Base**
-   - **Install** `adventure_base`
-
-Custom addons are mounted from the repo at `./addons` → `/mnt/extra-addons` in the container. After you change Python or manifest files, **restart the Odoo container** or **upgrade the module** from the UI as you normally would in Odoo.
+Custom addons: **`./addons`** in the repo → **`/mnt/extra-addons`** in the container. After Python/manifest changes, restart Odoo or **upgrade** the module from the UI.
 
 ---
 
-## 5. Project layout (where things live)
+## 5. Daily work in Cursor
 
-| Path | Purpose |
-|------|--------|
-| `addons/` | All custom Odoo modules; **do not** change Odoo core. |
-| `config/` | Tooling such as optional OpenClaw config reference (`openclaw.json5`). |
-| `docs/` | Setup notes, agent rules, this onboarding doc. |
-| `scripts/` | Helper scripts (add as needed). |
-| `.cursor/rules/` | Cursor agent rules aligned with [agent-rules.md](agent-rules.md). |
+| Topic | What to use |
+|--------|-------------|
+| **Project rules** | `.cursor/rules/` (`odoo.mdc`, `repo.mdc`) — align with [agent-rules.md](agent-rules.md). Cursor loads them per rule settings (paths/globs). |
+| **Context** | In chat, **`@`**-mention files (e.g. `@docs/agent-rules.md`, `@addons/adventure_base/__manifest__.py`) instead of pasting large snippets. |
+| **Odoo / Python** | Install the **Python** extension in Cursor if you want analysis, go-to-definition, and formatting in `addons/`. |
+| **Docker** | Optional **Docker** extension to see compose services; same images as `docker compose ps`. |
 
 ---
 
-## 6. AI assistants and OpenClaw (optional)
+## 6. OpenClaw (optional, beside Cursor)
 
-- **Cursor:** Rules in `.cursor/rules/` are loaded according to Cursor’s rule settings.
-- **OpenClaw:** Configuration lives globally under `%USERPROFILE%\.openclaw\` by default. Point OpenClaw’s **workspace** at this repo root so file tools and context match the project, and merge model/provider settings with the example in `config/openclaw.json5` if you use that layout. See your OpenClaw docs for `agents.defaults.workspace` and `OPENCLAW_CONFIG_PATH`.
+- **Cursor** uses repo rules and your chosen models in the product settings.
+- **OpenClaw** uses global config under `%USERPROFILE%\.openclaw\` by default. Point its **workspace** at this **repo root** so file tools match your tree; align model config with **`config/openclaw.json5`** if your team uses that snippet.
 
-Do **not** put API keys in tracked files; use `.env` or OS/user environment variables.
+Never store keys in tracked files—**`.env`** or OS env only.
 
 ---
 
 ## 7. Verify you are ready
 
-- [ ] `docker compose ps` shows `db` and `odoo` healthy or running.
-- [ ] http://localhost:8069 loads and you can log into your dev database.
-- [ ] **Adventure Base** is installed (or you know how to install it from Apps).
-- [ ] `.env` exists locally with `OPENAI_API_KEY` if you need it; `.env` is not in `git status`.
-- [ ] You are on a **feature branch** from `develop` for code changes.
+- [ ] Repo opened in Cursor as a **folder** (root contains `docker-compose.yml`).
+- [ ] **`.env`** exists, keys filled as needed, and **`.env` is not** staged in Source Control.
+- [ ] `docker compose ps` in Cursor’s terminal shows **`db`** and **`odoo`**.
+- [ ] http://localhost:8069 works; **Adventure Base** installed (or you know how to install it).
+- [ ] You’re on a **feature branch** from **`develop`** for product changes.
 
 ---
 
 ## Reference and history
 
-- **[README.md](../README.md)** — Short overview and commands.
-- **[agent-rules.md](agent-rules.md)** — How agents and humans should work in this repo (modules, Git, security).
-- **[setup.md](setup.md)** — Original “greenfield” bootstrap checklist (historical); **new developers should follow this onboarding doc** for a clone-based workflow.
+- **[README.md](../README.md)** — Short overview.
+- **[agent-rules.md](agent-rules.md)** — Modules, Git, security, POS/inventory expectations.
+- **[setup.md](setup.md)** — Original greenfield checklist; **clone-based** onboarding is this document.
 
-If setup steps change, update **this file** and mention it in the PR.
+If setup or Cursor workflows change, update **this file** in the same PR.
