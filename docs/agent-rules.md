@@ -83,6 +83,27 @@ Avoid:
 
 ---
 
+### 4. Configuration as code (mandatory for agreed Odoo settings)
+
+When the team **decides** on an Odoo configuration that must exist in **test, staging, production, or every new developer database** (Settings screens, system parameters, required master data, POS shop defaults, etc.), that outcome MUST be **captured in the repository**, not left only as manual changes in one database.
+
+Agents and developers MUST implement repeatability using one or more of:
+
+* **Module data files** (`data/` XML or CSV, with appropriate `noupdate` flags) in the right `adventure_*` module—or a dedicated thin setup module if the team adds one (e.g. `adventure_setup`).
+* **`post_init_hook` / `pre_init_hook`** in the manifest when hooks are the right tool.
+* **Documented deployment scripts** (e.g. Odoo shell or API calls) checked into `scripts/` or `docs/`, if something cannot be expressed cleanly in XML.
+
+Agents MUST NOT treat “we configured it in the UI on my laptop” as done unless the same result is encoded for the next install/upgrade.
+
+**Acceptable exceptions** (must still be followed up):
+
+* Short **spikes** or demos—then either discard the DB or **promote** the final decisions into module data or scripts before merge to shared branches.
+* **Emergency production** tweaks—document and **backport** into the repo in the same change train.
+
+Pull requests that introduce or rely on **team-mandatory** configuration without a repeatable artifact in git should be flagged; humans may allow a time-boxed follow-up task, but the default expectation is **script or data file in the same PR** when the change is agreed.
+
+---
+
 ## Coding Standards
 
 ### Python

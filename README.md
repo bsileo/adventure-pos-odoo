@@ -15,7 +15,7 @@ Original bootstrap and tooling notes: [docs/setup.md](docs/setup.md). Agent and 
 
 ## Layout
 
-- `addons/` — Odoo modules (`adventure_base`, future modules)
+- `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports)
 - `config/` — Tooling config (e.g. OpenClaw)
 - `docs/` — Setup and agent guidelines
 - `scripts/` — Helper scripts
