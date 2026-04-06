@@ -5,8 +5,10 @@
         <field name="model">res.company</field>
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='general_info']//field[@name='currency_id']" position="after">
-                <field name="adventure_pos_dev_note" placeholder="e.g. dev-smoke"/>
+            <xpath expr="//sheet/notebook" position="before">
+                <group>
+                    <field name="adventure_pos_dev_note" placeholder="e.g. dev-smoke"/>
+                </group>
             </xpath>
         </field>
     </record>
