@@ -14,7 +14,7 @@ Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md]
 
 - `addons/` — Odoo modules (`adventure_base`, future modules)
 - `config/` — Tooling config (e.g. OpenClaw)
-- `docs/` — Setup and agent guidelines
+- `docs/` — Setup and agent guidelines; [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md)
 - `scripts/` — Helper scripts
 
 Do not store secrets in the repo; use `.env` (ignored by git).
