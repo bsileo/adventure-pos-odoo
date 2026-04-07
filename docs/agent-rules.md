@@ -118,6 +118,14 @@ Pull requests that introduce or rely on **team-mandatory** configuration without
 * minimal XPath complexity
 * always comment non-obvious logic
 
+### Module install / upgrade (local dev)
+
+After **Python model changes** (new fields, field definitions, or other schema-related model code) or **data/XML** that the module must load into the database, the affected module must be **upgraded** so the ORM and database stay in sync.
+
+* **Restarting Odoo only** does not add columns or apply module data; skipping an upgrade can surface as HTTP 500 with `UndefinedColumn` (or similar) when SQL selects fields the database never received.
+* Tell the human (or note in the PR) to **upgrade the module**: for example **Apps** → show installed modules → open the module → **Upgrade**, or from Docker: `odoo -d <database> -u <module> --stop-after-init` (then start the service as usual).
+* Bump **`version` in `__manifest__.py`** when a change requires an upgrade so environments can spot drift; use patch bumps for small additive changes unless the team prefers otherwise.
+
 ### Naming
 
 Use consistent prefixes:

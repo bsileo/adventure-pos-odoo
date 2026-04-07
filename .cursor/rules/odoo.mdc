@@ -35,6 +35,11 @@ Initial modules: `adventure_base`, `adventure_pos`, `adventure_inventory`, `adve
 - Python: Odoo conventions, small readable methods.
 - XML: clean structure, minimal XPath complexity; comment non-obvious logic.
 
+## Module upgrade (local dev)
+
+- After **model fields** or module **data/XML** changes, the module must be **upgraded** (`Apps` → Upgrade, or `odoo -u <module> --stop-after-init`); **restart alone** does not migrate the DB and can cause `UndefinedColumn` / HTTP 500.
+- When an upgrade is required for testers or deploys, bump **`version`** in that module’s `__manifest__.py`.
+
 ## Security
 
 - Do NOT change access rules or remove security constraints without explanation.
