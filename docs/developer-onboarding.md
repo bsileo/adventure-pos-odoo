@@ -65,12 +65,14 @@ Use the **Source Control** view (sidebar icon) or the terminal:
 ```bash
 git checkout develop
 git pull origin develop
-git checkout -b feature/your-short-description
+git checkout -b feat/42-your-short-description
 ```
+
+Include the **GitHub issue number** in the branch name when there is a tracking issue (example: `feat/42-line-item-notes`). If there is no issue yet, create one ([development tracking](development-tracking.md)) or use a temporary name and rename after filing the issue.
 
 If **`develop` does not exist** on the remote (e.g. the team uses only `main`), run `git branch -r` to see remote branches, check with the team which branch to branch from, then `git checkout <that-branch>` and `git pull` before creating your feature branch.
 
-Don’t commit directly to `main`. Conventions: [agent-rules.md — Git workflow](agent-rules.md#git-workflow).
+Don’t commit directly to `main`. Conventions: [agent-rules.md — Git workflow](agent-rules.md#git-workflow), [development-tracking.md](development-tracking.md) (PRs must link issues with `Closes #…`).
 
 ---
 
@@ -234,6 +236,10 @@ Spikes and one-off experiments are fine on a throwaway database; before the work
 | **Odoo / Python** | Install the **Python** extension in Cursor if you want analysis, go-to-definition, and formatting in `addons/`. |
 | **Docker** | Optional **Docker** extension to see compose services; same images as `docker compose ps`. |
 
+### Development tracking (GitHub Issues)
+
+Work is tracked with **GitHub Issues** and a **GitHub Project** board. Use an issue per feature or bug, branch names that include the issue number, and **`Closes #123`** in the PR body so the issue closes on merge. Full workflow, labels, and optional **`gh`** / Cursor tips: **[development-tracking.md](development-tracking.md)**.
+
 ---
 
 ## 7. OpenClaw (optional, beside Cursor)
@@ -251,7 +257,7 @@ Never store keys in tracked files—**`.env`** or OS env only.
 - [ ] **`.env`** exists, keys filled as needed, and **`.env` is not** staged in Source Control.
 - [ ] `docker compose ps` in Cursor’s terminal shows **`db`** and **`odoo`**.
 - [ ] http://localhost:8069 works; **Adventure Base** and **Adventure POS** installed (or you know how to install them).
-- [ ] You’re on a **feature branch** from the team’s integration branch (**`develop`** if your remote has it—see **Git branches** above) for product changes.
+- [ ] You’re on a **feature branch** from the team’s integration branch (**`develop`** if your remote has it—see **Git branches** above) for product changes, and you know how work links to **[GitHub Issues](development-tracking.md)** (issue → branch → PR → `Closes #…`).
 - [ ] You understand **configuration as code** ([section 5](#5-configuration-as-code-repeatable-odoo-settings)): agreed Odoo settings belong in the repo, not only in your local DB.
 
 ---
@@ -259,6 +265,7 @@ Never store keys in tracked files—**`.env`** or OS env only.
 ## Reference and history
 
 - **[README.md](../README.md)** — Short overview.
+- **[development-tracking.md](development-tracking.md)** — GitHub Issues, Projects, branches, PRs, labels.
 - **[agent-rules.md](agent-rules.md)** — Modules, Git, security, POS/inventory expectations.
 - **[setup.md](setup.md)** — Original greenfield checklist; **clone-based** onboarding is this document.
 
