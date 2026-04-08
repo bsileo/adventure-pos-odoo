@@ -11,13 +11,14 @@ Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code
 3. **Once**, initialize the default DB: `make init-db` (avoids HTTP 500 until `base` is installed).
 4. Open [http://localhost:8069](http://localhost:8069) and sign in; install **Adventure Base** from Apps if needed.
 
-Original bootstrap and tooling notes: [docs/setup.md](docs/setup.md). Agent and Git conventions: [docs/agent-rules.md](docs/agent-rules.md).
+Original bootstrap and tooling notes: [docs/setup.md](docs/setup.md). Agent and Git conventions: [docs/agent-rules.md](docs/agent-rules.md). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md).
 
 ## Layout
 
+- `.github/` — Issue & PR templates for GitHub
 - `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports)
 - `config/` — Tooling config (e.g. OpenClaw)
-- `docs/` — Setup and agent guidelines; [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md)
+- `docs/` — Setup and agent guidelines; [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md)
 - `scripts/` — Helper scripts
 
 Do not store secrets in the repo; use `.env` (ignored by git).

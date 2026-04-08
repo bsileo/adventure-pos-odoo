@@ -198,6 +198,7 @@ When modifying POS:
 * work on feature branches only
 * never commit directly to main
 * use descriptive commit messages
+* link PRs to GitHub Issues (`Closes #123`) when an issue exists — see [development-tracking.md](development-tracking.md)
 
 Example:
 
@@ -211,6 +212,7 @@ Agents must update:
 
 * docs/setup.md → if setup changes
 * README.md → if architecture changes
+* docs/development-tracking.md → if GitHub Issues / PR workflow for humans changes
 * module README if logic becomes complex
 
 ---
