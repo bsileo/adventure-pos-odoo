@@ -15,6 +15,7 @@ Original bootstrap and tooling notes: [docs/setup.md](docs/setup.md). Agent and 
 
 ## Layout
 
+- `.github/` — Issue & PR templates for GitHub
 - `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports)
 - `config/` — Tooling config (e.g. OpenClaw)
 - `docs/` — Setup and agent guidelines; [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md)
