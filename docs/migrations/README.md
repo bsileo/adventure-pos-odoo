@@ -24,6 +24,10 @@ Documentation for moving customers from external systems into Adventure POS (Odo
 | [idempotency-test-procedure.md](idempotency-test-procedure.md) | Double-import verification |
 | [training-hypercare-checklist.md](training-hypercare-checklist.md) | Staff training and go-live support |
 
+## GitHub work items
+
+To (re)create the standard **Adventure POS development** project items and milestone issues from this doc set, use [`scripts/create_d360_migration_issues.py`](../../scripts/create_d360_migration_issues.py) (requires [GitHub CLI](https://cli.github.com/) `gh auth login`).
+
 ## Related architecture
 
 - [Core data model](../data-model/core-model.md)
