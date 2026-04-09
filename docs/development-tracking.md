@@ -152,6 +152,7 @@ Cursor does not replace GitHub for **Issues and Projects**—you still create an
 
 | Path | Purpose |
 |------|--------|
+| [docs/migrations/](migrations/README.md) | Dive Shop 360 → Adventure migration runbooks (`risk:db-migration` for schema-heavy work) |
 | [.github/ISSUE_TEMPLATE/](../.github/ISSUE_TEMPLATE/) | Bug and feature issue templates |
 | [.github/pull_request_template.md](../.github/pull_request_template.md) | Default PR description |
 | [scripts/sync-github-labels.sh](../scripts/sync-github-labels.sh) | Create/update labels (`gh`) — Unix |
