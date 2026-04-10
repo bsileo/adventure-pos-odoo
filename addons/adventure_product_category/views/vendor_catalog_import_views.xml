@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_vendor_catalog_import_batch_form" model="ir.ui.view">
+        <field name="name">adventure.vendor.catalog.import.batch.form</field>
+        <field name="model">adventure.vendor.catalog.import.batch</field>
+        <field name="arch" type="xml">
+            <form string="Vendor catalog import">
+                <header>
+                    <button name="action_recompute_categories" type="object" string="Recompute suggestions"
+                            class="btn-secondary" invisible="state != 'review'"/>
+                    <button name="action_import_products" type="object" string="Create products"
+                            class="btn-primary" invisible="state != 'review'"/>
+                    <button name="action_cancel" type="object" string="Cancel batch"
+                            class="btn-secondary" invisible="state != 'review'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="review,done,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Import description" readonly="state != 'review'"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="source_filename" readonly="1"/>
+                            <field name="match_threshold" readonly="state != 'review'"/>
+                        </group>
+                        <group>
+                            <field name="line_count"/>
+                            <field name="pending_count"/>
+                            <field name="imported_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids" readonly="state != 'review'">
+                                <list string="Catalog lines" editable="bottom" decoration-warning="needs_review"
+                                      create="false" delete="false">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_name" readonly="state == 'done'"/>
+                                    <field name="vendor_category" readonly="state == 'done'"/>
+                                    <field name="categ_id"/>
+                                    <field name="match_confidence" optional="show"/>
+                                    <field name="needs_review" optional="show"/>
+                                    <field name="state" optional="show"/>
+                                    <field name="product_tmpl_id" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_vendor_catalog_import_batch_list" model="ir.ui.view">
+        <field name="name">adventure.vendor.catalog.import.batch.list</field>
+        <field name="model">adventure.vendor.catalog.import.batch</field>
+        <field name="arch" type="xml">
+            <list string="Vendor catalog imports">
+                <field name="name"/>
+                <field name="source_filename"/>
+                <field name="state"/>
+                <field name="line_count"/>
+                <field name="pending_count"/>
+                <field name="imported_count"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_adventure_vendor_catalog_import_batch" model="ir.actions.act_window">
+        <field name="name">Vendor catalog imports</field>
+        <field name="res_model">adventure.vendor.catalog.import.batch</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '!=', 'cancelled')]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Upload a CSV via <strong>New import</strong> to map vendor categories and create products.
+            </p>
+        </field>
+    </record>
+
+    <record id="view_adventure_vendor_catalog_import_wizard_form" model="ir.ui.view">
+        <field name="name">adventure.vendor.catalog.import.wizard.form</field>
+        <field name="model">adventure.vendor.catalog.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import vendor catalog">
+                <group>
+                    <field name="data_file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <group string="Columns (header names, case-insensitive)">
+                    <field name="name_column"/>
+                    <field name="category_column"/>
+                </group>
+                <group string="CSV &amp; matching">
+                    <field name="delimiter"/>
+                    <field name="encoding"/>
+                    <field name="match_threshold"/>
+                </group>
+                <footer>
+                    <button name="action_import" type="object" string="Upload &amp; map" class="btn-primary" data-hotkey="q"/>
+                    <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_vendor_catalog_import_wizard" model="ir.actions.act_window">
+        <field name="name">New vendor catalog import</field>
+        <field name="res_model">adventure.vendor.catalog.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_adventure_vendor_catalog_import_wizard"
+              name="New vendor import"
+              parent="stock.menu_product_in_config_stock"
+              action="action_adventure_vendor_catalog_import_wizard"
+              sequence="25"
+              groups="stock.group_stock_manager"/>
+
+    <menuitem id="menu_adventure_vendor_catalog_import_batches"
+              name="Vendor import batches"
+              parent="stock.menu_product_in_config_stock"
+              action="action_adventure_vendor_catalog_import_batch"
+              sequence="26"
+              groups="stock.group_stock_manager"/>
+</odoo>

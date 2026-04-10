@@ -6,12 +6,14 @@
     "category": "Productivity",
     "author": "Adventure POS",
     "license": "LGPL-3",
-    "depends": ["product"],
+    "depends": ["product", "stock"],
     "external_dependencies": {
         "python": ["rapidfuzz"],
     },
     "data": [
+        "security/ir.model.access.csv",
         "views/product_category_views.xml",
+        "views/vendor_catalog_import_views.xml",
     ],
     "installable": True,
     "application": False,
