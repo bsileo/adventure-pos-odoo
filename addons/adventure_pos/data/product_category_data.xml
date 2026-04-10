@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="pc_regulator_systems" model="product.category">
+            <field name="name">REGULATOR SYSTEMS</field>
+        </record>
+        <record id="pc_first_stage_regulators_yoke" model="product.category">
+            <field name="name">FIRST STAGE REGULATORS - YOKE</field>
+        </record>
+        <record id="pc_first_stage_regulators_din" model="product.category">
+            <field name="name">FIRST STAGE REGULATORS - DIN</field>
+        </record>
+        <record id="pc_second_stage_regulators" model="product.category">
+            <field name="name">SECOND STAGE REGULATORS</field>
+        </record>
+        <record id="pc_octopus_stage_regulators" model="product.category">
+            <field name="name">OCTOPUS STAGE REGULATORS</field>
+        </record>
+        <record id="pc_first_stage_regulator_accessories" model="product.category">
+            <field name="name">FIRST STAGE REGULATOR ACCESSORIES</field>
+        </record>
+        <record id="pc_second_stage_regulator_accessories" model="product.category">
+            <field name="name">SECOND STAGE REGULATOR ACCESSORIES</field>
+        </record>
+        <record id="pc_nitrox_regulator_accessories" model="product.category">
+            <field name="name">NITROX REGULATOR ACCESSORIES</field>
+        </record>
+        <record id="pc_tools" model="product.category">
+            <field name="name">TOOLS</field>
+        </record>
+        <record id="pc_service_kits" model="product.category">
+            <field name="name">SERVICE KITS</field>
+        </record>
+        <record id="pc_lp_hp_hoses" model="product.category">
+            <field name="name">LP/HP HOSES</field>
+        </record>
+        <record id="pc_computers" model="product.category">
+            <field name="name">COMPUTERS</field>
+        </record>
+        <record id="pc_computer_software" model="product.category">
+            <field name="name">COMPUTER SOFTWARE</field>
+        </record>
+        <record id="pc_computer_accessories" model="product.category">
+            <field name="name">COMPUTER ACCESSORIES</field>
+        </record>
+        <record id="pc_instruments" model="product.category">
+            <field name="name">INSTRUMENTS</field>
+        </record>
+        <record id="pc_capsules" model="product.category">
+            <field name="name">CAPSULES</field>
+        </record>
+        <record id="pc_instrument_accessories" model="product.category">
+            <field name="name">INSTRUMENT ACCESSORIES</field>
+        </record>
+        <record id="pc_air2_v_gen_balanced_power_inflator" model="product.category">
+            <field name="name">AIR2 V GEN/BALANCED POWER INFLATOR</field>
+        </record>
+        <record id="pc_air2_bpi_hose_adapters" model="product.category">
+            <field name="name">AIR2/BPI HOSE ADAPTERS</field>
+        </record>
+        <record id="pc_buoyancy_compensators" model="product.category">
+            <field name="name">BUOYANCY COMPENSATORS</field>
+        </record>
+        <record id="pc_buoyancy_compensators_accessories" model="product.category">
+            <field name="name">BUOYANCY COMPENSATORS ACCESSORIES</field>
+        </record>
+        <record id="pc_s_tek_harness_system" model="product.category">
+            <field name="name">S-TEK HARNESS SYSTEM</field>
+        </record>
+        <record id="pc_s_tek_harness" model="product.category">
+            <field name="name">S-TEK HARNESS</field>
+        </record>
+        <record id="pc_s_tek_wing" model="product.category">
+            <field name="name">S-TEK WING</field>
+        </record>
+        <record id="pc_s_tek_accessories" model="product.category">
+            <field name="name">S-TEK ACCESSORIES</field>
+        </record>
+        <record id="pc_x_tek_accessories" model="product.category">
+            <field name="name">X-TEK ACCESSORIES</field>
+        </record>
+        <record id="pc_drysuits" model="product.category">
+            <field name="name">DRYSUITS</field>
+        </record>
+        <record id="pc_drysuit_undergarments" model="product.category">
+            <field name="name">DRYSUIT UNDERGARMENTS</field>
+        </record>
+        <record id="pc_drysuit_accessories" model="product.category">
+            <field name="name">DRYSUIT ACCESSORIES</field>
+        </record>
+        <record id="pc_semi_dry" model="product.category">
+            <field name="name">SEMI-DRY</field>
+        </record>
+        <record id="pc_wetsuits" model="product.category">
+            <field name="name">WETSUITS</field>
+        </record>
+        <record id="pc_professional_military_dwe" model="product.category">
+            <field name="name">Professional / Military DWE</field>
+        </record>
+        <record id="pc_rash_guards" model="product.category">
+            <field name="name">RASH GUARDS</field>
+        </record>
+        <record id="pc_boots_socks" model="product.category">
+            <field name="name">BOOTS/SOCKS</field>
+        </record>
+        <record id="pc_gloves" model="product.category">
+            <field name="name">GLOVES</field>
+        </record>
+        <record id="pc_dry_glove_accessories" model="product.category">
+            <field name="name">DRY GLOVE ACCESSORIES</field>
+        </record>
+        <record id="pc_fins" model="product.category">
+            <field name="name">FINS</field>
+        </record>
+        <record id="pc_masks" model="product.category">
+            <field name="name">MASKS</field>
+        </record>
+        <record id="pc_masks_accessories" model="product.category">
+            <field name="name">MASKS ACCESSORIES</field>
+        </record>
+        <record id="pc_snorkels" model="product.category">
+            <field name="name">SNORKELS</field>
+        </record>
+        <record id="pc_snorkels_accessories" model="product.category">
+            <field name="name">SNORKELS ACCESSORIES</field>
+        </record>
+        <record id="pc_snorkel_combos" model="product.category">
+            <field name="name">SNORKEL COMBOS</field>
+        </record>
+        <record id="pc_snorkelpro_snorkel" model="product.category">
+            <field name="name">SNORKELPRO SNORKEL</field>
+        </record>
+        <record id="pc_snorkelpro_fins" model="product.category">
+            <field name="name">SNORKELPRO FINS</field>
+        </record>
+        <record id="pc_snorkelpro_snorkeling_vests" model="product.category">
+            <field name="name">SNORKELPRO SNORKELING VESTS</field>
+        </record>
+        <record id="pc_bags" model="product.category">
+            <field name="name">BAGS</field>
+        </record>
+        <record id="pc_lights" model="product.category">
+            <field name="name">LIGHTS</field>
+        </record>
+        <record id="pc_knives" model="product.category">
+            <field name="name">KNIVES</field>
+        </record>
+        <record id="pc_accessories" model="product.category">
+            <field name="name">ACCESSORIES</field>
+        </record>
+        <record id="pc_promotional" model="product.category">
+            <field name="name">PROMOTIONAL</field>
+        </record>
+        <record id="pc_dealer_support" model="product.category">
+            <field name="name">DEALER SUPPORT</field>
+        </record>
+        <record id="pc_rental_only_regulator_systems" model="product.category">
+            <field name="name">RENTAL ONLY REGULATOR SYSTEMS</field>
+        </record>
+        <record id="pc_rental_only_second_stage" model="product.category">
+            <field name="name">RENTAL ONLY SECOND STAGE</field>
+        </record>
+        <record id="pc_rental_only_masks" model="product.category">
+            <field name="name">RENTAL ONLY MASKS</field>
+        </record>
+    </data>
+</odoo>
