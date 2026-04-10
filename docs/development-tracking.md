@@ -34,6 +34,8 @@ flowchart LR
 
 ## GitHub Projects (board)
 
+**Project for this repo:** [Adventure POS development](https://github.com/users/bsileo/projects/5) — linked to `bsileo/adventure-pos-odoo` so you can add issues from this repository to the board.
+
 The team maintains a **Project** on GitHub (table or board layout) with columns such as:
 
 | Column | Meaning |
@@ -44,7 +46,7 @@ The team maintains a **Project** on GitHub (table or board layout) with columns 
 | **In review** | PR open; code review. |
 | **Done** | Merged (issue closed by PR or manually). |
 
-**New to the board?** Open the repo on GitHub → **Projects** tab → select the Adventure POS project → add your issue or drag cards as status changes.
+**New to the board?** Open the [project](https://github.com/users/bsileo/projects/5) directly, or from the repo go to the **Projects** tab → **Adventure POS development** → add issues or drag cards as status changes.
 
 **First-time setup (maintainers)** — pick one:
 
@@ -150,6 +152,7 @@ Cursor does not replace GitHub for **Issues and Projects**—you still create an
 
 | Path | Purpose |
 |------|--------|
+| [docs/migrations/](migrations/README.md) | Dive Shop 360 → Adventure migration runbooks (`risk:db-migration` for schema-heavy work) |
 | [.github/ISSUE_TEMPLATE/](../.github/ISSUE_TEMPLATE/) | Bug and feature issue templates |
 | [.github/pull_request_template.md](../.github/pull_request_template.md) | Default PR description |
 | [scripts/sync-github-labels.sh](../scripts/sync-github-labels.sh) | Create/update labels (`gh`) — Unix |
