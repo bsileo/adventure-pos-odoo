@@ -11,7 +11,8 @@ services:
       - "5432:5432"
 
   odoo:
-    image: odoo:18.0
+    build: .
+    image: adventure-pos-odoo:18.0
     depends_on:
       - db
     ports:
