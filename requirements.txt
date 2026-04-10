@@ -1,0 +1,2 @@
+# Python deps for custom Odoo addons (install into the Odoo image / venv).
+rapidfuzz>=3.9.0

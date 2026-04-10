@@ -7,6 +7,9 @@
     "author": "Adventure POS",
     "license": "LGPL-3",
     "depends": ["product"],
+    "external_dependencies": {
+        "python": ["rapidfuzz"],
+    },
     "data": [
         "views/product_category_views.xml",
     ],
