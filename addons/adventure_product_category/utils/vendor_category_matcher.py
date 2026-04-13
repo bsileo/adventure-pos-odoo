@@ -3,9 +3,13 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, TypedDict
 
 from rapidfuzz import fuzz
+
+# Delimiters that indicate a compound vendor category (e.g. "Regs/Octos", "Wetsuits & Drysuits")
+_COMPOUND_SPLIT = re.compile(r"[/\\|,&]|\s+(?:and|or|with)\s+", re.IGNORECASE)
 
 
 class CategoryRow(TypedDict, total=False):
@@ -41,11 +45,35 @@ def _strings_for_category(row: CategoryRow) -> list[str]:
     return out
 
 
+def _split_vendor_tokens(text: str) -> list[str]:
+    """Split a compound vendor label into individual tokens.
+
+    "Regs/Octos" → ["Regs", "Octos"]
+    "Wetsuits & Drysuits" → ["Wetsuits", "Drysuits"]
+    """
+    parts = _COMPOUND_SPLIT.split(text)
+    return [p.strip() for p in parts if p.strip() and len(p.strip()) >= 2]
+
+
 def _best_score_for_category(vendor_norm: str, row: CategoryRow) -> float:
-    candidates = _strings_for_category(row)
-    if not candidates:
+    cat_strings = _strings_for_category(row)
+    if not cat_strings:
         return 0.0
-    return float(max(fuzz.WRatio(vendor_norm, c) for c in candidates))
+
+    # Score the full vendor string as-is
+    full_score = max(fuzz.WRatio(vendor_norm, c) for c in cat_strings)
+
+    # For compound labels (e.g. "Regs/Octos"), also score each token independently.
+    # This lets "Regs" match "Regulators" even when the full string scores poorly.
+    tokens = _split_vendor_tokens(vendor_norm)
+    if len(tokens) > 1:
+        token_best = max(
+            max(fuzz.WRatio(token, c) for c in cat_strings)
+            for token in tokens
+        )
+        return float(max(full_score, token_best))
+
+    return float(full_score)
 
 
 def match_vendor_category(

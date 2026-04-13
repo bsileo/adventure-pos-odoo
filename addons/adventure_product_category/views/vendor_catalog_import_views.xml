@@ -6,10 +6,12 @@
         <field name="arch" type="xml">
             <form string="Vendor catalog import">
                 <header>
+                    <button name="action_apply_mappings" type="object" string="Apply mappings to lines"
+                            class="btn-primary" invisible="state != 'review'"/>
                     <button name="action_recompute_categories" type="object" string="Recompute suggestions"
                             class="btn-secondary" invisible="state != 'review'"/>
                     <button name="action_import_products" type="object" string="Create products"
-                            class="btn-primary" invisible="state != 'review'"/>
+                            class="btn-secondary" invisible="state != 'review'"/>
                     <button name="action_cancel" type="object" string="Cancel batch"
                             class="btn-secondary" invisible="state != 'review'"/>
                     <field name="state" widget="statusbar" statusbar_visible="review,done,cancelled"/>
@@ -31,7 +33,25 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Lines" name="lines">
+                        <page string="Category mapping" name="category_mapping">
+                            <p class="text-muted mb-2">
+                                Each row below represents a unique vendor category from your CSV.
+                                Confirm or correct the suggested Odoo category, then click
+                                <strong>Apply mappings to lines</strong> to update all products at once.
+                            </p>
+                            <field name="mapping_ids" readonly="state != 'review'">
+                                <list string="Category mappings" editable="bottom"
+                                      decoration-warning="needs_review"
+                                      create="false" delete="false">
+                                    <field name="vendor_category" readonly="1" string="Vendor category"/>
+                                    <field name="categ_id" string="Odoo category"/>
+                                    <field name="match_confidence" string="Confidence %" optional="show"/>
+                                    <field name="needs_review" optional="show"/>
+                                    <field name="product_count" string="Products" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Product lines" name="lines">
                             <field name="line_ids" readonly="state != 'review'">
                                 <list string="Catalog lines" editable="bottom" decoration-warning="needs_review"
                                       create="false" delete="false">

@@ -4,10 +4,43 @@ import base64
 import csv
 import io
 import logging
+from collections import Counter
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
+
+
+class AdventureVendorCategoryMapping(models.Model):
+    """One row per unique vendor category string within a batch.
+
+    Lets the user review and correct category suggestions in bulk — one choice
+    covers every product that shares the same vendor category label.
+    """
+
+    _name = "adventure.vendor.category.mapping"
+    _description = "Vendor category mapping"
+    _order = "needs_review desc, vendor_category"
+
+    batch_id = fields.Many2one(
+        "adventure.vendor.catalog.import.batch",
+        string="Batch",
+        required=True,
+        ondelete="cascade",
+    )
+    vendor_category = fields.Char(string="Vendor category", readonly=True)
+    categ_id = fields.Many2one(
+        "product.category",
+        string="Product category",
+        help="Select the correct Odoo category for all products with this vendor label.",
+    )
+    match_confidence = fields.Float(
+        string="Confidence",
+        digits=(16, 2),
+        readonly=True,
+    )
+    needs_review = fields.Boolean(string="Review needed", readonly=True)
+    product_count = fields.Integer(string="Products", readonly=True)
 
 
 class AdventureVendorCatalogImportBatch(models.Model):
@@ -38,6 +71,11 @@ class AdventureVendorCatalogImportBatch(models.Model):
         "batch_id",
         string="Lines",
     )
+    mapping_ids = fields.One2many(
+        "adventure.vendor.category.mapping",
+        "batch_id",
+        string="Category mappings",
+    )
     line_count = fields.Integer(compute="_compute_line_stats", store=False)
     imported_count = fields.Integer(compute="_compute_line_stats", store=False)
     pending_count = fields.Integer(compute="_compute_line_stats", store=False)
@@ -51,12 +89,15 @@ class AdventureVendorCatalogImportBatch(models.Model):
             batch.pending_count = len(lines.filtered(lambda l: l.state == "pending"))
 
     def action_recompute_categories(self):
-        """Re-run fuzzy mapping for all pending lines (e.g. after editing categories)."""
+        """Re-run fuzzy mapping for all pending lines and refresh mapping records."""
         Match = self.env["adventure.vendor_category_match"]
+        Mapping = self.env["adventure.vendor.category.mapping"]
         for batch in self:
             if batch.state != "review":
                 raise UserError(_("You can only remap batches in Review."))
             pending = batch.line_ids.filtered(lambda l: l.state == "pending")
+
+            # Re-score every unique vendor category
             cache = {}
             for line in pending:
                 key = (line.vendor_category or "").strip()
@@ -65,6 +106,10 @@ class AdventureVendorCatalogImportBatch(models.Model):
                         key,
                         threshold=batch.match_threshold,
                     )
+
+            # Update lines
+            for line in pending:
+                key = (line.vendor_category or "").strip()
                 m = cache[key]
                 line.write(
                     {
@@ -73,7 +118,56 @@ class AdventureVendorCatalogImportBatch(models.Model):
                         "needs_review": m["needs_review"],
                     }
                 )
+
+            # Rebuild mapping records from scratch
+            batch.mapping_ids.unlink()
+            counts = {}
+            for line in batch.line_ids:
+                k = (line.vendor_category or "").strip()
+                counts[k] = counts.get(k, 0) + 1
+            mapping_vals = []
+            for vkey, m in cache.items():
+                mapping_vals.append(
+                    {
+                        "batch_id": batch.id,
+                        "vendor_category": vkey,
+                        "categ_id": m["category_id"],
+                        "match_confidence": m["confidence"],
+                        "needs_review": m["needs_review"],
+                        "product_count": counts.get(vkey, 0),
+                    }
+                )
+            Mapping.create(mapping_vals)
         return True
+
+    def action_apply_mappings(self):
+        """Push the category chosen in each mapping row down to every matching pending line."""
+        self.ensure_one()
+        if self.state != "review":
+            raise UserError(_("You can only apply mappings to batches in Review."))
+        for mapping in self.mapping_ids:
+            lines = self.line_ids.filtered(
+                lambda l, vc=mapping.vendor_category: (
+                    (l.vendor_category or "").strip() == (vc or "").strip()
+                    and l.state == "pending"
+                )
+            )
+            lines.write(
+                {
+                    "categ_id": mapping.categ_id.id if mapping.categ_id else False,
+                    "needs_review": not bool(mapping.categ_id),
+                }
+            )
+        # Reload the form so the Product lines tab reflects the applied categories.
+        # Returning True only works when self was modified; writing to related
+        # line records requires an explicit act_window to trigger a UI refresh.
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self._name,
+            "res_id": self.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def action_import_products(self):
         """Create ``product.template`` rows from pending lines (requires category)."""
@@ -278,6 +372,7 @@ class AdventureVendorCatalogImportWizard(models.TransientModel):
 
         Batch = self.env["adventure.vendor.catalog.import.batch"]
         Line = self.env["adventure.vendor.catalog.import.line"]
+        Mapping = self.env["adventure.vendor.category.mapping"]
         Match = self.env["adventure.vendor_category_match"]
 
         base_title = (self.filename or _("Vendor catalog")).strip()
@@ -291,6 +386,9 @@ class AdventureVendorCatalogImportWizard(models.TransientModel):
                 "state": "review",
             }
         )
+
+        # Count products per vendor category for the mapping summary
+        vcat_counts = Counter(r["vendor_category"] for r in parsed)
 
         cache = {}
         seq = 10
@@ -316,6 +414,20 @@ class AdventureVendorCatalogImportWizard(models.TransientModel):
             )
             seq += 10
         Line.create(line_vals)
+
+        # One mapping row per unique vendor category for bulk review
+        mapping_vals = [
+            {
+                "batch_id": batch.id,
+                "vendor_category": vkey,
+                "categ_id": cache[vkey]["category_id"],
+                "match_confidence": cache[vkey]["confidence"],
+                "needs_review": cache[vkey]["needs_review"],
+                "product_count": vcat_counts[vkey],
+            }
+            for vkey in cache
+        ]
+        Mapping.create(mapping_vals)
 
         return {
             "type": "ir.actions.act_window",

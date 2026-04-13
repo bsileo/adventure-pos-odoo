@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_adventure_vendor_catalog_import_batch_stock_manager,adventure.vendor.catalog.import.batch stock manager,model_adventure_vendor_catalog_import_batch,stock.group_stock_manager,1,1,1,1
 access_adventure_vendor_catalog_import_line_stock_manager,adventure.vendor.catalog.import.line stock manager,model_adventure_vendor_catalog_import_line,stock.group_stock_manager,1,1,1,1
 access_adventure_vendor_catalog_import_wizard_stock_manager,adventure.vendor.catalog.import.wizard stock manager,model_adventure_vendor_catalog_import_wizard,stock.group_stock_manager,1,1,1,1
+access_adventure_vendor_category_mapping_stock_manager,adventure.vendor.category.mapping stock manager,model_adventure_vendor_category_mapping,stock.group_stock_manager,1,1,1,1

@@ -79,8 +79,8 @@ class ProductTemplate(models.Model):
             elif misc:
                 product.pos_categ_ids = [(6, 0, misc.ids)]
 
-    @classmethod
-    def create(cls, vals_list):
+    @api.model_create_multi
+    def create(self, vals_list):
         records = super().create(vals_list)
         # Sync after create so `categ_id` is available on record
         records._sync_pos_category_from_inventory_category()
