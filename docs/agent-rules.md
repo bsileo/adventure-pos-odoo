@@ -13,6 +13,8 @@ The goal is to ensure:
 
 Agents must follow these rules unless explicitly overridden by a human.
 
+**Shared GCP sandbox (project/account, `gcloud` configs):** see [shared-environment.md](shared-environment.md).
+
 ---
 
 ## Project Overview
