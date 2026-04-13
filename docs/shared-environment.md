@@ -74,6 +74,25 @@ gcloud auth application-default login
 
 ---
 
+## `environment` tag reminder (terminal message from `gcloud`)
+
+If you see:
+
+`Project 'adventure-pos-sandbox' lacks an 'environment' tag...`
+
+that is **separate from** `gcloud config`: your **active project can still be set correctly** (you should still see `Updated property [core/project]`). GCP is asking you to **label the project** for org governance using a resource tag whose **key** is `environment` and whose **value** is one of the allowed labels (e.g. `Production`, `Development`, `Test`, `Staging`).
+
+For **`adventure-pos-sandbox`**, use **`Development`** or **`Staging`** — not `Production`.
+
+**How to fix (org admin / someone with tag permissions):**
+
+1. Follow Google’s guide: [Designate project environments with tags](https://cloud.google.com/resource-manager/docs/creating-managing-projects#designate_project_environments_with_tags).
+2. Typical flow: ensure an **`environment` tag key** exists at the **organization** (or folder) level, create a **tag value** (e.g. `Development`), then **bind** that value to project **`adventure-pos-sandbox`** (Console **Tag Manager** / **gcloud resource-manager tags bindings create** as in the doc).
+
+Until the binding exists, some orgs show this warning whenever you select the project; it does not block local `gcloud` use by itself.
+
+---
+
 ## Handoff fields (fill in as setup progresses)
 
 Agents and runbooks should use these once known:
