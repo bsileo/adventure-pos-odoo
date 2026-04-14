@@ -13,6 +13,10 @@ Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code
 
 Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md](docs/setup.md). Agent conventions: [docs/agent-rules.md](docs/agent-rules.md). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md). **Shared GCP sandbox** (project, `gcloud` profile, deploy workflow): [docs/shared-environment.md](docs/shared-environment.md). **Cursor → push → sandbox:** [docs/sandbox-cursor-to-deploy.md](docs/sandbox-cursor-to-deploy.md).
 
+## Development Workflow
+
+Follow the branching and pull request rules in [CONTRIBUTING.md](CONTRIBUTING.md). Feature work starts from `develop`, feature PRs target `develop`, and only release or hotfix changes should go to `main`.
+
 ## Layout
 
 - `.github/` — Issue & PR templates; [deploy-gcp-sandbox workflow](.github/workflows/deploy-gcp-sandbox.yml) (push to `develop`)
