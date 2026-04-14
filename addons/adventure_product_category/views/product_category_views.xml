@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_category_form_view_adventure" model="ir.ui.view">
+        <field name="name">product.category.form.adventure</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='first']" position="after">
+                <group name="adventure_classification" string="Classification">
+                    <field name="canonical_name"/>
+                    <field name="category_level"/>
+                    <field name="alias_names"/>
+                    <field name="keywords"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_category_list_view_adventure" model="ir.ui.view">
+        <field name="name">product.category.list.adventure</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_list_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='display_name']" position="after">
+                <field name="canonical_name" optional="show"/>
+                <field name="category_level" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_category_search_view_adventure" model="ir.ui.view">
+        <field name="name">product.category.search.adventure</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="canonical_name"/>
+                <field name="category_level"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

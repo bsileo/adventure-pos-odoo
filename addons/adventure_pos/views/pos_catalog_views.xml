@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product list: bulk Add to POS (only from POS catalog action context) -->
+    <record id="product_template_tree_view_adventure_pos" model="ir.ui.view">
+        <field name="name">product.template.list.adventure.pos</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list/header" position="inside">
+                <button name="action_adventure_pos_add_to_pos"
+                        type="object"
+                        string="Add to POS"
+                        class="btn-primary"
+                        groups="point_of_sale.group_pos_manager"
+                        invisible="not context.get('adventure_pos_catalog')"
+                        data-hotkey="y"/>
+            </xpath>
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="available_in_pos" optional="show" groups="point_of_sale.group_pos_manager"
+                       column_invisible="not context.get('adventure_pos_catalog')"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: hierarchical category + vendor sidebar, vendor text search, POS filter -->
+    <record id="product_template_search_view_adventure_pos" model="ir.ui.view">
+        <field name="name">product.template.search.adventure.pos</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="seller_ids" string="Vendor"
+                       filter_domain="[('seller_ids.partner_id.name', 'ilike', self)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='filter_to_sell']" position="before">
+                <filter string="Not in POS yet" name="adventure_pos_not_in_pos"
+                        domain="[('available_in_pos', '=', False)]"
+                        groups="point_of_sale.group_pos_manager"/>
+                <separator/>
+            </xpath>
+            <xpath expr="//search" position="inside">
+                <searchpanel groups="point_of_sale.group_pos_manager"
+                             invisible="not context.get('adventure_pos_catalog')">
+                    <field name="categ_id" icon="fa-folder" enable_counters="1" hierarchize="1" limit="200"/>
+                    <field name="pos_vendor_partner_ids" string="Vendor" icon="fa-truck"
+                           enable_counters="1" select="multi" limit="80"/>
+                </searchpanel>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_adventure_pos_catalog_products" model="ir.actions.act_window">
+        <field name="name">POS catalog selection</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="search_view_id" ref="product.product_template_search_view"/>
+        <field name="context">{
+            'search_default_filter_to_sell': 1,
+            'adventure_pos_catalog': True,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Pick products for the Point of Sale.
+            </p>
+            <p>
+                Use the <strong>category</strong> and <strong>vendor</strong> side panels to narrow the list.
+                Select rows and click <strong>Add to POS</strong>, or clear the selection and use the same button
+                to add <strong>all products matching the current filters</strong> (entire category or vendor slice).
+                For a full inventory category tree or a vendor’s whole catalog, use the buttons on the category
+                or partner form.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_adventure_pos_catalog_products"
+              name="POS catalog selection"
+              parent="point_of_sale.pos_menu_products_configuration"
+              action="action_adventure_pos_catalog_products"
+              sequence="15"
+              groups="point_of_sale.group_pos_manager"/>
+
+    <!-- Action menu: same logic as header button -->
+    <record id="action_server_adventure_pos_add_to_pos" model="ir.actions.server">
+        <field name="name">Add to POS</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="state">code</field>
+        <field name="groups_id" eval="[(4, ref('point_of_sale.group_pos_manager'))]"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+records = env['product.template'].browse(env.context.get('active_ids', []))
+action = records.action_adventure_pos_add_to_pos()
+        </field>
+    </record>
+
+    <!-- Category form: add entire subtree -->
+    <record id="product_category_form_view_adventure_pos" model="ir.ui.view">
+        <field name="name">product.category.form.adventure.pos</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_adventure_pos_add_category_tree_to_pos"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-shopping-cart"
+                        groups="point_of_sale.group_pos_manager"
+                        title="Add all products in this category and subcategories to the Point of Sale">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Add subtree to POS</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner: entire vendor catalog -->
+    <record id="res_partner_form_view_adventure_pos" model="ir.ui.view">
+        <field name="name">res.partner.form.adventure.pos</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_adventure_pos_add_vendor_catalog_to_pos"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-cubes"
+                        groups="point_of_sale.group_pos_manager"
+                        invisible="supplier_rank == 0"
+                        title="Enable POS for every product that lists this partner as vendor">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Vendor → POS</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
