@@ -1,0 +1,44 @@
+# Deploy the shared Odoo sandbox on GCP when `develop` is updated.
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   GCP_SANDBOX_SSH_PRIVATE_KEY  — PEM private key for user `deploy` (same as your GCE SSH key; never commit)
+#   GCP_SANDBOX_SSH_HOST         — VM public IP or DNS (ephemeral IP changes after stop/start unless static)
+#   GCP_SANDBOX_KNOWN_HOSTS      — one or more lines from: ssh-keyscan -H HOST
+#   GCP_SANDBOX_DEPLOY_PATH      — e.g. /srv/adventurepos/adventure-pos-odoo
+#
+# Fork PRs do not receive secrets; only pushes to `develop` in this repo run deploy.
+
+name: Deploy GCP sandbox
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-gcp-sandbox
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load SSH private key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.GCP_SANDBOX_SSH_PRIVATE_KEY }}
+
+      - name: Trust host key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.GCP_SANDBOX_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Pull latest and restart Docker stack
+        env:
+          SANDBOX_SSH_HOST: ${{ secrets.GCP_SANDBOX_SSH_HOST }}
+          SANDBOX_DEPLOY_PATH: ${{ secrets.GCP_SANDBOX_DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "deploy@${SANDBOX_SSH_HOST}" \
+            "set -euo pipefail; cd \"${SANDBOX_DEPLOY_PATH}\"; git fetch origin; git checkout develop; git reset --hard origin/develop; docker compose up -d"

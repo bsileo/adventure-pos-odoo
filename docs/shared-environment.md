@@ -269,6 +269,30 @@ See [Makefile](../Makefile) targets `gcp-vm-*` and [scripts/gcp-sandbox-vm.ps1](
 
 ---
 
+## GitHub Actions → auto-deploy to the sandbox (`develop`)
+
+When **`develop`** receives a **push** (e.g. after you merge a PR), workflow **[`.github/workflows/deploy-gcp-sandbox.yml`](../.github/workflows/deploy-gcp-sandbox.yml)** SSHs as **`deploy`**, runs **`git fetch` / `reset --hard origin/develop`**, and **`docker compose up -d`** in the deploy directory so **bind-mounted `addons/`** match the branch.
+
+**Requirements**
+
+- VM is **running** (start it with **`make gcp-vm-start`** or **`scripts/gcp-sandbox-vm.ps1 start`**).
+- Repo **Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | Value |
+|--------|--------|
+| `GCP_SANDBOX_SSH_PRIVATE_KEY` | Full contents of the **private** key that logs in as `deploy` on the VM (e.g. `adventurepos_gcp_deploy` from your PC — **never** commit this file). |
+| `GCP_SANDBOX_SSH_HOST` | Current VM **public IP** or hostname (from **`make gcp-vm-ip`** / **`gcp-sandbox-vm.ps1 ip`**). **Update** when the ephemeral IP changes after stop/start. |
+| `GCP_SANDBOX_KNOWN_HOSTS` | Output of **`ssh-keyscan -H YOUR_IP`** (run on your PC; paste **all** lines GitHub shows). **Update** if the host key changes (new VM / IP). |
+| `GCP_SANDBOX_DEPLOY_PATH` | **`/srv/adventurepos/adventure-pos-odoo`** (or your real clone path on the VM). |
+
+**Manual run:** **Actions** → **Deploy GCP sandbox** → **Run workflow**.
+
+**Developing:** open a feature branch → PR → merge to **`develop`** → workflow deploys → refresh **`http://SANDBOX_IP:8069`** (upgrade modules in Odoo only when needed for schema/XML changes).
+
+**Optional:** Reserve a **static external IP** in GCP and attach it to the VM so **`GCP_SANDBOX_SSH_HOST`** rarely changes.
+
+---
+
 ## Related
 
 - [agent-rules.md](agent-rules.md) — repo-wide agent behavior
