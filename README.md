@@ -11,14 +11,18 @@ Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code
 3. **Once**, initialize the default DB: `make init-db` (avoids HTTP 500 until `base` is installed).
 4. Open [http://localhost:8069](http://localhost:8069) and sign in; install **Adventure Base** from Apps if needed.
 
-Original bootstrap and tooling notes: [docs/setup.md](docs/setup.md). Agent and Git conventions: [docs/agent-rules.md](docs/agent-rules.md). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md).
+Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md](docs/setup.md). Agent conventions: [docs/agent-rules.md](docs/agent-rules.md). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md). **Shared GCP sandbox** (project, `gcloud` profile, deploy workflow): [docs/shared-environment.md](docs/shared-environment.md). **Cursor → push → sandbox:** [docs/sandbox-cursor-to-deploy.md](docs/sandbox-cursor-to-deploy.md).
+
+## Development Workflow
+
+Follow the branching and pull request rules in [CONTRIBUTING.md](CONTRIBUTING.md). Feature work starts from `develop`, feature PRs target `develop`, and only release or hotfix changes should go to `main`.
 
 ## Layout
 
-- `.github/` — Issue & PR templates for GitHub
+- `.github/` — Issue & PR templates; [deploy-gcp-sandbox workflow](.github/workflows/deploy-gcp-sandbox.yml) (push to `develop`)
 - `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports)
 - `config/` — Tooling config (e.g. OpenClaw)
-- `docs/` — Setup and agent guidelines; [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md); [FareHarbor booking sync (draft)](docs/integrations/fareharbor-pos-sync.md); [migrations (e.g. Dive Shop 360)](docs/migrations/README.md)
-- `scripts/` — Helper scripts
+- `docs/` — Setup and agent guidelines; [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md); [FareHarbor booking sync (draft)](docs/integrations/fareharbor-pos-sync.md); [migrations (e.g. Dive Shop 360)](docs/migrations/README.md); [shared environment](docs/shared-environment.md); [sandbox deploy from Cursor](docs/sandbox-cursor-to-deploy.md)
+- `scripts/` — Helper scripts (e.g. [gcp-sandbox-vm.ps1](scripts/gcp-sandbox-vm.ps1) for shared GCP sandbox VM start/stop; see [shared-environment.md](docs/shared-environment.md))
 
 Do not store secrets in the repo; use `.env` (ignored by git).

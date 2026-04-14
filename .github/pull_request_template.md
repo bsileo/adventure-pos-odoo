@@ -1,26 +1,18 @@
-## Summary
+## What does this change do?
 
-<!-- What changed and why (1–3 sentences). -->
+<!-- Describe the change clearly and briefly. -->
 
-## Related issue
+## Why is this needed?
 
-<!-- Link the tracking issue so merging can close it. -->
+<!-- Explain the problem, risk, or business need. -->
 
-Closes #
+## How should this be tested?
 
-## Checklist
+<!-- List the exact steps a reviewer should use to verify this change. -->
 
-- [ ] Works on a feature branch (not `main`).
-- [ ] No secrets or credentials in commits (use `.env`, not tracked files).
-- [ ] Agreed Odoo settings are in module `data/` / code where applicable ([configuration as code](docs/developer-onboarding.md#5-configuration-as-code-repeatable-odoo-settings)).
-- [ ] Follows [agent-rules.md](docs/agent-rules.md) (modules under `addons/`, no Odoo core edits).
+## Required Checklist
 
-## Modules touched
-
-<!-- e.g. `adventure_pos` — helps reviewers scope upgrade/testing. -->
-
--
-
-## Testing
-
-<!-- How you verified (manual steps, DB/module upgrade notes). -->
+- [ ] Branch created from `develop` (or `main` for hotfix)
+- [ ] PR target is correct (`develop` for features, `main` for release/hotfix)
+- [ ] Changes tested against latest `develop`
+- [ ] No unrelated changes included

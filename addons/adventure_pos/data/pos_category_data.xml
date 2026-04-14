@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- POS product category names -->
+        <record id="posc_regulator_systems" model="pos.category">
+            <field name="name">REGULATOR SYSTEMS</field>
+        </record>
+        <record id="posc_first_stage_regulators_yoke" model="pos.category">
+            <field name="name">FIRST STAGE REGULATORS - YOKE</field>
+        </record>
+        <record id="posc_first_stage_regulators_din" model="pos.category">
+            <field name="name">FIRST STAGE REGULATORS - DIN</field>
+        </record>
+        <record id="posc_second_stage_regulators" model="pos.category">
+            <field name="name">SECOND STAGE REGULATORS</field>
+        </record>
+        <record id="posc_octopus_stage_regulators" model="pos.category">
+            <field name="name">OCTOPUS STAGE REGULATORS</field>
+        </record>
+        <record id="posc_first_stage_regulator_accessories" model="pos.category">
+            <field name="name">FIRST STAGE REGULATOR ACCESSORIES</field>
+        </record>
+        <record id="posc_second_stage_regulator_accessories" model="pos.category">
+            <field name="name">SECOND STAGE REGULATOR ACCESSORIES</field>
+        </record>
+        <record id="posc_nitrox_regulator_accessories" model="pos.category">
+            <field name="name">NITROX REGULATOR ACCESSORIES</field>
+        </record>
+        <record id="posc_tools" model="pos.category">
+            <field name="name">TOOLS</field>
+        </record>
+        <record id="posc_service_kits" model="pos.category">
+            <field name="name">SERVICE KITS</field>
+        </record>
+        <record id="posc_lp_hp_hoses" model="pos.category">
+            <field name="name">LP/HP HOSES</field>
+        </record>
+        <record id="posc_computers" model="pos.category">
+            <field name="name">COMPUTERS</field>
+        </record>
+        <record id="posc_computer_software" model="pos.category">
+            <field name="name">COMPUTER SOFTWARE</field>
+        </record>
+        <record id="posc_computer_accessories" model="pos.category">
+            <field name="name">COMPUTER ACCESSORIES</field>
+        </record>
+        <record id="posc_instruments" model="pos.category">
+            <field name="name">INSTRUMENTS</field>
+        </record>
+        <record id="posc_capsules" model="pos.category">
+            <field name="name">CAPSULES</field>
+        </record>
+        <record id="posc_instrument_accessories" model="pos.category">
+            <field name="name">INSTRUMENT ACCESSORIES</field>
+        </record>
+        <record id="posc_air2_v_gen_balanced_power_inflator" model="pos.category">
+            <field name="name">AIR2 V GEN/BALANCED POWER INFLATOR</field>
+        </record>
+        <record id="posc_air2_bpi_hose_adapters" model="pos.category">
+            <field name="name">AIR2/BPI HOSE ADAPTERS</field>
+        </record>
+        <record id="posc_buoyancy_compensators" model="pos.category">
+            <field name="name">BUOYANCY COMPENSATORS</field>
+        </record>
+        <record id="posc_buoyancy_compensators_accessories" model="pos.category">
+            <field name="name">BUOYANCY COMPENSATORS ACCESSORIES</field>
+        </record>
+        <record id="posc_s_tek_harness_system" model="pos.category">
+            <field name="name">S-TEK HARNESS SYSTEM</field>
+        </record>
+        <record id="posc_s_tek_harness" model="pos.category">
+            <field name="name">S-TEK HARNESS</field>
+        </record>
+        <record id="posc_s_tek_wing" model="pos.category">
+            <field name="name">S-TEK WING</field>
+        </record>
+        <record id="posc_s_tek_accessories" model="pos.category">
+            <field name="name">S-TEK ACCESSORIES</field>
+        </record>
+        <record id="posc_x_tek_accessories" model="pos.category">
+            <field name="name">X-TEK ACCESSORIES</field>
+        </record>
+        <record id="posc_drysuits" model="pos.category">
+            <field name="name">DRYSUITS</field>
+        </record>
+        <record id="posc_drysuit_undergarments" model="pos.category">
+            <field name="name">DRYSUIT UNDERGARMENTS</field>
+        </record>
+        <record id="posc_drysuit_accessories" model="pos.category">
+            <field name="name">DRYSUIT ACCESSORIES</field>
+        </record>
+        <record id="posc_semi_dry" model="pos.category">
+            <field name="name">SEMI-DRY</field>
+        </record>
+        <record id="posc_wetsuits" model="pos.category">
+            <field name="name">WETSUITS</field>
+        </record>
+        <record id="posc_professional_military_dwe" model="pos.category">
+            <field name="name">Professional / Military DWE</field>
+        </record>
+        <record id="posc_rash_guards" model="pos.category">
+            <field name="name">RASH GUARDS</field>
+        </record>
+        <record id="posc_boots_socks" model="pos.category">
+            <field name="name">BOOTS/SOCKS</field>
+        </record>
+        <record id="posc_gloves" model="pos.category">
+            <field name="name">GLOVES</field>
+        </record>
+        <record id="posc_dry_glove_accessories" model="pos.category">
+            <field name="name">DRY GLOVE ACCESSORIES</field>
+        </record>
+        <record id="posc_fins" model="pos.category">
+            <field name="name">FINS</field>
+        </record>
+        <record id="posc_masks" model="pos.category">
+            <field name="name">MASKS</field>
+        </record>
+        <record id="posc_masks_accessories" model="pos.category">
+            <field name="name">MASKS ACCESSORIES</field>
+        </record>
+        <record id="posc_snorkels" model="pos.category">
+            <field name="name">SNORKELS</field>
+        </record>
+        <record id="posc_snorkels_accessories" model="pos.category">
+            <field name="name">SNORKELS ACCESSORIES</field>
+        </record>
+        <record id="posc_snorkel_combos" model="pos.category">
+            <field name="name">SNORKEL COMBOS</field>
+        </record>
+        <record id="posc_snorkelpro_snorkel" model="pos.category">
+            <field name="name">SNORKELPRO SNORKEL</field>
+        </record>
+        <record id="posc_snorkelpro_fins" model="pos.category">
+            <field name="name">SNORKELPRO FINS</field>
+        </record>
+        <record id="posc_snorkelpro_snorkeling_vests" model="pos.category">
+            <field name="name">SNORKELPRO SNORKELING VESTS</field>
+        </record>
+        <record id="posc_bags" model="pos.category">
+            <field name="name">BAGS</field>
+        </record>
+        <record id="posc_lights" model="pos.category">
+            <field name="name">LIGHTS</field>
+        </record>
+        <record id="posc_knives" model="pos.category">
+            <field name="name">KNIVES</field>
+        </record>
+        <record id="posc_accessories" model="pos.category">
+            <field name="name">ACCESSORIES</field>
+        </record>
+        <record id="posc_promotional" model="pos.category">
+            <field name="name">PROMOTIONAL</field>
+        </record>
+        <record id="posc_dealer_support" model="pos.category">
+            <field name="name">DEALER SUPPORT</field>
+        </record>
+        <record id="posc_rental_only_regulator_systems" model="pos.category">
+            <field name="name">RENTAL ONLY REGULATOR SYSTEMS</field>
+        </record>
+        <record id="posc_rental_only_second_stage" model="pos.category">
+            <field name="name">RENTAL ONLY SECOND STAGE</field>
+        </record>
+        <record id="posc_rental_only_masks" model="pos.category">
+            <field name="name">RENTAL ONLY MASKS</field>
+        </record>
+    </data>
+</odoo>
+
