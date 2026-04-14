@@ -11,7 +11,7 @@ Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code
 3. **Once**, initialize the default DB: `make init-db` (avoids HTTP 500 until `base` is installed).
 4. Open [http://localhost:8069](http://localhost:8069) and sign in; install **Adventure Base** from Apps if needed.
 
-Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md](docs/setup.md). Agent conventions: [docs/agent-rules.md](docs/agent-rules.md). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md). **Shared GCP sandbox** (project, `gcloud` profile): [docs/shared-environment.md](docs/shared-environment.md).
+Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md](docs/setup.md). Agent conventions: [docs/agent-rules.md](docs/agent-rules.md). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md). **Shared GCP sandbox** (project, `gcloud` profile, deploy workflow): [docs/shared-environment.md](docs/shared-environment.md).
 
 ## Layout
 
