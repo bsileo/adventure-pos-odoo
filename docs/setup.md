@@ -1,5 +1,7 @@
 # Adventure POS — Initial Setup Guide
 
+> **Cloning the repo?** Use [developer-onboarding.md](developer-onboarding.md) for step-by-step directions. This page is the original greenfield/bootstrap checklist.
+
 This guide walks through setting up the local development environment using:
 
 * Cursor (IDE + agent)
@@ -60,7 +62,7 @@ OPENAI_API_KEY=
 ODOO_VERSION=18.0
 POSTGRES_DB=odoo
 POSTGRES_USER=odoo
-POSTGRES_PASSWORD=odoo
+POSTGRES_PASSWORD=change_me_local_dev
 ODOO_PORT=8069
 
 ---
@@ -71,28 +73,30 @@ Create:
 
 docker-compose.yml
 
-Paste:
-
-version: "3.9"
+Paste (credentials come from `.env`; see `.env.example`):
 
 services:
-db:
-image: postgres:16
-environment:
-POSTGRES_DB: odoo
-POSTGRES_USER: odoo
-POSTGRES_PASSWORD: odoo
-ports:
-- "5432:5432"
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-odoo}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+    ports:
+      - "5432:5432"
 
-odoo:
-image: odoo:18.0
-depends_on:
-- db
-ports:
-- "8069:8069"
-volumes:
-- ./addons:/mnt/extra-addons
+  odoo:
+    image: odoo:18.0
+    depends_on:
+      - db
+    environment:
+      HOST: db
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./addons:/mnt/extra-addons
 
 ---
 

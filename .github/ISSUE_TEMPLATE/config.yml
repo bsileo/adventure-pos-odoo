@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Developer docs
+    url: https://github.com/bsileo/adventure-pos-odoo/blob/main/docs/development-tracking.md
+    about: How we use GitHub Issues, Projects, branches, and PRs.

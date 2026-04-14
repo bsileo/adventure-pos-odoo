@@ -5,4 +5,5 @@
     "depends": ["base"],
     "data": [],
     "installable": True,
+    "license": "LGPL-3",
 }
