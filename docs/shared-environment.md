@@ -207,6 +207,22 @@ git checkout develop
 
 (Use your org’s URL if the remote differs.)
 
+**If you see `Permission denied (publickey)`:** GitHub is not accepting the key the VM is offering. Check in order:
+
+1. **Deploy key is on the same repository** you clone — **Settings → Deploy keys** for **`bsileo/adventure-pos-odoo`** (not only your user SSH keys, not another fork’s settings).
+2. **Public key on GitHub matches the VM** — on the VM run `cat ~/.ssh/github_adventurepos.pub` and confirm the **entire** one-line key was pasted into **Add deploy key** (title e.g. `gcp-sandbox-deploy`). Re-add if unsure.
+3. **Private key permissions** — `chmod 600 ~/.ssh/github_adventurepos`
+4. **Verbose test** (see which key is tried):
+
+   ```bash
+   ssh -vT git@github.com 2>&1 | tail -30
+   ```
+
+   You want `Offering public key: ... github_adventurepos` then authentication success. If it offers a different key, fix **`~/.ssh/config`** (`IdentitiesOnly yes` and correct `IdentityFile`).
+5. **Read access** — deploy key must **not** be created with “Allow write access” disabled is fine for `git clone`; ensure the key wasn’t deleted or disabled in GitHub.
+
+**Temporary workaround:** clone with HTTPS and a [fine-grained or classic PAT](https://docs.github.com/en/authentication) (repo read) — less ideal than a deploy key; do not store the token in the repo.
+
 ### 3. Environment file
 
 ```bash
