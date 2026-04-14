@@ -265,6 +265,7 @@ Never store keys in tracked files—**`.env`** or OS env only.
 ## Reference and history
 
 - **[README.md](../README.md)** — Short overview.
+- **[sandbox-cursor-to-deploy.md](sandbox-cursor-to-deploy.md)** — Push to `develop` and verify the **shared GCP sandbox** (start VM, PR flow, Actions).
 - **[development-tracking.md](development-tracking.md)** — GitHub Issues, Projects, branches, PRs, labels.
 - **[agent-rules.md](agent-rules.md)** — Modules, Git, security, POS/inventory expectations.
 - **[setup.md](setup.md)** — Original greenfield checklist; **clone-based** onboarding is this document.

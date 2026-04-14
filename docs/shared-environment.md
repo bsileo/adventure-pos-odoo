@@ -295,5 +295,6 @@ When **`develop`** receives a **push** (e.g. after you merge a PR), workflow **[
 
 ## Related
 
+- [sandbox-cursor-to-deploy.md](sandbox-cursor-to-deploy.md) — short path: Cursor, PR to `develop`, verify sandbox
 - [agent-rules.md](agent-rules.md) — repo-wide agent behavior
 - [architecture/tenant-provisioning.md](architecture/tenant-provisioning.md) — long-term hosting; **Odoo.sh** deferred for this sandbox phase
