@@ -129,7 +129,7 @@ Agents and runbooks should use these once known:
 | `ZONE` | `us-central1-a` |
 | `INSTANCE_NAME` | `adventurepos-sandbox-vm` |
 | `EXTERNAL_IP` | **Ephemeral** — fetch current: `gcloud compute instances describe adventurepos-sandbox-vm --zone=us-central1-a --project=adventure-pos-sandbox --format="get(networkInterfaces[0].accessConfigs[0].natIP)"` |
-| `DEPLOY_PATH` | _(absolute path to repo clone on VM — set when repo is cloned)_ |
+| `DEPLOY_PATH` | `/srv/adventurepos/adventure-pos-odoo` (see **On the VM after SSH**) |
 | `DEPLOY_BRANCH` | `develop` (expected integration branch for deploys) |
 | Linux SSH user (Option B) | `deploy` (must match `ssh-keys` metadata line) |
 
@@ -152,6 +152,85 @@ ssh -o StrictHostKeyChecking=accept-new -i "$env:USERPROFILE\.ssh\adventurepos_g
 Replace **`EXTERNAL_IP`** with the `natIP` from the `gcloud ... describe` command above (it **changes** if the VM is recreated unless you use a **static** IP).
 
 **Boot disk size warning:** Ubuntu 22.04 on GCE usually **grows the root filesystem** on first boot; if `df -h` shows only ~10 GB, use Google’s [resize](https://cloud.google.com/compute/docs/disks/add-persistent-disk#resize_pd) guidance.
+
+---
+
+## On the VM after SSH (Docker + repo + Odoo)
+
+Run these as the **`deploy`** user (use `sudo` where shown). **`DEPLOY_PATH`** below is `/srv/adventurepos/adventure-pos-odoo` — adjust if you clone elsewhere and update the handoff table.
+
+### 1. Install Docker Engine + Compose plugin (Ubuntu 22.04)
+
+```bash
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo usermod -aG docker deploy
+```
+
+Sign out and SSH back in so **`deploy`** is in group **`docker`**, then verify: `docker run --rm hello-world`
+
+### 2. Clone the Git repo (private repo → GitHub deploy key)
+
+1. In GitHub: repo **Settings → Deploy keys → Add deploy key** — paste a **new** `ssh-ed25519` **public** key generated **on the VM** (read-only). Do **not** reuse the GCE login key unless you intend to.
+2. On the VM:
+
+```bash
+sudo mkdir -p /srv/adventurepos
+sudo chown deploy:deploy /srv/adventurepos
+cd /srv/adventurepos
+ssh-keygen -t ed25519 -f ~/.ssh/github_adventurepos -N ""
+cat ~/.ssh/github_adventurepos.pub
+```
+
+Add that `.pub` to GitHub, then:
+
+```bash
+cat >> ~/.ssh/config << 'EOF'
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github_adventurepos
+  IdentitiesOnly yes
+EOF
+chmod 600 ~/.ssh/config
+ssh -T git@github.com
+git clone git@github.com:bsileo/adventure-pos-odoo.git
+cd adventure-pos-odoo
+git checkout develop
+```
+
+(Use your org’s URL if the remote differs.)
+
+### 3. Environment file
+
+```bash
+cp .env.example .env
+nano .env   # set POSTGRES_PASSWORD to a strong value; optional OPENAI_API_KEY
+```
+
+### 4. GCP firewall for Odoo (port **8069**)
+
+Default VPC allows **SSH**; it does **not** automatically allow **8069**. Create a rule (Console **VPC network → Firewall** or `gcloud`) allowing **tcp:8069** from **your IP** / team / `0.0.0.0/0` for a wide-open dev sandbox.
+
+### 5. Start the stack (current repo compose)
+
+From the repo root:
+
+```bash
+docker compose up -d
+```
+
+First-time DB init (if `/` returns 500): see [Makefile](Makefile) `init-db` — run the `docker compose exec odoo odoo ... -i base --stop-after-init` line with **`--db_password`** matching **`.env`**.
+
+Then open `http://EXTERNAL_IP:8069`, install **Adventure Base** / **Adventure POS** per [developer-onboarding.md](developer-onboarding.md).
+
+**Note:** Hardening (`docker-compose.server.yml`, internal-only Postgres, TLS) is a follow-up in-repo task; the steps above match today’s single [docker-compose.yml](docker-compose.yml).
 
 ---
 
