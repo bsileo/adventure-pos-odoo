@@ -74,6 +74,31 @@ gcloud auth application-default login
 
 ---
 
+## SSH access model (Option B — instance / project metadata keys)
+
+This sandbox uses **classic SSH keys** in **Compute Engine metadata** (not OS Login). GitHub Actions will use the same pattern: **private key** in a GitHub Actions secret; **public key** on the VM.
+
+**Local key files (example paths — do not commit private key):**
+
+| File | Purpose |
+|------|--------|
+| `%USERPROFILE%\.ssh\adventurepos_gcp_deploy` | **Private** — GitHub Actions secret + your local `ssh -i` if needed |
+| `%USERPROFILE%\.ssh\adventurepos_gcp_deploy.pub` | **Public** — paste into VM creation metadata or `ssh-keys` file |
+
+**Metadata format** (one line; `USERNAME` = Linux login on the VM, e.g. `deploy`):
+
+```text
+USERNAME:ssh-ed25519 AAAA... rest-of-public-key
+```
+
+Build a small file (e.g. `gcp-ssh-keys.txt`) with that single line, then pass it when creating the instance:
+
+`--metadata-from-file ssh-keys=gcp-ssh-keys.txt`
+
+**Conflict with OS Login:** If **project or instance** metadata has **`enable-oslogin`** = **`TRUE`**, **metadata `ssh-keys` are ignored**. For Option B, ensure OS Login is **off** at project default (delete the key) or set `enable-oslogin=FALSE` before relying on metadata keys. See [Set OS Login](https://cloud.google.com/compute/docs/instances/managing-instance-access#enable_os_login).
+
+---
+
 ## `environment` tag reminder (terminal message from `gcloud`)
 
 If you see:
@@ -105,6 +130,7 @@ Agents and runbooks should use these once known:
 | `INSTANCE_NAME` | _(add when VM exists)_ |
 | `DEPLOY_PATH` | _(absolute path to repo clone on VM)_ |
 | `DEPLOY_BRANCH` | `develop` (expected integration branch for deploys) |
+| Linux SSH user (Option B) | e.g. `deploy` (must match `ssh-keys` metadata line) |
 
 ---
 
