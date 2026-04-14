@@ -126,11 +126,32 @@ Agents and runbooks should use these once known:
 |--------|----------------|
 | `PROJECT_ID` | `adventure-pos-sandbox` |
 | `PROJECT_NUMBER` | `48830482503` |
-| `ZONE` | _(e.g. `us-central1-a`) — add when VM exists_ |
-| `INSTANCE_NAME` | _(add when VM exists)_ |
-| `DEPLOY_PATH` | _(absolute path to repo clone on VM)_ |
+| `ZONE` | `us-central1-a` |
+| `INSTANCE_NAME` | `adventurepos-sandbox-vm` |
+| `EXTERNAL_IP` | **Ephemeral** — fetch current: `gcloud compute instances describe adventurepos-sandbox-vm --zone=us-central1-a --project=adventure-pos-sandbox --format="get(networkInterfaces[0].accessConfigs[0].natIP)"` |
+| `DEPLOY_PATH` | _(absolute path to repo clone on VM — set when repo is cloned)_ |
 | `DEPLOY_BRANCH` | `develop` (expected integration branch for deploys) |
-| Linux SSH user (Option B) | e.g. `deploy` (must match `ssh-keys` metadata line) |
+| Linux SSH user (Option B) | `deploy` (must match `ssh-keys` metadata line) |
+
+---
+
+## Windows / PowerShell notes
+
+**`gcloud --metadata-from-file ssh-keys`:** `%USERPROFILE%` is **not** expanded by PowerShell. Use an explicit path, e.g.:
+
+```powershell
+--metadata-from-file "ssh-keys=$env:USERPROFILE\.ssh\gcp-ssh-keys.txt"
+```
+
+**First SSH connection:** When OpenSSH asks to confirm the host key, answer **`yes`**. If the prompt fails with `Host key verification failed` (non-interactive session), use:
+
+```powershell
+ssh -o StrictHostKeyChecking=accept-new -i "$env:USERPROFILE\.ssh\adventurepos_gcp_deploy" deploy@EXTERNAL_IP
+```
+
+Replace **`EXTERNAL_IP`** with the `natIP` from the `gcloud ... describe` command above (it **changes** if the VM is recreated unless you use a **static** IP).
+
+**Boot disk size warning:** Ubuntu 22.04 on GCE usually **grows the root filesystem** on first boot; if `df -h` shows only ~10 GB, use Google’s [resize](https://cloud.google.com/compute/docs/disks/add-persistent-disk#resize_pd) guidance.
 
 ---
 
