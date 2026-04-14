@@ -8,7 +8,6 @@
     "license": "LGPL-3",
     "depends": ["adventure_base", "product", "point_of_sale"],
     "data": [
-        "security/ir.model.access.csv",
         "data/product_category_data.xml",
         "data/pos_category_data.xml",
         "views/views.xml",
