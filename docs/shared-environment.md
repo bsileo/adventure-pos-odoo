@@ -250,6 +250,25 @@ Then open `http://EXTERNAL_IP:8069`, install **Adventure Base** / **Adventure PO
 
 ---
 
+## Stop / start the sandbox VM (save GCP compute cost)
+
+Run from a developer machine with **`gcloud`** authenticated to this project — **not** from inside the VM (the VM service account cannot stop itself).
+
+**Defaults:** project `adventure-pos-sandbox`, zone `us-central1-a`, instance `adventurepos-sandbox-vm`. Override when calling **`make`** or set **`GCP_PROJECT`**, **`GCP_ZONE`**, **`GCP_INSTANCE`** (PowerShell env).
+
+| Action | Make (macOS / Linux / Git Bash) | PowerShell (repo root) |
+|--------|-----------------------------------|-------------------------|
+| Start | `make gcp-vm-start` | `.\scripts\gcp-sandbox-vm.ps1 start` |
+| Stop | `make gcp-vm-stop` | `.\scripts\gcp-sandbox-vm.ps1 stop` |
+| Status | `make gcp-vm-status` | `.\scripts\gcp-sandbox-vm.ps1 status` |
+| Public IP | `make gcp-vm-ip` | `.\scripts\gcp-sandbox-vm.ps1 ip` |
+
+**After `start`:** ephemeral **public IP may change**; use **`ip`** / **`gcp-vm-ip`** before SSH or opening Odoo. Then on the VM (SSH): `cd /srv/adventurepos/adventure-pos-odoo && docker compose up -d` unless you add **systemd** auto-start later.
+
+See [Makefile](../Makefile) targets `gcp-vm-*` and [scripts/gcp-sandbox-vm.ps1](../scripts/gcp-sandbox-vm.ps1).
+
+---
+
 ## Related
 
 - [agent-rules.md](agent-rules.md) — repo-wide agent behavior

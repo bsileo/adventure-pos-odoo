@@ -19,6 +19,6 @@ Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md]
 - `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports)
 - `config/` — Tooling config (e.g. OpenClaw)
 - `docs/` — Setup and agent guidelines; [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md); [FareHarbor booking sync (draft)](docs/integrations/fareharbor-pos-sync.md); [migrations (e.g. Dive Shop 360)](docs/migrations/README.md); [shared environment](docs/shared-environment.md)
-- `scripts/` — Helper scripts
+- `scripts/` — Helper scripts (e.g. [gcp-sandbox-vm.ps1](scripts/gcp-sandbox-vm.ps1) for shared GCP sandbox VM start/stop; see [shared-environment.md](docs/shared-environment.md))
 
 Do not store secrets in the repo; use `.env` (ignored by git).
