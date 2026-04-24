@@ -2,6 +2,8 @@
 
 Step-by-step setup for a new developer using **[Cursor](https://cursor.com)** as the IDE. You will run **Odoo 18** and **PostgreSQL** with Docker, work from a local clone in Cursor, and keep secrets (especially **`.env`**) off git and out of shared AI transcripts where possible.
 
+If your laptop is resource-constrained and you want Docker, Odoo, and Postgres to run on a **developer-owned GCP VM** instead, use [remote-development.md](remote-development.md). That path is designed for **Cursor Remote SSH** and keeps the shared sandbox separate.
+
 ---
 
 ## Before you start
@@ -11,7 +13,7 @@ Install and sign into **Cursor** on your machine. This guide applies to **Window
 | Requirement | Notes |
 |-------------|--------|
 | **Git** | Used from a terminal (Cursor’s integrated terminal or any other) for clone, pull, and branches. For a **private** repo, set up GitHub auth first (HTTPS with a [credential helper / PAT](https://docs.github.com/en/get-started/git-basics/set-up-git), **SSH** with a key added to GitHub, or `gh auth login`). **Clone repo** in Cursor still uses your normal Git credentials. |
-| **Docker Desktop** (or compatible engine) | Install it, start it, and wait until it reports **running** before `docker compose`. If `docker compose` errors with *Cannot connect to the Docker daemon* (or similar), the engine isn’t running yet. **Windows:** prefer the **WSL2** backend if Docker prompts you. **macOS:** use Docker Desktop for Mac (Apple Silicon or Intel per Docker’s install page). |
+| **Docker Desktop** (or compatible engine) | Install it, start it, and wait until it reports **running** before `docker compose`. If `docker compose` errors with *Cannot connect to the Docker daemon* (or similar), the engine isn’t running yet. **Windows:** prefer the **WSL2** backend if Docker prompts you. **macOS:** use Docker Desktop for Mac (Apple Silicon or Intel per Docker’s install page). Skip this if you are following [remote-development.md](remote-development.md) and plan to run Docker on a GCP VM instead. |
 
 Optional:
 
@@ -265,6 +267,7 @@ Never store keys in tracked files—**`.env`** or OS env only.
 ## Reference and history
 
 - **[README.md](../README.md)** — Short overview.
+- **[remote-development.md](remote-development.md)** — Run Docker, Odoo, and Postgres on your own GCP dev VM with Cursor Remote SSH.
 - **[sandbox-cursor-to-deploy.md](sandbox-cursor-to-deploy.md)** — Push to `develop` and verify the **shared GCP sandbox** (start VM, PR flow, Actions).
 - **[development-tracking.md](development-tracking.md)** — GitHub Issues, Projects, branches, PRs, labels.
 - **[agent-rules.md](agent-rules.md)** — Modules, Git, security, POS/inventory expectations.
