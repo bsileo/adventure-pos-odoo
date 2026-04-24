@@ -181,7 +181,11 @@ Cursor Remote SSH target:
   Host: ${instance_name}
   HostName: ${ip}
   User: ${vm_user}
-  Workspace path: ${repo_path}
+
+Open this exact folder in Cursor after connecting:
+  ${repo_path}
+
+Do not open $(dirname "$repo_path"); it is only the parent folder and Source Control may not detect the nested repo.
 
 Suggested SSH config snippet:
 Host ${instance_name}
