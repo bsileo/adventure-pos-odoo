@@ -151,7 +151,30 @@ In Cursor:
 2. Connect to the host printed by the script
 3. Open `/srv/adventurepos/adventure-pos-odoo` or your configured repo path
 
+Open the **repo folder itself**, not its parent. For the default setup, that means:
+
+- Correct: `/srv/adventurepos/adventure-pos-odoo`
+- Incorrect: `/srv/adventurepos`
+
+If you open the parent folder, Cursor may connect successfully but Source Control and agents may not detect the Git repository because `.git/` is inside the child folder.
+
 Once connected, the workspace is running on the VM. Search, terminal commands, git, AI context, and Docker commands all operate against the remote machine.
+
+### Source Control Is Empty
+
+If Cursor connects but the Source Control sidebar is empty, check the opened folder first. In the remote terminal:
+
+```bash
+git rev-parse --show-toplevel
+```
+
+It should print:
+
+```text
+/srv/adventurepos/adventure-pos-odoo
+```
+
+If it says `not a git repository`, reopen the folder `/srv/adventurepos/adventure-pos-odoo` from Cursor's remote window.
 
 ### 4. Start the app stack on the VM
 

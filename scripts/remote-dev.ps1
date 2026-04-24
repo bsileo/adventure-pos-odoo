@@ -257,7 +257,11 @@ switch ($Action) {
         Write-Host "  Host: $Instance"
         Write-Host "  HostName: $ip"
         Write-Host "  User: $VmUser"
-        Write-Host "  Workspace path: $RepoPath"
+        Write-Host ''
+        Write-Host 'Open this exact folder in Cursor after connecting:'
+        Write-Host "  $RepoPath"
+        Write-Host ''
+        Write-Host "Do not open $(Split-Path -Parent $RepoPath); it is only the parent folder and Source Control may not detect the nested repo."
         Write-Host ''
         Write-Host 'Suggested SSH config snippet:'
         Write-Host "Host $Instance"
