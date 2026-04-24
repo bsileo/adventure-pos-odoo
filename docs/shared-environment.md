@@ -1,6 +1,6 @@
 # Shared sandbox environment (Google Cloud)
 
-Notes for **humans and agents** working on the team’s shared Odoo sandbox on **GCP**. This is **not** local Docker; it complements [developer-onboarding.md](developer-onboarding.md).
+Notes for **humans and agents** working on the team’s shared Odoo sandbox on **GCP**. This is **not** local Docker and **not** the developer-owned remote VM workflow; it complements [developer-onboarding.md](developer-onboarding.md) and [remote-development.md](remote-development.md).
 
 **Do not** put passwords, API keys, or private SSH keys in this file. Operational identities below are for **project/account selection** only.
 
@@ -296,5 +296,6 @@ When **`develop`** receives a **push** (e.g. after you merge a PR), workflow **[
 ## Related
 
 - [sandbox-cursor-to-deploy.md](sandbox-cursor-to-deploy.md) — short path: Cursor, PR to `develop`, verify sandbox
+- [remote-development.md](remote-development.md) — developer-owned remote VMs for offloading Docker/Odoo/Postgres from a laptop
 - [agent-rules.md](agent-rules.md) — repo-wide agent behavior
 - [architecture/tenant-provisioning.md](architecture/tenant-provisioning.md) — long-term hosting; **Odoo.sh** deferred for this sandbox phase
