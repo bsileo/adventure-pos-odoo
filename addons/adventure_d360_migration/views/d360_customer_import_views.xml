@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="adventure_d360_migration_dashboard_main" model="adventure.d360.migration.dashboard">
+        <field name="name">D360 Migration</field>
+    </record>
+
+    <record id="view_adventure_d360_migration_dashboard_form" model="ir.ui.view">
+        <field name="name">adventure.d360.migration.dashboard.form</field>
+        <field name="model">adventure.d360.migration.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="D360 Migration" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>D360 Migration</h1>
+                        <div class="text-muted">
+                            Base workspace for migration tools, operator notes, and guided workflows.
+                        </div>
+                    </div>
+                    <group string="Customer migration">
+                        <group>
+                            <button name="action_open_customer_workflow"
+                                    type="object"
+                                    string="New customer workflow"
+                                    class="btn-primary"/>
+                            <button name="action_open_customer_batches"
+                                    type="object"
+                                    string="Customer import batches"
+                                    class="btn-secondary"/>
+                        </group>
+                        <group>
+                            <div class="text-muted">
+                                Use the workflow to upload and preprocess a D360 contact export, then return to
+                                batches to review prior imports, statuses, and source metadata.
+                            </div>
+                        </group>
+                    </group>
+                    <group string="Migration areas">
+                        <div>
+                            <ul>
+                                <li>Customers and contacts</li>
+                                <li>Vendors and partner cleanup</li>
+                                <li>Products and catalog strategy</li>
+                                <li>Inventory and opening stock</li>
+                                <li>Historical transactions and reporting</li>
+                                <li>Validation, cutover, and hypercare</li>
+                            </ul>
+                        </div>
+                    </group>
+                    <group string="Roadmap">
+                        <div class="text-muted">
+                            This landing page can grow into a guided migration checklist with links to each step,
+                            validation checkpoints, and cutover notes.
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_d360_migration_dashboard" model="ir.actions.act_window">
+        <field name="name">D360 Migration</field>
+        <field name="res_model">adventure.d360.migration.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="adventure_d360_migration_dashboard_main"/>
+        <field name="target">current</field>
+    </record>
+
+    <record id="view_adventure_d360_customer_import_batch_form" model="ir.ui.view">
+        <field name="name">adventure.d360.customer.import.batch.form</field>
+        <field name="model">adventure.d360.customer.import.batch</field>
+        <field name="arch" type="xml">
+            <form string="D360 customer import">
+                <header>
+                    <button name="action_recompute_classification"
+                            type="object"
+                            string="Recompute classifications"
+                            class="btn-secondary"
+                            invisible="state != 'review'"/>
+                    <button name="action_upsert_partners"
+                            type="object"
+                            string="Upsert partners"
+                            class="btn-primary"
+                            invisible="state != 'review'"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel batch"
+                            class="btn-secondary"
+                            invisible="state != 'review'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="review,done,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="D360 customer import batch" readonly="state != 'review'"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="shop_name"/>
+                            <field name="source_filename" readonly="1"/>
+                            <field name="source_checksum" readonly="1"/>
+                            <field name="source_encoding" readonly="1"/>
+                            <field name="source_delimiter" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="line_count" readonly="1"/>
+                            <field name="processed_count" readonly="1"/>
+                            <field name="review_needed_count" readonly="1"/>
+                            <field name="imported_count" readonly="1"/>
+                            <field name="failed_count" readonly="1"/>
+                            <field name="progress_percent" widget="progressbar" readonly="1"/>
+                            <field name="last_upsert_at" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="person_count" readonly="1"/>
+                            <field name="company_count" readonly="1"/>
+                            <field name="ambiguous_count" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="upload_notes" placeholder="Capture how the export was obtained from D360." readonly="state != 'review'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Workflow">
+                            <div class="text-muted">
+                                <p>
+                                    This first-pass D360 customer workflow is designed around the observed
+                                    <strong>contact list</strong> export shape. It treats the file as a
+                                    partner import, not a people-only import.
+                                </p>
+                                <ol>
+                                    <li>Export the D360 customer/contact list as CSV and keep the original filename.</li>
+                                    <li>Upload it here using <strong>New customer workflow</strong>.</li>
+                                    <li>Review rows flagged for mixed signals, duplicate IDs, or weak classifications. Use the one-click <strong>Person</strong>, <strong>Company</strong>, or <strong>Ambiguous</strong> actions to correct partner type quickly.</li>
+                                    <li>Run <strong>Upsert partners</strong> to create or update <code>res.partner</code> by D360 Customer ID.</li>
+                                </ol>
+                                <p>
+                                    Company-style rows such as vendors, agencies, or manufacturers are preserved
+                                    as partners. Ambiguous rows should be reviewed before import.
+                                </p>
+                            </div>
+                        </page>
+                        <page string="Review rows" name="review_rows">
+                            <field name="line_ids" readonly="state == 'done'">
+                                <list string="Customer rows"
+                                      editable="bottom"
+                                      create="false"
+                                      delete="false"
+                                      decoration-warning="review_needed"
+                                      decoration-danger="import_state == 'failed'"
+                                      decoration-success="import_state == 'imported'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="source_customer_id"/>
+                                    <field name="partner_display_name" readonly="1"/>
+                                    <field name="partner_kind_guess" widget="d360_partner_kind_actions"/>
+                                    <field name="classification_confidence" readonly="1"/>
+                                    <field name="review_needed" readonly="1"/>
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
+                                    <field name="email" optional="show"/>
+                                    <field name="mobile_phone" optional="show"/>
+                                    <field name="customer_type" optional="show"/>
+                                    <field name="invoice_type" optional="show"/>
+                                    <field name="import_state" readonly="1" optional="show"/>
+                                    <field name="import_error" readonly="1" optional="show"/>
+                                    <field name="partner_id" readonly="1" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Source detail" name="source_detail">
+                            <field name="line_ids" readonly="1">
+                                <list string="Source detail" create="false" delete="false">
+                                    <field name="source_customer_id"/>
+                                    <field name="mailing_name"/>
+                                    <field name="address_line_0"/>
+                                    <field name="address_line_1"/>
+                                    <field name="city"/>
+                                    <field name="state_name"/>
+                                    <field name="zip_code"/>
+                                    <field name="country_name"/>
+                                    <field name="home_phone" optional="show"/>
+                                    <field name="work_phone" optional="show"/>
+                                    <field name="mobile_phone" optional="show"/>
+                                    <field name="birthday" optional="show"/>
+                                    <field name="last_purchase_date" optional="show"/>
+                                    <field name="classification_reasons"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_d360_customer_import_batch_list" model="ir.ui.view">
+        <field name="name">adventure.d360.customer.import.batch.list</field>
+        <field name="model">adventure.d360.customer.import.batch</field>
+        <field name="arch" type="xml">
+            <list string="D360 customer imports">
+                <field name="name"/>
+                <field name="shop_name"/>
+                <field name="source_filename"/>
+                <field name="state"/>
+                <field name="line_count"/>
+                <field name="processed_count"/>
+                <field name="review_needed_count"/>
+                <field name="imported_count"/>
+                <field name="failed_count"/>
+                <field name="progress_percent" widget="progressbar" optional="show"/>
+                <field name="last_upsert_at"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_adventure_d360_customer_import_batch" model="ir.actions.act_window">
+        <field name="name">Customer import batches</field>
+        <field name="res_model">adventure.d360.customer.import.batch</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '!=', 'cancelled')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Start with <strong>New customer workflow</strong> to upload a Dive360 contact export.
+            </p>
+        </field>
+    </record>
+
+    <record id="view_adventure_d360_customer_import_wizard_form" model="ir.ui.view">
+        <field name="name">adventure.d360.customer.import.wizard.form</field>
+        <field name="model">adventure.d360.customer.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="New D360 customer workflow">
+                <group>
+                    <div class="text-muted">
+                        <p>
+                            Upload the original Dive360 customer/contact CSV. This workflow is tuned for files
+                            shaped like <code>contact_list_*.csv</code> and will preprocess the rows into a
+                            reviewable partner batch before any upsert happens.
+                        </p>
+                        <p>
+                            Keep raw PII exports outside normal git workflows. Use the notes field to record
+                            how you obtained the export from D360.
+                        </p>
+                    </div>
+                </group>
+                <group>
+                    <field name="data_file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                    <field name="shop_name"/>
+                    <field name="upload_notes" placeholder="Example: D360 customer/contact export run by Jane on 2026-04-25 before cutover prep."/>
+                </group>
+                <group string="CSV settings">
+                    <field name="delimiter"/>
+                    <field name="encoding"/>
+                </group>
+                <footer>
+                    <button name="action_upload_and_preprocess"
+                            type="object"
+                            string="Upload &amp; preprocess"
+                            class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_d360_customer_import_wizard" model="ir.actions.act_window">
+        <field name="name">New customer workflow</field>
+        <field name="res_model">adventure.d360.customer.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_adventure_d360_root"
+              name="D360 Migration"
+              action="action_adventure_d360_migration_dashboard"
+              sequence="70"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_adventure_d360_customer_workflow"
+              name="New customer workflow"
+              parent="menu_adventure_d360_root"
+              action="action_adventure_d360_customer_import_wizard"
+              sequence="10"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_adventure_d360_customer_batches"
+              name="Customer import batches"
+              parent="menu_adventure_d360_root"
+              action="action_adventure_d360_customer_import_batch"
+              sequence="20"
+              groups="base.group_system"/>
+</odoo>

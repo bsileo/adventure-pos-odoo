@@ -2,7 +2,7 @@
 {
     "name": "Adventure Product Category",
     "summary": "Extended product categories with canonical name, aliases, keywords, and level.",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Productivity",
     "author": "Adventure POS",
     "license": "LGPL-3",

@@ -7,6 +7,7 @@ Documentation for moving customers from external systems into Adventure POS (Odo
 | Document | Purpose |
 |----------|---------|
 | [dive-shop-360-export-inventory.md](dive-shop-360-export-inventory.md) | Per-object export surface (paths, formats) — **fill during discovery** |
+| [d360-customers-workflow.md](d360-customers-workflow.md) | Guided customer/contact import workflow from D360 export to Odoo upsert |
 | [sample-exports-pii-and-retention.md](sample-exports-pii-and-retention.md) | Sample data handling, parallel-run and retention policy |
 | [dive-shop-360-odoo-mapping.md](dive-shop-360-odoo-mapping.md) | D360 → Odoo mapping matrix template |
 | [catalog-strategy-migrated-shops.md](catalog-strategy-migrated-shops.md) | Master catalog vs tenant-local vs hybrid |
