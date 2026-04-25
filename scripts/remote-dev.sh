@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Manage a developer-owned Adventure POS GCP VM for remote development.
-# Usage: ./scripts/remote-dev.sh [init-ssh|create|start|stop|status|ip|url|open|ssh|cursor|up|init-db|bootstrap]
+# Usage: ./scripts/remote-dev.sh [init-ssh|create|start|stop|status|ip|url|open|ssh|cursor|up|init-db|bootstrap|fetch-branch]
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -18,6 +18,7 @@ sanitized_user="${sanitized_user:0:40}"
 sanitized_user="${sanitized_user%-}"
 
 action="${1:-status}"
+branch_name="${2:-}"
 project="${REMOTE_DEV_GCP_PROJECT:-adventure-pos-sandbox}"
 zone="${REMOTE_DEV_GCP_ZONE:-us-central1-a}"
 instance_prefix="${REMOTE_DEV_INSTANCE_PREFIX:-adventurepos-dev}"
@@ -227,6 +228,46 @@ run_remote_bootstrap() {
   ssh "${ssh_args[@]}" "${vm_user}@${ip}" "bash -s -- $(printf '%q' "$repo_url") $(printf '%q' "$repo_branch") $(printf '%q' "$repo_path")" < "${ROOT_DIR}/scripts/remote-dev-bootstrap.sh"
 }
 
+fetch_branch_from_vm() {
+  local remote_name="${REMOTE_DEV_FETCH_REMOTE:-gcp-dev}"
+  local ip remote_url current_url
+
+  if [[ -z "$branch_name" ]]; then
+    echo "Branch name is required. Example: ./scripts/remote-dev.sh fetch-branch feature/d360-customer-workflow" >&2
+    exit 1
+  fi
+
+  ensure_command git
+  ensure_gcloud
+  ensure_instance_exists
+
+  ip="$(get_ip)"
+  if [[ -z "$ip" ]]; then
+    echo "Instance '$instance_name' does not have a public IP yet." >&2
+    exit 1
+  fi
+
+  remote_url="${vm_user}@${ip}:${repo_path}"
+  if git remote | grep -qx "$remote_name"; then
+    current_url="$(git remote get-url "$remote_name")"
+    if [[ "$current_url" != "$remote_url" ]]; then
+      git remote set-url "$remote_name" "$remote_url"
+    fi
+  else
+    git remote add "$remote_name" "$remote_url"
+  fi
+
+  git fetch "$remote_name" "$branch_name"
+
+  if git branch --list "$branch_name" | grep -q .; then
+    echo "Local branch '$branch_name' already exists. Delete or rename it before fetching from the VM." >&2
+    exit 1
+  fi
+
+  git checkout -b "$branch_name" FETCH_HEAD
+  git push -u origin "$branch_name"
+}
+
 case "$action" in
   init-ssh)
     init_ssh_key
@@ -291,8 +332,11 @@ case "$action" in
     ensure_instance_exists
     run_remote_bootstrap
     ;;
+  fetch-branch)
+    fetch_branch_from_vm
+    ;;
   *)
-    echo "Usage: $0 [init-ssh|create|start|stop|status|ip|url|open|ssh|cursor|up|init-db|bootstrap]" >&2
+    echo "Usage: $0 [init-ssh|create|start|stop|status|ip|url|open|ssh|cursor|up|init-db|bootstrap|fetch-branch]" >&2
     exit 1
     ;;
 esac

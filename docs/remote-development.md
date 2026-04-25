@@ -4,12 +4,6 @@ Use this workflow when you want **Cursor on your laptop** but want **Odoo, Postg
 
 This is a **developer convenience** workflow for lowering local CPU/RAM usage. It is **separate from** the shared sandbox documented in [shared-environment.md](shared-environment.md).
 
-## Why this fits Odoo + Postgres
-
-- Odoo day-to-day work is mostly **source changes** in `addons/`, not image publishing.
-- Postgres benefits from a **persistent VM disk and Docker volume** instead of disposable rebuilds.
-- Cursor **Remote SSH** avoids a fragile file-sync loop because the repo, Docker Compose, Odoo, and Postgres all live on the same VM.
-
 ## Recommended developer experience
 
 1. Start your VM from the repo.
@@ -282,7 +276,21 @@ Recommended flow when your feature branch work is committed on the VM:
    git commit -m "your message"
    ```
 
-2. On your laptop, fetch the VM branch over SSH:
+2. On your laptop, fetch the VM branch over SSH and push it to GitHub:
+
+   ```powershell
+   .\scripts\remote-dev.ps1 fetch-branch feature/d360-customer-workflow
+   ```
+
+   Or from Bash:
+
+   ```bash
+   bash ./scripts/remote-dev.sh fetch-branch feature/d360-customer-workflow
+   ```
+
+   The helper creates or updates a local `gcp-dev` Git remote that points at the current VM IP, fetches the branch, creates the same local branch from `FETCH_HEAD`, and pushes it to `origin`.
+
+   If you need to do the same flow manually:
 
    ```powershell
    git remote add gcp-dev deploy@adventurepos-dev-brad:/srv/adventurepos/adventure-pos-odoo
@@ -320,6 +328,13 @@ Do **not** make the VM deploy key writable unless there is a specific reason and
 - If you need database access from your laptop, use **SSH tunneling** instead of exposing `5432` publicly.
 - Odoo remains reachable on port `8069`. The helper defaults to `0.0.0.0/0` for first-time ease, so set `REMOTE_DEV_ODOO_SOURCE_RANGES` if you want to restrict it to your IP or office range.
 - The VM is intended to be **persistent** so your Postgres data and checked-out repo survive stop/start cycles.
+
+## Why this fits Odoo + Postgres
+
+- Odoo day-to-day work is mostly **source changes** in `addons/`, not image publishing.
+- Postgres benefits from a **persistent VM disk and Docker volume** instead of disposable rebuilds.
+- Cursor **Remote SSH** avoids a fragile file-sync loop because the repo, Docker Compose, Odoo, and Postgres all live on the same VM.
+
 
 ## Related files
 
