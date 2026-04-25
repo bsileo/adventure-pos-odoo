@@ -28,6 +28,8 @@ repo_url="${REMOTE_DEV_REPO_URL:-git@github.com:bsileo/adventure-pos-odoo.git}"
 repo_branch="${REMOTE_DEV_REPO_BRANCH:-develop}"
 odoo_port="${REMOTE_DEV_ODOO_PORT:-8069}"
 ssh_key="${REMOTE_DEV_SSH_KEY:-}"
+service_account="${REMOTE_DEV_SERVICE_ACCOUNT:-adventurepos-remote-dev-vm@${project}.iam.gserviceaccount.com}"
+access_scopes="${REMOTE_DEV_ACCESS_SCOPES:-cloud-platform}"
 
 ensure_command() {
   local command_name="$1"
@@ -133,6 +135,8 @@ create_instance() {
       --boot-disk-size="$boot_disk_size" \
       --image-family="$image_family" \
       --image-project="$image_project" \
+      --service-account="$service_account" \
+      --scopes="$access_scopes" \
       --tags="$network_tags" \
       --metadata-from-file "ssh-keys=$temp_file"
   fi

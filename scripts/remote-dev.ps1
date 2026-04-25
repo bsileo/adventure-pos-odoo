@@ -164,6 +164,8 @@ $RepoUrl = if ($env:REMOTE_DEV_REPO_URL) { $env:REMOTE_DEV_REPO_URL } else { 'gi
 $RepoBranch = if ($env:REMOTE_DEV_REPO_BRANCH) { $env:REMOTE_DEV_REPO_BRANCH } else { 'develop' }
 $OdooPort = if ($env:REMOTE_DEV_ODOO_PORT) { $env:REMOTE_DEV_ODOO_PORT } else { '8069' }
 $SshKey = if ($env:REMOTE_DEV_SSH_KEY) { $env:REMOTE_DEV_SSH_KEY } else { '' }
+$ServiceAccount = if ($env:REMOTE_DEV_SERVICE_ACCOUNT) { $env:REMOTE_DEV_SERVICE_ACCOUNT } else { "adventurepos-remote-dev-vm@$Project.iam.gserviceaccount.com" }
+$AccessScopes = if ($env:REMOTE_DEV_ACCESS_SCOPES) { $env:REMOTE_DEV_ACCESS_SCOPES } else { 'cloud-platform' }
 $MachineType = if ($env:REMOTE_DEV_MACHINE_TYPE) { $env:REMOTE_DEV_MACHINE_TYPE } else { 'e2-standard-2' }
 $BootDiskSize = if ($env:REMOTE_DEV_BOOT_DISK_SIZE) { $env:REMOTE_DEV_BOOT_DISK_SIZE } else { '50GB' }
 $ImageFamily = if ($env:REMOTE_DEV_IMAGE_FAMILY) { $env:REMOTE_DEV_IMAGE_FAMILY } else { 'ubuntu-2204-lts' }
@@ -190,6 +192,8 @@ switch ($Action) {
                     --boot-disk-size=$BootDiskSize `
                     --image-family=$ImageFamily `
                     --image-project=$ImageProject `
+                    --service-account=$ServiceAccount `
+                    --scopes=$AccessScopes `
                     --tags=$NetworkTags `
                     --metadata-from-file "ssh-keys=$metadataFile"
             } finally {

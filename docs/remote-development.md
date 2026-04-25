@@ -56,10 +56,25 @@ Override any of these with shell environment variables before running the script
 - `REMOTE_DEV_REPO_BRANCH`
 - `REMOTE_DEV_ODOO_PORT`
 - `REMOTE_DEV_SSH_KEY`
+- `REMOTE_DEV_SERVICE_ACCOUNT`
+- `REMOTE_DEV_ACCESS_SCOPES`
 
 ## First-time VM bootstrap
 
 From your laptop:
+
+### GCP login
+
+```powershell
+gcloud auth login
+gcloud config set project adventure-pos-sandbox
+```
+
+The project admin must grant your Google account the custom remote-dev role and `roles/iam.serviceAccountUser` on:
+
+```text
+adventurepos-remote-dev-vm@adventure-pos-sandbox.iam.gserviceaccount.com
+```
 
 ### PowerShell
 
@@ -104,10 +119,14 @@ The `create` step uses these defaults unless you override them with environment 
 - image family: `ubuntu-2204-lts`
 - image project: `ubuntu-os-cloud`
 - login user on the VM: `deploy`
+- VM service account: `adventurepos-remote-dev-vm@adventure-pos-sandbox.iam.gserviceaccount.com`
+- access scopes: `cloud-platform`
 - firewall rule: `adventurepos-remote-dev-odoo`
 - Odoo source ranges: `0.0.0.0/0`
 
 `create` uses your local public SSH key from `~/.ssh/id_ed25519.pub` by default, or `~/.ssh/id_rsa.pub` if needed. Override with `REMOTE_DEV_SSH_PUBLIC_KEY_PATH`.
+
+`create` also attaches the low-privilege remote-dev VM service account by default. Override it with `REMOTE_DEV_SERVICE_ACCOUNT` only if the project admin gives you a different service account.
 
 `create` also ensures a GCP firewall rule exists for browser access to Odoo on port `8069`. Override the rule name with `REMOTE_DEV_FIREWALL_RULE`, or narrow browser access with `REMOTE_DEV_ODOO_SOURCE_RANGES` such as `203.0.113.10/32`.
 
