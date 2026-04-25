@@ -211,6 +211,8 @@ To confirm in logs: `docker compose logs odoo` should no longer show `Database o
 
 Custom addons: **`./addons`** in the repo → **`/mnt/extra-addons`** in the container. After Python/manifest changes, restart Odoo or **upgrade** the module from the UI.
 
+The local Compose Postgres data persists in a Docker volume, so `docker compose down` no longer wipes the Odoo database by default. If you intentionally want a clean local database, run **`make reset-db`** to remove the Compose volume, restart the stack, and reinstall `base`.
+
 ---
 
 ## 5. Configuration as code (repeatable Odoo settings)

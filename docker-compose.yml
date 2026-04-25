@@ -7,6 +7,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
     ports:
       - "${POSTGRES_BIND_ADDRESS:-127.0.0.1}:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   odoo:
     build: .
@@ -24,3 +26,6 @@ services:
       - "8069:8069"
     volumes:
       - ./addons:/mnt/extra-addons
+
+volumes:
+  postgres_data:

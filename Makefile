@@ -1,4 +1,4 @@
-.PHONY: up down logs ps shell-db init-db gcp-vm-start gcp-vm-stop gcp-vm-status gcp-vm-ip remote-dev-init-ssh remote-dev-create remote-dev-start remote-dev-stop remote-dev-status remote-dev-ip remote-dev-url remote-dev-open remote-dev-ssh remote-dev-cursor remote-dev-up remote-dev-init-db remote-dev-bootstrap
+.PHONY: up down logs ps shell-db init-db reset-db gcp-vm-start gcp-vm-stop gcp-vm-status gcp-vm-ip remote-dev-init-ssh remote-dev-create remote-dev-start remote-dev-stop remote-dev-status remote-dev-ip remote-dev-url remote-dev-open remote-dev-ssh remote-dev-cursor remote-dev-up remote-dev-init-db remote-dev-bootstrap
 
 # Shared GCP sandbox VM (override per developer if needed: make gcp-vm-stop GCP_ZONE=us-east1-b)
 GCP_PROJECT ?= adventure-pos-sandbox
@@ -23,6 +23,10 @@ shell-db:
 # Initialize Postgres DB named `odoo` with Odoo core (required once after first `up` if you get HTTP 500 on /).
 init-db:
 	bash ./scripts/odoo-init-db.sh
+
+# Drop the local compose Postgres volume, restart services, and reinitialize Odoo.
+reset-db:
+	bash ./scripts/odoo-reset-db.sh
 
 gcp-vm-start:
 	gcloud compute instances start $(GCP_INSTANCE) --zone=$(GCP_ZONE) --project=$(GCP_PROJECT)
