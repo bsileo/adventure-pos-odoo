@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_adventure_d360_migration_dashboard_system,adventure.d360.migration.dashboard system,model_adventure_d360_migration_dashboard,base.group_system,1,0,0,0
+access_adventure_d360_customer_import_batch_system,adventure.d360.customer.import.batch system,model_adventure_d360_customer_import_batch,base.group_system,1,1,1,1
+access_adventure_d360_customer_import_line_system,adventure.d360.customer.import.line system,model_adventure_d360_customer_import_line,base.group_system,1,1,1,1
+access_adventure_d360_customer_import_wizard_system,adventure.d360.customer.import.wizard system,model_adventure_d360_customer_import_wizard,base.group_system,1,1,1,1
