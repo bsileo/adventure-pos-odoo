@@ -133,5 +133,23 @@ class TestD360CustomerImport(TransactionCase):
         self.assertEqual(batch.imported_count, 1)
         self.assertEqual(batch.processed_count, 1)
         self.assertEqual(batch.line_count, 2)
+        self.assertEqual(batch.pending_count, 1)
         self.assertEqual(imported_line.import_state, "imported")
         self.assertEqual(ambiguous_line.import_state, "pending")
+
+    def test_pending_count_tracks_pending_import_state(self):
+        batch = self._create_batch()
+        pending_line = self._create_line(batch, customer_id="PEND-1", sequence=10)
+        imported_line = self._create_line(batch, customer_id="DONE-1", sequence=20)
+        failed_line = self._create_line(batch, customer_id="FAIL-1", sequence=30)
+
+        imported_line.write({"import_state": "imported"})
+        failed_line.write({"import_state": "failed", "import_error": "simulated"})
+        batch.invalidate_recordset()
+
+        self.assertEqual(batch.line_count, 3)
+        self.assertEqual(batch.pending_count, 1)
+        self.assertEqual(batch.imported_count, 1)
+        self.assertEqual(batch.failed_count, 1)
+        self.assertEqual(batch.processed_count, 2)
+        self.assertEqual(batch.pending_line_ids.ids, pending_line.ids)

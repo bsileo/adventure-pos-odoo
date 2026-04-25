@@ -278,6 +278,8 @@ patch(FormController.prototype, {
         if (saved === false) {
             return false;
         }
+        const initialImportedCount = Number(record.data.imported_count) || 0;
+        const initialFailedCount = Number(record.data.failed_count) || 0;
         showD360ProgressBar();
         updateD360ProgressBar(record.data);
         this.d360UpsertProgressVisible = true;
@@ -301,8 +303,14 @@ patch(FormController.prototype, {
 
             await this.model.load();
             const batchValues = result?.batch_values || this.model.root.data;
-            const failedCount = batchValues.failed_count || 0;
-            const importedCount = batchValues.imported_count || 0;
+            const failedCount = Math.max(
+                0,
+                (Number(batchValues.failed_count) || 0) - initialFailedCount
+            );
+            const importedCount = Math.max(
+                0,
+                (Number(batchValues.imported_count) || 0) - initialImportedCount
+            );
             this.notification.add(
                 failedCount
                     ? `${_t("Partner upsert finished")}: ${importedCount} ${_t("imported")}, ${failedCount} ${_t(

@@ -43,15 +43,17 @@ The raw export may also contain `Social Security Number`. The workflow must **no
 
 ### 1. Obtain the D360 export
 
-- Run the D360 customer/contact export that produces the flat contact list CSV.
+- Open `/contacts` in Dive360.
+- Click `Search` without filling out any fields, unless you only want to export a subset of records.
+- Under `Action`, choose `Export as CSV`.
 - Keep the original filename and note who ran the export and when.
 - Store the raw export in an approved working location; do not commit raw PII exports to git.
 
 ### 2. Upload and preprocess
 
 - Open the `D360 Migration` workflow in Odoo.
-- Start `New customer workflow`.
-- Upload the original CSV file.
+- Start `New customer import`.
+- Use the resulting CSV file to import the customers and contacts into Adventure POS by uploading it into the workflow.
 - Record any source notes, such as the D360 menu path, operator, export time, or cutover context.
 
 ### 3. Review classification and quality flags
