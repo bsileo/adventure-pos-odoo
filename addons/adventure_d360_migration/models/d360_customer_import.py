@@ -11,6 +11,7 @@ class AdventureD360CustomerImportBatch(models.Model):
 
     _PROGRESS_FIELD_NAMES = [
         "line_count",
+        "pending_count",
         "review_needed_count",
         "processed_count",
         "imported_count",
@@ -45,7 +46,19 @@ class AdventureD360CustomerImportBatch(models.Model):
         "batch_id",
         string="Source rows",
     )
+    pending_line_ids = fields.One2many(
+        "adventure.d360.customer.import.line",
+        "batch_id",
+        string="Pending source rows",
+        domain=[("import_state", "=", "pending")],
+    )
+    show_pending_only = fields.Boolean(
+        string="Pending only",
+        default=False,
+        help="Show only rows whose import state is still Pending in the review table.",
+    )
     line_count = fields.Integer(compute="_compute_counts")
+    pending_count = fields.Integer(compute="_compute_counts")
     review_needed_count = fields.Integer(compute="_compute_counts")
     processed_count = fields.Integer(compute="_compute_counts")
     imported_count = fields.Integer(compute="_compute_counts")
@@ -67,6 +80,7 @@ class AdventureD360CustomerImportBatch(models.Model):
         stats = {
             batch.id: {
                 "line_count": 0,
+                "pending_count": 0,
                 "review_needed_count": 0,
                 "processed_count": 0,
                 "imported_count": 0,
@@ -96,6 +110,8 @@ class AdventureD360CustomerImportBatch(models.Model):
                 batch_stats["imported_count"] += count
             elif import_state == "failed":
                 batch_stats["failed_count"] += count
+            elif import_state == "pending":
+                batch_stats["pending_count"] += count
 
             partner_kind = group.get("partner_kind_guess")
             if partner_kind == "person":
@@ -615,6 +631,7 @@ class AdventureD360CustomerImportLine(models.Model):
             result["batch_values"] = batches.read(
                 [
                     "line_count",
+                    "pending_count",
                     "review_needed_count",
                     "imported_count",
                     "person_count",
