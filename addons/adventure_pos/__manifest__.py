@@ -2,13 +2,12 @@
 {
     "name": "Adventure POS",
     "summary": "Retail POS extensions for Adventure POS (MVP scaffold).",
-    "version": "1.0.0",
-    "category": "Point of Sale",
+    "version": "18.0.1.0.1",
+    "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
     "depends": ["adventure_base", "product", "point_of_sale"],
     "data": [
-        "security/ir.model.access.csv",
         "data/product_category_data.xml",
         "data/pos_category_data.xml",
         "views/views.xml",
@@ -19,4 +18,5 @@
         "demo/demo.xml",
     ],
     "installable": True,
+    "application": True,
 }
