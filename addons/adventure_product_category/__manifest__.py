@@ -3,7 +3,7 @@
     "name": "Adventure Product Category",
     "summary": "Extended product categories with canonical name, aliases, keywords, and level.",
     "version": "18.0.1.0.1",
-    "category": "Productivity",
+    "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
     "depends": ["product", "stock"],
@@ -16,5 +16,5 @@
         "views/vendor_catalog_import_views.xml",
     ],
     "installable": True,
-    "application": False,
+    "application": True,
 }
