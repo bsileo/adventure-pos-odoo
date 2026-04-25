@@ -261,6 +261,59 @@ or:
 bash ./scripts/remote-dev.sh stop
 ```
 
+## Pushing Work From The VM
+
+The remote dev VM uses a **read-only GitHub deploy key** by default. It can clone and pull, but `git push origin ...` from the VM will fail with:
+
+```text
+ERROR: The key you are authenticating with has been marked as read only.
+```
+
+That is intentional. Keep GitHub write credentials on your laptop and push from there.
+
+Recommended flow when your feature branch work is committed on the VM:
+
+1. On the VM, make sure your work is committed:
+
+   ```bash
+   cd /srv/adventurepos/adventure-pos-odoo
+   git status
+   git add .
+   git commit -m "your message"
+   ```
+
+2. On your laptop, fetch the VM branch over SSH:
+
+   ```powershell
+   git remote add gcp-dev deploy@adventurepos-dev-brad:/srv/adventurepos/adventure-pos-odoo
+   git fetch gcp-dev feature/d360-customer-workflow
+   git checkout -b feature/d360-customer-workflow FETCH_HEAD
+   git push -u origin feature/d360-customer-workflow
+   ```
+
+   If you already added the `gcp-dev` remote earlier, skip `git remote add`.
+
+3. Open the PR from GitHub as usual.
+
+After the PR is merged, sync both copies back to `develop`:
+
+```powershell
+git checkout develop
+git pull origin develop
+git branch -d feature/d360-customer-workflow
+```
+
+On the VM:
+
+```bash
+cd /srv/adventurepos/adventure-pos-odoo
+git checkout develop
+git pull origin develop
+git branch -d feature/d360-customer-workflow
+```
+
+Do **not** make the VM deploy key writable unless there is a specific reason and the security tradeoff is accepted.
+
 ## Security and data notes
 
 - Postgres now binds to `127.0.0.1` by default, which is safer for remote VMs.
