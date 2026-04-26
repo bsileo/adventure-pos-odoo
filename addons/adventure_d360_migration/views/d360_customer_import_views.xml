@@ -16,7 +16,7 @@
                             Base workspace for migration tools, operator notes, and guided workflows.
                         </div>
                     </div>
-                    <group string="Customer migration">
+                    <group name="d360_customer_migration_group" string="Customer migration">
                         <group>
                             <button name="action_open_customer_workflow"
                                     type="object"
