@@ -11,7 +11,7 @@ Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code
 1. Copy `.env.example` to `.env` and set variables as needed.
 2. Start services: `docker compose up -d` (or `make up`).
 3. **Once**, initialize the default DB: `make init-db` (avoids HTTP 500 until `base` is installed).
-4. The Postgres database now persists across `docker compose down` / `up`. To intentionally wipe and recreate local dev data, run `make reset-db`.
+4. Postgres uses a Docker named volume (default `adventurepos-sandbox-postgres`, overridable via `.env`); it survives `docker compose down` / `up`, container restarts, and VM reboots. **`docker compose down -v`** deletes that volume—avoid it on the shared sandbox. To intentionally wipe local dev data, use `make reset-db`. GCP notes: [docs/shared-environment.md](docs/shared-environment.md).
 5. Open [http://localhost:8069](http://localhost:8069) and sign in; install **Adventure Base** from Apps if needed.
 
 Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md](docs/setup.md). Agent conventions: [docs/agent-rules.md](docs/agent-rules.md). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md). **Remote dev VM:** [docs/remote-development.md](docs/remote-development.md). **Shared GCP sandbox** (project, `gcloud` profile, deploy workflow): [docs/shared-environment.md](docs/shared-environment.md). **Cursor → push → sandbox:** [docs/sandbox-cursor-to-deploy.md](docs/sandbox-cursor-to-deploy.md).
