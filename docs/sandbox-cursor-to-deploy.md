@@ -26,7 +26,7 @@ make gcp-vm-start   # if needed
 make gcp-vm-ip
 ```
 
-After a **stop/start**, the **public IP can change**. Someone with repo admin access must update GitHub Actions secrets **`GCP_SANDBOX_SSH_HOST`** and usually **`GCP_SANDBOX_KNOWN_HOSTS`** (see [shared-environment.md — GitHub Actions](shared-environment.md#github-actions--auto-deploy-to-the-sandbox-develop)). Until that matches, deploys from GitHub will fail even if the VM is up.
+After a **stop/start**, the **public IP can change**. Someone with repo admin access must update GitHub Actions secrets **`GCP_SANDBOX_SSH_HOST`** and usually **`GCP_SANDBOX_KNOWN_HOSTS`** (see [shared-environment.md — GitHub Actions](shared-environment.md#github-actions-auto-deploy-to-the-sandbox-develop)). Until that matches, deploys from GitHub will fail even if the VM is up.
 
 Wait a minute after **`start`** before SSH or Odoo respond.
 
