@@ -1,0 +1,74 @@
+site_name: Event Ops Developer Docs
+site_description: Developer documentation for Event Ops / Adventure POS (Odoo stack).
+
+repo_url: https://github.com/bsileo/adventure-pos-odoo
+edit_uri: edit/develop/docs/
+
+strict: true
+
+# Repo docs link to scripts, workflows, and README outside `docs/`; those URLs work on GitHub but are not MkDocs pages.
+validation:
+  links:
+    not_found: info
+    anchors: info
+
+theme:
+  name: material
+  features:
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - navigation.tracking
+    - toc.follow
+
+plugins:
+  - search
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - Guides:
+      - Developer onboarding: developer-onboarding.md
+      - Setup: setup.md
+      - Remote development: remote-development.md
+      - Shared environment: shared-environment.md
+      - Sandbox Cursor to deploy: sandbox-cursor-to-deploy.md
+      - Development tracking: development-tracking.md
+      - Agent rules: agent-rules.md
+  - Architecture:
+      - Master catalog and sync: architecture/master-catalog-and-sync.md
+      - Tenant provisioning: architecture/tenant-provisioning.md
+  - Data model:
+      - Core model: data-model/core-model.md
+      - Product catalog: data-model/product-catalog.md
+  - Integrations:
+      - FareHarbor POS sync: integrations/fareharbor-pos-sync.md
+  - Migrations:
+      - Overview: migrations/README.md
+      - Catalog strategy (migrated shops): migrations/catalog-strategy-migrated-shops.md
+      - Certifications and training: migrations/certifications-training-migration.md
+      - Chart of accounts localization: migrations/chart-of-accounts-localization.md
+      - D360 CSV normalizer: migrations/d360-csv-normalizer-spec.md
+      - D360 customers workflow: migrations/d360-customers-workflow.md
+      - Dive Shop 360 export inventory: migrations/dive-shop-360-export-inventory.md
+      - Dive Shop 360 Odoo mapping: migrations/dive-shop-360-odoo-mapping.md
+      - External ID convention: migrations/external-id-convention.md
+      - Historical POS import spike: migrations/historical-pos-import-spike.md
+      - Idempotency test procedure: migrations/idempotency-test-procedure.md
+      - Odoo import tooling evaluation: migrations/odoo-import-tooling-evaluation.md
+      - Pilot dry run procedure: migrations/pilot-dry-run-procedure.md
+      - Runbook cutover weekend: migrations/runbook-cutover-weekend.md
+      - Runbook phases and checkpoints: migrations/runbook-phases-and-checkpoints.md
+      - Sample exports PII and retention: migrations/sample-exports-pii-and-retention.md
+      - Stock opening valuation: migrations/stock-opening-valuation-strategy.md
+      - Training hypercare checklist: migrations/training-hypercare-checklist.md
+      - Validation report template: migrations/validation-report-template.md

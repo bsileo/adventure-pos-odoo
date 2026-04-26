@@ -248,6 +248,27 @@ Then open `http://EXTERNAL_IP:8069`, install **Adventure Base** / **Adventure PO
 
 **Note:** Hardening (`docker-compose.server.yml`, internal-only Postgres, TLS) is a follow-up in-repo task; the steps above match today’s single [docker-compose.yml](docker-compose.yml).
 
+### Reset sandbox database (destructive)
+
+To **wipe the Postgres volume** and re-run **`base`** install (no Odoo demos, same as [`odoo-init-db.sh`](../scripts/odoo-init-db.sh)):
+
+**On the VM** (SSH as `deploy`, repo root):
+
+```bash
+cd /srv/adventurepos/adventure-pos-odoo   # or your GCP_SANDBOX_DEPLOY_PATH
+bash ./scripts/gcp-sandbox-reset-db.sh
+```
+
+You must type **`reset-sandbox`** when prompted. Non-interactive (e.g. automation): `bash ./scripts/gcp-sandbox-reset-db.sh --yes` (still wipes all Odoo DB data on that VM).
+
+**From Windows** (interactive SSH; set **`GCP_SANDBOX_SSH_HOST`** to the current VM IP, optional **`GCP_SANDBOX_DEPLOY_PATH`**):
+
+```powershell
+.\scripts\gcp-sandbox-reset-db.ps1
+```
+
+This runs **`docker compose down --volumes`** then **`up -d`** and **`odoo-init-db.sh`** — coordinate with the team before using it. For **local** disposable data only, use **`make reset-db`** instead (does not target GCP by itself).
+
 ---
 
 ## Stop / start the sandbox VM (save GCP compute cost)
