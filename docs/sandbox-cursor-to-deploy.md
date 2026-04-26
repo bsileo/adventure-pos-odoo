@@ -79,3 +79,9 @@ Check **GitHub → Actions → Deploy GCP sandbox** for the run. If it failed, f
 - Run **Actions → Deploy GCP sandbox → Run workflow** manually on `develop`.
 
 You can still **SSH** as `deploy` and run the same commands by hand on the VM if needed (paths in [shared-environment.md](shared-environment.md)).
+
+---
+
+## 6. Reset the shared sandbox database (destructive)
+
+Only when the team agrees: wipe Postgres and re-init **`base`** (see [shared-environment.md — Reset sandbox database](shared-environment.md#reset-sandbox-database-destructive)). **`make reset-db`** is for **local** Docker only.

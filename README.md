@@ -26,6 +26,6 @@ Follow the branching and pull request rules in [CONTRIBUTING.md](CONTRIBUTING.md
 - `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports)
 - `config/` — Tooling config (e.g. OpenClaw)
 - `docs/` — Setup and agent guidelines; [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md); [FareHarbor booking sync (draft)](docs/integrations/fareharbor-pos-sync.md); [migrations (e.g. Dive Shop 360)](docs/migrations/README.md); [shared environment](docs/shared-environment.md); [sandbox deploy from Cursor](docs/sandbox-cursor-to-deploy.md)
-- `scripts/` — Helper scripts (e.g. [gcp-sandbox-vm.ps1](scripts/gcp-sandbox-vm.ps1) for the shared sandbox and [remote-dev.ps1](scripts/remote-dev.ps1) / [remote-dev.sh](scripts/remote-dev.sh) for developer-owned remote VMs)
+- `scripts/` — Helper scripts (e.g. [gcp-sandbox-vm.ps1](scripts/gcp-sandbox-vm.ps1), [gcp-sandbox-reset-db.ps1](scripts/gcp-sandbox-reset-db.ps1) / [gcp-sandbox-reset-db.sh](scripts/gcp-sandbox-reset-db.sh) for shared sandbox DB wipe; [remote-dev.ps1](scripts/remote-dev.ps1) / [remote-dev.sh](scripts/remote-dev.sh) for developer-owned remote VMs)
 
 Do not store secrets in the repo; use `.env` (ignored by git).
