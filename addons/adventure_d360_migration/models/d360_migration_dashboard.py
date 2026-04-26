@@ -20,3 +20,21 @@ class AdventureD360MigrationDashboard(models.Model):
         return self.env.ref(
             "adventure_d360_migration.action_adventure_d360_customer_import_batch"
         ).read()[0]
+
+    def action_open_history_import_wizard(self):
+        self.ensure_one()
+        return self.env.ref(
+            "adventure_d360_migration.action_adventure_d360_history_import_wizard"
+        ).read()[0]
+
+    def action_open_history_import_batches(self):
+        self.ensure_one()
+        return self.env.ref(
+            "adventure_d360_migration.action_adventure_d360_history_import_batch"
+        ).read()[0]
+
+    def action_open_history_orders(self):
+        self.ensure_one()
+        return self.env.ref(
+            "adventure_d360_migration.action_adventure_history_order"
+        ).read()[0]

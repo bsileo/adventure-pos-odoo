@@ -3,3 +3,7 @@ access_adventure_d360_migration_dashboard_system,adventure.d360.migration.dashbo
 access_adventure_d360_customer_import_batch_system,adventure.d360.customer.import.batch system,model_adventure_d360_customer_import_batch,base.group_system,1,1,1,1
 access_adventure_d360_customer_import_line_system,adventure.d360.customer.import.line system,model_adventure_d360_customer_import_line,base.group_system,1,1,1,1
 access_adventure_d360_customer_import_wizard_system,adventure.d360.customer.import.wizard system,model_adventure_d360_customer_import_wizard,base.group_system,1,1,1,1
+access_adventure_history_order_system,adventure.history.order system,model_adventure_history_order,base.group_system,1,1,1,1
+access_adventure_history_order_line_system,adventure.history.order.line system,model_adventure_history_order_line,base.group_system,1,1,1,1
+access_adventure_d360_history_import_batch_system,adventure.d360.history.import.batch system,model_adventure_d360_history_import_batch,base.group_system,1,1,1,1
+access_adventure_d360_history_import_wizard_system,adventure.d360.history.import.wizard system,model_adventure_d360_history_import_wizard,base.group_system,1,1,1,1
