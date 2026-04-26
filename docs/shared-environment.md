@@ -242,7 +242,7 @@ From the repo root:
 docker compose up -d
 ```
 
-First-time DB init (if `/` returns 500): see [Makefile](Makefile) `init-db` — run the `docker compose exec odoo odoo ... -i base --stop-after-init` line with **`--db_password`** matching **`.env`**.
+First-time DB init (if `/` returns 500): see [Makefile](Makefile) `init-db` (uses **`--without-demo=all`**, no Odoo sample data). Or run the same `odoo ... -i base --without-demo=all --stop-after-init` command with **`--db_password`** matching **`.env`**. Creating a DB via the **Manage databases** web UI is separate—leave **Load demonstration data** unchecked if you want the same behavior.
 
 Then open `http://EXTERNAL_IP:8069`, install **Adventure Base** / **Adventure POS** per [developer-onboarding.md](developer-onboarding.md).
 

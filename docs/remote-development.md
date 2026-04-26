@@ -229,6 +229,8 @@ If you are already SSH'd into the VM and standing in the repo:
 bash ./scripts/odoo-init-db.sh
 ```
 
+That script installs **`base`** with **`--without-demo=all`** (no Odoo demonstration/sample data), same as **`make init-db`** locally.
+
 The shared helper script falls back between `POSTGRES_*` and Odoo's existing `USER` / `PASSWORD` env vars so it works against both the updated branch and older remote checkouts.
 
 ### 6. Open Odoo
