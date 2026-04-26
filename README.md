@@ -39,6 +39,8 @@ Build check (same as CI): `mkdocs build --strict`
 
 **Repo admin:** enable Pages with source **GitHub Actions** (Settings → Pages). For private repos, confirm org policy for who can view Pages.
 
+If the **Documentation** workflow’s deploy job fails with **HTTP 404** / “Failed to create deployment”, Pages is still set to **Deploy from a branch** or Pages is disabled. Switch **Build and deployment → Source** to **GitHub Actions**, save, then re-run the failed workflow or push an empty commit to `develop`.
+
 ## Layout
 
 - `.github/` — Issue & PR templates; [deploy-gcp-sandbox workflow](.github/workflows/deploy-gcp-sandbox.yml) (push to `develop`); [documentation workflow](.github/workflows/docs.yml) (MkDocs build; Pages deploy from `develop`)
