@@ -16,11 +16,11 @@
                             Base workspace for migration tools, operator notes, and guided workflows.
                         </div>
                     </div>
-                    <group string="Customer migration">
+                    <group name="d360_customer_migration_group" string="Customer migration">
                         <group>
                             <button name="action_open_customer_workflow"
                                     type="object"
-                                    string="New customer workflow"
+                                    string="New customer import"
                                     class="btn-primary"/>
                             <button name="action_open_customer_batches"
                                     type="object"
@@ -78,7 +78,7 @@
                             invisible="state != 'review'"/>
                     <button name="action_upsert_partners"
                             type="object"
-                            string="Upsert partners"
+                            string="Import partners"
                             class="btn-primary"
                             invisible="state != 'review'"/>
                     <button name="action_cancel"
@@ -105,6 +105,7 @@
                         </group>
                         <group>
                             <field name="line_count" readonly="1"/>
+                            <field name="pending_count" readonly="1"/>
                             <field name="processed_count" readonly="1"/>
                             <field name="review_needed_count" readonly="1"/>
                             <field name="imported_count" readonly="1"/>
@@ -131,12 +132,26 @@
                                     <strong>contact list</strong> export shape. It treats the file as a
                                     partner import, not a people-only import.
                                 </p>
+                                <p>
+                                    To get a fresh source data file from Dive360, use the standard contacts export.
+                                </p>
                                 <ol>
-                                    <li>Export the D360 customer/contact list as CSV and keep the original filename.</li>
-                                    <li>Upload it here using <strong>New customer workflow</strong>.</li>
+                                    <li>Open <code>/contacts</code> in Dive360.</li>
+                                    <li>Click <strong>Search</strong> without filling out any fields, unless you only want to export a subset of records.</li>
+                                    <li>Under <strong>Action</strong>, choose <strong>Export as CSV</strong> and keep the original filename.</li>
+                                    <li>Use the resulting CSV file here in <strong>New customer import</strong> to import customers and contacts into Adventure POS.</li>
                                     <li>Review rows flagged for mixed signals, duplicate IDs, or weak classifications. Use the one-click <strong>Person</strong>, <strong>Company</strong>, or <strong>Ambiguous</strong> actions to correct partner type quickly.</li>
-                                    <li>Run <strong>Upsert partners</strong> to create or update <code>res.partner</code> by D360 Customer ID.</li>
+                                    <li>Run <strong>Import partners</strong> to create or update <code>res.partner</code> by D360 Customer ID.</li>
                                 </ol>
+                                <div class="mt16 mb16">
+                                    <p>
+                                        <strong>Reference screenshot:</strong> In Dive360, the CSV export is available from the
+                                        <strong>Action</strong> menu.
+                                    </p>
+                                    <img src="/adventure_d360_migration/static/src/img/d360_export_as_csv_reference.png"
+                                         alt="Dive360 Action menu showing Export as CSV"
+                                         style="max-width: 210px; width: 100%; border: 1px solid #d8dadd;"/>
+                                </div>
                                 <p>
                                     Company-style rows such as vendors, agencies, or manufacturers are preserved
                                     as partners. Ambiguous rows should be reviewed before import.
@@ -144,8 +159,40 @@
                             </div>
                         </page>
                         <page string="Review rows" name="review_rows">
-                            <field name="line_ids" readonly="state == 'done'">
+                            <group>
+                                <field name="show_pending_only" widget="boolean_toggle"/>
+                            </group>
+                            <field name="line_ids"
+                                   readonly="state == 'done'"
+                                   invisible="show_pending_only">
                                 <list string="Customer rows"
+                                      editable="bottom"
+                                      create="false"
+                                      delete="false"
+                                      decoration-warning="review_needed"
+                                      decoration-danger="import_state == 'failed'"
+                                      decoration-success="import_state == 'imported'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="source_customer_id"/>
+                                    <field name="partner_display_name" readonly="1"/>
+                                    <field name="partner_kind_guess" widget="d360_partner_kind_actions"/>
+                                    <field name="classification_confidence" readonly="1"/>
+                                    <field name="review_needed" readonly="1"/>
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
+                                    <field name="email" optional="show"/>
+                                    <field name="mobile_phone" optional="show"/>
+                                    <field name="customer_type" optional="show"/>
+                                    <field name="invoice_type" optional="show"/>
+                                    <field name="import_state" readonly="1" optional="show"/>
+                                    <field name="import_error" readonly="1" optional="show"/>
+                                    <field name="partner_id" readonly="1" optional="show"/>
+                                </list>
+                            </field>
+                            <field name="pending_line_ids"
+                                   readonly="state == 'done'"
+                                   invisible="not show_pending_only">
+                                <list string="Pending customer rows"
                                       editable="bottom"
                                       create="false"
                                       delete="false"
@@ -224,7 +271,7 @@
         <field name="domain">[('state', '!=', 'cancelled')]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Start with <strong>New customer workflow</strong> to upload a Dive360 contact export.
+                Start with <strong>New customer import</strong> to upload a Dive360 contact export.
             </p>
         </field>
     </record>
@@ -233,17 +280,24 @@
         <field name="name">adventure.d360.customer.import.wizard.form</field>
         <field name="model">adventure.d360.customer.import.wizard</field>
         <field name="arch" type="xml">
-            <form string="New D360 customer workflow">
+            <form string="New D360 customer import">
                 <group>
                     <div class="text-muted">
                         <p>
-                            Upload the original Dive360 customer/contact CSV. This workflow is tuned for files
+                            Export the customer/contact CSV from Dive360 by opening <code>/contacts</code>,
+                            clicking <strong>Search</strong> with no filters, and choosing
+                            <strong>Action</strong> → <strong>Export as CSV</strong>. This workflow is tuned for files
                             shaped like <code>contact_list_*.csv</code> and will preprocess the rows into a
-                            reviewable partner batch before any upsert happens.
+                            reviewable batch before any upsert happens.
                         </p>
                         <p>
-                            Keep raw PII exports outside normal git workflows. Use the notes field to record
+                            Do not include raw Peronsally Identifiable Information!
                             how you obtained the export from D360.
+                        </p>
+                        <p>
+                            <img src="/adventure_d360_migration/static/src/img/d360_export_as_csv_reference.png"
+                                 alt="Dive360 Action menu showing Export as CSV"
+                                 style="max-width: 160px; width: 100%; border: 1px solid #d8dadd;"/>
                         </p>
                     </div>
                 </group>
@@ -270,7 +324,7 @@
     </record>
 
     <record id="action_adventure_d360_customer_import_wizard" model="ir.actions.act_window">
-        <field name="name">New customer workflow</field>
+        <field name="name">New customer import</field>
         <field name="res_model">adventure.d360.customer.import.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -283,7 +337,7 @@
               groups="base.group_system"/>
 
     <menuitem id="menu_adventure_d360_customer_workflow"
-              name="New customer workflow"
+              name="New customer import"
               parent="menu_adventure_d360_root"
               action="action_adventure_d360_customer_import_wizard"
               sequence="10"

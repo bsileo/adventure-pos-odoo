@@ -4,12 +4,6 @@ Use this workflow when you want **Cursor on your laptop** but want **Odoo, Postg
 
 This is a **developer convenience** workflow for lowering local CPU/RAM usage. It is **separate from** the shared sandbox documented in [shared-environment.md](shared-environment.md).
 
-## Why this fits Odoo + Postgres
-
-- Odoo day-to-day work is mostly **source changes** in `addons/`, not image publishing.
-- Postgres benefits from a **persistent VM disk and Docker volume** instead of disposable rebuilds.
-- Cursor **Remote SSH** avoids a fragile file-sync loop because the repo, Docker Compose, Odoo, and Postgres all live on the same VM.
-
 ## Recommended developer experience
 
 1. Start your VM from the repo.
@@ -235,6 +229,8 @@ If you are already SSH'd into the VM and standing in the repo:
 bash ./scripts/odoo-init-db.sh
 ```
 
+That script installs **`base`** with **`--without-demo=all`** (no Odoo demonstration/sample data), same as **`make init-db`** locally.
+
 The shared helper script falls back between `POSTGRES_*` and Odoo's existing `USER` / `PASSWORD` env vars so it works against both the updated branch and older remote checkouts.
 
 ### 6. Open Odoo
@@ -261,12 +257,86 @@ or:
 bash ./scripts/remote-dev.sh stop
 ```
 
+## Pushing Work From The VM
+
+The remote dev VM uses a **read-only GitHub deploy key** by default. It can clone and pull, but `git push origin ...` from the VM will fail with:
+
+```text
+ERROR: The key you are authenticating with has been marked as read only.
+```
+
+That is intentional. Keep GitHub write credentials on your laptop and push from there.
+
+Recommended flow when your feature branch work is committed on the VM:
+
+1. On the VM, make sure your work is committed:
+
+   ```bash
+   cd /srv/adventurepos/adventure-pos-odoo
+   git status
+   git add .
+   git commit -m "your message"
+   ```
+
+2. On your laptop, fetch the VM branch over SSH and push it to GitHub:
+
+   ```powershell
+   .\scripts\remote-dev.ps1 fetch-branch feature/d360-customer-workflow
+   ```
+
+   Or from Bash:
+
+   ```bash
+   bash ./scripts/remote-dev.sh fetch-branch feature/d360-customer-workflow
+   ```
+
+   The helper creates or updates a local `gcp-dev` Git remote that points at the current VM IP, fetches the branch, creates the same local branch from `FETCH_HEAD`, and pushes it to `origin`.
+
+   If you need to do the same flow manually:
+
+   ```powershell
+   git remote add gcp-dev deploy@adventurepos-dev-brad:/srv/adventurepos/adventure-pos-odoo
+   git fetch gcp-dev feature/d360-customer-workflow
+   git checkout -b feature/d360-customer-workflow FETCH_HEAD
+   git push -u origin feature/d360-customer-workflow
+   ```
+
+   If you already added the `gcp-dev` remote earlier, skip `git remote add`.
+
+3. Open the PR from GitHub as usual.
+
+After the PR is merged, sync both copies back to `develop`:
+
+```powershell
+git checkout develop
+git pull origin develop
+git branch -d feature/d360-customer-workflow
+```
+
+On the VM:
+
+```bash
+cd /srv/adventurepos/adventure-pos-odoo
+git checkout develop
+git pull origin develop
+git branch -d feature/d360-customer-workflow
+```
+
+Do **not** make the VM deploy key writable unless there is a specific reason and the security tradeoff is accepted.
+
 ## Security and data notes
 
 - Postgres now binds to `127.0.0.1` by default, which is safer for remote VMs.
 - If you need database access from your laptop, use **SSH tunneling** instead of exposing `5432` publicly.
 - Odoo remains reachable on port `8069`. The helper defaults to `0.0.0.0/0` for first-time ease, so set `REMOTE_DEV_ODOO_SOURCE_RANGES` if you want to restrict it to your IP or office range.
 - The VM is intended to be **persistent** so your Postgres data and checked-out repo survive stop/start cycles.
+
+## Why this fits Odoo + Postgres
+
+- Odoo day-to-day work is mostly **source changes** in `addons/`, not image publishing.
+- Postgres benefits from a **persistent VM disk and Docker volume** instead of disposable rebuilds.
+- Cursor **Remote SSH** avoids a fragile file-sync loop because the repo, Docker Compose, Odoo, and Postgres all live on the same VM.
+
 
 ## Related files
 

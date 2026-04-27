@@ -9,8 +9,13 @@
 #>
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('init-ssh', 'create', 'start', 'stop', 'status', 'ip', 'url', 'open', 'ssh', 'cursor', 'up', 'init-db', 'bootstrap')]
-    [string] $Action = 'status'
+    [ValidateSet('init-ssh', 'create', 'start', 'stop', 'status', 'ip', 'url', 'open', 'ssh', 'cursor', 'up', 'init-db', 'bootstrap', 'fetch-branch')]
+    [string] $Action = 'status',
+
+    [Parameter(Position = 1)]
+    [string] $Branch,
+
+    [switch] $Force
 )
 
 Set-StrictMode -Version Latest
@@ -151,6 +156,52 @@ function Invoke-RemoteCommand {
     }
     $sshArgs = Get-SshArgs
     & ssh @sshArgs "$script:VmUser@$ip" $Command
+}
+
+function Invoke-FetchBranch {
+    param(
+        [string] $BranchName,
+        [switch] $ResetExistingBranch
+    )
+
+    if (-not $BranchName) {
+        throw "Branch name is required. Example: .\scripts\remote-dev.ps1 fetch-branch feature/d360-customer-workflow"
+    }
+
+    Assert-Command git
+    Assert-Command gcloud
+    Assert-InstanceExists
+
+    $remoteName = if ($env:REMOTE_DEV_FETCH_REMOTE) { $env:REMOTE_DEV_FETCH_REMOTE } else { 'gcp-dev' }
+    $ip = Get-InstanceIp
+    if (-not $ip) {
+        throw "Instance '$Instance' does not have a public IP yet."
+    }
+
+    $remoteUrl = "${VmUser}@${ip}:$RepoPath"
+    $existingRemotes = @(git remote)
+
+    if ($existingRemotes -contains $remoteName) {
+        $currentUrl = git remote get-url $remoteName
+        if ($currentUrl -ne $remoteUrl) {
+            git remote set-url $remoteName $remoteUrl
+        }
+    } else {
+        git remote add $remoteName $remoteUrl
+    }
+
+    git fetch $remoteName $BranchName
+
+    $localBranch = git branch --list $BranchName
+    if ($localBranch) {
+        if (-not $ResetExistingBranch) {
+            throw "Local branch '$BranchName' already exists. Use -Force to reset it to the VM branch."
+        }
+        git branch -D $BranchName
+    }
+
+    git checkout -b $BranchName FETCH_HEAD
+    git push -u origin $BranchName
 }
 
 $Project = if ($env:REMOTE_DEV_GCP_PROJECT) { $env:REMOTE_DEV_GCP_PROJECT } else { 'adventure-pos-sandbox' }
@@ -303,5 +354,8 @@ switch ($Action) {
         $sshArgs = Get-SshArgs
         $remoteBootstrapCommand = "bash -s -- $RepoUrl $RepoBranch $RepoPath"
         $bootstrapScript | & ssh @sshArgs "$VmUser@$ip" $remoteBootstrapCommand
+    }
+    'fetch-branch' {
+        Invoke-FetchBranch -BranchName $Branch -ResetExistingBranch:$Force
     }
 }

@@ -2,14 +2,17 @@
 {
     "name": "Adventure D360 Migration",
     "summary": "Dive Shop 360 migration workflow scaffolding for Adventure POS.",
-    "version": "18.0.1.0.4",
+    "version": "18.0.1.1.4",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
-    "depends": ["adventure_base", "contacts"],
+    "depends": ["adventure_base", "contacts", "product"],
+    "external_dependencies": {"python": ["openpyxl"]},
     "data": [
         "security/ir.model.access.csv",
         "views/d360_customer_import_views.xml",
+        "views/d360_history_import_views.xml",
+        "views/res_partner_views.xml",
     ],
     "assets": {
         "web.assets_backend": [

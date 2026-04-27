@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_d360_history_import_batch_form" model="ir.ui.view">
+        <field name="name">adventure.d360.history.import.batch.form</field>
+        <field name="model">adventure.d360.history.import.batch</field>
+        <field name="arch" type="xml">
+            <form string="D360 historical import">
+                <header>
+                    <button name="action_analyze"
+                            type="object"
+                            string="Recompute preview"
+                            class="btn-secondary"
+                            invisible="state == 'cancelled'"/>
+                    <button name="action_import_archive"
+                            type="object"
+                            string="Import to archive"
+                            class="btn-primary"
+                            invisible="state == 'cancelled'"/>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel batch"
+                            class="btn-secondary"
+                            invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,imported,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Historical import batch" readonly="state == 'imported'"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="source_filename" readonly="1"/>
+                            <field name="source_checksum" readonly="1"/>
+                            <field name="dedupe_mode"/>
+                            <field name="imported_at" readonly="1"/>
+                        </group>
+                        <group string="Preview">
+                            <field name="row_count" readonly="1"/>
+                            <field name="invoice_count" readonly="1"/>
+                            <field name="customer_key_count" readonly="1"/>
+                            <field name="product_match_preview" readonly="1"/>
+                            <field name="product_unmatched_preview" readonly="1"/>
+                            <field name="duplicate_candidate_count" readonly="1"/>
+                            <field name="negative_qty_row_count" readonly="1"/>
+                            <field name="skipped_aggregate_rows" readonly="1"/>
+                            <field name="skipped_duplicate_lines" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="upload_notes" readonly="state == 'imported'"/>
+                    </group>
+                    <notebook>
+                        <page string="Imported orders" invisible="not order_ids">
+                            <field name="order_ids" readonly="1">
+                                <list create="false" delete="false">
+                                    <field name="name"/>
+                                    <field name="invoice_date"/>
+                                    <field name="partner_id"/>
+                                    <field name="customer_match_status"/>
+                                    <field name="line_count"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_d360_history_import_batch_list" model="ir.ui.view">
+        <field name="name">adventure.d360.history.import.batch.list</field>
+        <field name="model">adventure.d360.history.import.batch</field>
+        <field name="arch" type="xml">
+            <list string="Historical imports">
+                <field name="name"/>
+                <field name="source_filename"/>
+                <field name="state"/>
+                <field name="row_count"/>
+                <field name="invoice_count"/>
+                <field name="product_match_preview"/>
+                <field name="duplicate_candidate_count"/>
+                <field name="imported_at"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_adventure_d360_history_import_batch" model="ir.actions.act_window">
+        <field name="name">Historical import batches</field>
+        <field name="res_model">adventure.d360.history.import.batch</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_adventure_d360_history_import_wizard_form" model="ir.ui.view">
+        <field name="name">adventure.d360.history.import.wizard.form</field>
+        <field name="model">adventure.d360.history.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Historical transaction import">
+                <group>
+                    <div class="text-muted">
+                        <p>
+                            Upload the D360 <strong>Report Builder</strong> line-level transaction export (XLSX).
+                            Rows are grouped into non-posting archive orders by <strong>Location</strong> and
+                            <strong>Invoice number</strong>. No <code>pos.order</code>, <code>sale.order</code>,
+                            stock moves, or accounting entries are created.
+                        </p>
+                    </div>
+                </group>
+                <group>
+                    <field name="data_file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                    <field name="dedupe_mode"/>
+                    <field name="upload_notes"/>
+                </group>
+                <footer>
+                    <button name="action_upload_and_preview"
+                            type="object"
+                            string="Upload &amp; preview"
+                            class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_d360_history_import_wizard" model="ir.actions.act_window">
+        <field name="name">New historical import</field>
+        <field name="res_model">adventure.d360.history.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_adventure_history_order_search" model="ir.ui.view">
+        <field name="name">adventure.history.order.search</field>
+        <field name="model">adventure.history.order</field>
+        <field name="arch" type="xml">
+            <search string="Archive orders">
+                <field name="name"
+                       string="Invoice / location / product"
+                       filter_domain="['|','|','|','|',('name','ilike',self),('invoice_number','ilike',self),('line_ids.barcode','ilike',self),('line_ids.part_number','ilike',self),('line_ids.description','ilike',self)]"/>
+                <field name="partner_id"/>
+                <field name="d360_customer_id"/>
+                <field name="location"/>
+                <field name="invoice_number"/>
+                <separator/>
+                <filter string="Unmatched customer" name="cust_unmatched" domain="[('customer_match_status','=','unmatched')]"/>
+                <filter string="Has unmatched products" name="prod_unmatched" domain="[('unmatched_product_lines','>',0)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_adventure_history_order_list" model="ir.ui.view">
+        <field name="name">adventure.history.order.list</field>
+        <field name="model">adventure.history.order</field>
+        <field name="arch" type="xml">
+            <list string="Historical archive orders">
+                <field name="invoice_date"/>
+                <field name="invoice_number"/>
+                <field name="location"/>
+                <field name="partner_id"/>
+                <field name="d360_customer_id"/>
+                <field name="customer_match_status"/>
+                <field name="line_count"/>
+                <field name="unmatched_product_lines"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_history_order_form" model="ir.ui.view">
+        <field name="name">adventure.history.order.form</field>
+        <field name="model">adventure.history.order</field>
+        <field name="arch" type="xml">
+            <form string="Historical archive order">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Source">
+                            <field name="d360_source_xmlid" readonly="1"/>
+                            <field name="source_system" readonly="1"/>
+                            <field name="import_batch_id" readonly="1"/>
+                        </group>
+                        <group string="Invoice">
+                            <field name="location"/>
+                            <field name="invoice_type"/>
+                            <field name="invoice_number"/>
+                            <field name="invoice_date"/>
+                            <field name="sales_person"/>
+                        </group>
+                    </group>
+                    <group string="Customer">
+                        <group>
+                            <field name="d360_customer_id"/>
+                            <field name="partner_id"/>
+                            <field name="customer_match_status"/>
+                            <field name="customer_match_notes"/>
+                        </group>
+                        <group string="Snapshot">
+                            <field name="snapshot_first_name"/>
+                            <field name="snapshot_last_name"/>
+                            <field name="snapshot_email"/>
+                            <field name="snapshot_phone"/>
+                            <field name="snapshot_address_1"/>
+                            <field name="snapshot_address_2"/>
+                            <field name="snapshot_city"/>
+                            <field name="snapshot_state"/>
+                            <field name="snapshot_zip"/>
+                            <field name="snapshot_country"/>
+                            <field name="snapshot_customer_type"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="line_ids" readonly="1">
+                                <list create="false" delete="false">
+                                    <field name="line_sequence"/>
+                                    <field name="part_number"/>
+                                    <field name="barcode"/>
+                                    <field name="description"/>
+                                    <field name="sold_qty"/>
+                                    <field name="unit_price"/>
+                                    <field name="extended_price"/>
+                                    <field name="returned_qty"/>
+                                    <field name="product_id"/>
+                                    <field name="product_match_status"/>
+                                    <field name="is_negative_qty"/>
+                                    <field name="is_duplicate_candidate"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_history_order" model="ir.actions.act_window">
+        <field name="name">Historical archive orders</field>
+        <field name="res_model">adventure.history.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_adventure_history_order_search"/>
+    </record>
+
+    <record id="view_adventure_history_order_line_list" model="ir.ui.view">
+        <field name="name">adventure.history.order.line.list</field>
+        <field name="model">adventure.history.order.line</field>
+        <field name="arch" type="xml">
+            <list string="Historical archive lines" create="false" delete="false">
+                <field name="order_invoice_number"/>
+                <field name="order_partner_id"/>
+                <field name="line_sequence"/>
+                <field name="part_number"/>
+                <field name="barcode"/>
+                <field name="description"/>
+                <field name="sold_qty"/>
+                <field name="product_id"/>
+                <field name="product_match_status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_history_order_line_form" model="ir.ui.view">
+        <field name="name">adventure.history.order.line.form</field>
+        <field name="model">adventure.history.order.line</field>
+        <field name="arch" type="xml">
+            <form string="Historical archive line" create="false" delete="false">
+                <sheet>
+                    <group>
+                        <field name="order_id"/>
+                        <field name="line_sequence"/>
+                        <field name="d360_line_xmlid"/>
+                    </group>
+                    <group string="Product">
+                        <field name="part_number"/>
+                        <field name="barcode"/>
+                        <field name="description"/>
+                        <field name="product_id"/>
+                        <field name="product_match_status"/>
+                        <field name="product_match_notes"/>
+                    </group>
+                    <group string="Quantities &amp; price">
+                        <field name="sold_qty"/>
+                        <field name="unit_price"/>
+                        <field name="extended_price"/>
+                        <field name="delivered_qty"/>
+                        <field name="returned_qty"/>
+                        <field name="date_delivered"/>
+                    </group>
+                    <group string="Catalog hints">
+                        <field name="category"/>
+                        <field name="vendor"/>
+                        <field name="department"/>
+                        <field name="manufacturer"/>
+                        <field name="serial_number"/>
+                    </group>
+                    <group string="Tax &amp; cost">
+                        <field name="taxable"/>
+                        <field name="tax_collected_1"/>
+                        <field name="tax_collected_2"/>
+                        <field name="tax_collected_3"/>
+                        <field name="cost"/>
+                        <field name="extended_cost"/>
+                        <field name="margin"/>
+                    </group>
+                    <group string="Service / attributes">
+                        <field name="technician"/>
+                        <field name="instructor"/>
+                        <field name="primary_color"/>
+                        <field name="secondary_color"/>
+                        <field name="accent_color"/>
+                        <field name="size"/>
+                    </group>
+                    <group>
+                        <field name="is_negative_qty"/>
+                        <field name="is_duplicate_candidate"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_history_order_line" model="ir.actions.act_window">
+        <field name="name">Historical archive lines</field>
+        <field name="res_model">adventure.history.order.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_adventure_d360_migration_dashboard_form_inherit_history" model="ir.ui.view">
+        <field name="name">adventure.d360.migration.dashboard.form.inherit.history</field>
+        <field name="model">adventure.d360.migration.dashboard</field>
+        <field name="inherit_id" ref="adventure_d360_migration.view_adventure_d360_migration_dashboard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='d360_customer_migration_group']" position="after">
+                <group string="Historical transactions (archive)">
+                    <group>
+                        <button name="action_open_history_import_wizard"
+                                type="object"
+                                string="New historical import"
+                                class="btn-primary"/>
+                        <button name="action_open_history_import_batches"
+                                type="object"
+                                string="Historical import batches"
+                                class="btn-secondary"/>
+                        <button name="action_open_history_orders"
+                                type="object"
+                                string="Archive orders"
+                                class="btn-secondary"/>
+                    </group>
+                    <group>
+                        <div class="text-muted">
+                            Import D360 line-level history into read-only archive models for lookup and reporting.
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_adventure_d360_history_import_wizard"
+              name="New historical import"
+              parent="menu_adventure_d360_root"
+              action="action_adventure_d360_history_import_wizard"
+              sequence="30"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_adventure_d360_history_import_batch"
+              name="Historical import batches"
+              parent="menu_adventure_d360_root"
+              action="action_adventure_d360_history_import_batch"
+              sequence="31"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_adventure_history_order"
+              name="Historical archive orders"
+              parent="menu_adventure_d360_root"
+              action="action_adventure_history_order"
+              sequence="32"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_adventure_history_order_line"
+              name="Historical archive lines"
+              parent="menu_adventure_d360_root"
+              action="action_adventure_history_order_line"
+              sequence="33"
+              groups="base.group_system"/>
+</odoo>

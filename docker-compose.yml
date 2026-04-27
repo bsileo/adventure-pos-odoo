@@ -1,16 +1,20 @@
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-odoo}
       POSTGRES_USER: ${POSTGRES_USER:-odoo}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
     ports:
       - "${POSTGRES_BIND_ADDRESS:-127.0.0.1}:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   odoo:
     build: .
     image: adventure-pos-odoo:18.0
+    restart: unless-stopped
     depends_on:
       - db
     environment:
@@ -24,3 +28,8 @@ services:
       - "8069:8069"
     volumes:
       - ./addons:/mnt/extra-addons
+
+volumes:
+  # Stable name for the shared sandbox; override with POSTGRES_VOLUME_NAME in `.env` for local multi-clone setups.
+  postgres_data:
+    name: ${POSTGRES_VOLUME_NAME:-adventurepos-sandbox-postgres}

@@ -23,7 +23,8 @@ database_initialized() {
 }
 
 initialize_database() {
-  docker compose exec odoo sh -lc 'db_user="${POSTGRES_USER:-$USER}"; db_password="${POSTGRES_PASSWORD:-$PASSWORD}"; db_name="${POSTGRES_DB:-odoo}"; odoo --db_host=db --db_port=5432 --db_user="$db_user" --db_password="$db_password" -d "$db_name" -i base --stop-after-init'
+  # --without-demo=all skips Odoo sample/demonstration data (shared sandbox and local init-db).
+  docker compose exec odoo sh -lc 'db_user="${POSTGRES_USER:-$USER}"; db_password="${POSTGRES_PASSWORD:-$PASSWORD}"; db_name="${POSTGRES_DB:-odoo}"; odoo --db_host=db --db_port=5432 --db_user="$db_user" --db_password="$db_password" -d "$db_name" -i base --without-demo=all --stop-after-init'
 }
 
 wait_for_postgres

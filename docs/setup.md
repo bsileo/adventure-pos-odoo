@@ -112,6 +112,8 @@ http://localhost:8069
 
 Create your first database.
 
+For the current repo workflow, local Postgres data should live in a Docker volume so normal `docker compose down` / `up` cycles do not erase your dev database. If you intentionally want a clean slate, use the repo reset helper instead of relying on container teardown.
+
 ---
 
 ## Step 7 — Create First Module

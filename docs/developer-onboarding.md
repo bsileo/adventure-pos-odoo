@@ -189,10 +189,10 @@ make init-db
 Or the same command without `make`:
 
 ```bash
-docker compose exec odoo odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo -d odoo -i base --stop-after-init
+docker compose exec odoo odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo -d odoo -i base --without-demo=all --stop-after-init
 ```
 
-That installs **`base`** (and core web stack) into database **`odoo`**. Then reload **http://localhost:8069/** — you should get the normal Odoo UI / login instead of 500.
+That installs **`base`** (and core web stack) into database **`odoo`** **without** Odoo demonstration/sample data (`--without-demo=all`). Then reload **http://localhost:8069/** — you should get the normal Odoo UI / login instead of 500.
 
 To confirm in logs: `docker compose logs odoo` should no longer show `Database odoo not initialized` or `relation "ir_module_module" does not exist`.
 
@@ -207,9 +207,11 @@ To confirm in logs: `docker compose logs odoo` should no longer show `Database o
 5. **Apps → Update Apps List** → search **Adventure Base** → **Install** `adventure_base`.
 6. For MVP POS work: ensure **Point of Sale** is available (installed or will be pulled in as a dependency), then **Install** `adventure_pos` (**Adventure POS**).
 
-**Optional — extra database via the UI:** If you prefer a separate DB (e.g. `adventure_dev`), use **Manage databases** to create it; that flow sets master password and admin user in the browser. The default Postgres DB name in `docker-compose.yml` is still **`odoo`** unless you change team defaults.
+**Optional — extra database via the UI:** If you prefer a separate DB (e.g. `adventure_dev`), use **Manage databases** to create it; that flow sets master password and admin user in the browser. Leave **Load demonstration data** unchecked to match **`make init-db`** (no sample data). The default Postgres DB name in `docker-compose.yml` is still **`odoo`** unless you change team defaults.
 
 Custom addons: **`./addons`** in the repo → **`/mnt/extra-addons`** in the container. After Python/manifest changes, restart Odoo or **upgrade** the module from the UI.
+
+The local Compose Postgres data persists in a Docker volume, so `docker compose down` no longer wipes the Odoo database by default. If you intentionally want a clean local database, run **`make reset-db`** to remove the Compose volume, restart the stack, and reinstall `base`.
 
 ---
 
