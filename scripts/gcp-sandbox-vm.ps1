@@ -7,9 +7,9 @@
     .\scripts\gcp-sandbox-vm.ps1 stop
     .\scripts\gcp-sandbox-vm.ps1 start
     .\scripts\gcp-sandbox-vm.ps1 status
-    .\scripts\gcp-sandbox-vm.ps1 ip
+    .\scripts\gcp-sandbox-vm.ps1 ip   # prints NAT IP and http://IP:8069/ for Odoo
 
-  Override defaults with environment variables: GCP_PROJECT, GCP_ZONE, GCP_INSTANCE
+  Override defaults with environment variables: GCP_PROJECT, GCP_ZONE, GCP_INSTANCE, GCP_SANDBOX_ODOO_PORT (default 8069)
 #>
 param(
     [Parameter(Position = 0)]
@@ -32,6 +32,11 @@ switch ($Action) {
         gcloud compute instances describe $Instance --zone=$Zone --project=$Project --format="value(status)"
     }
     'ip' {
-        gcloud compute instances describe $Instance --zone=$Zone --project=$Project --format="value(networkInterfaces[0].accessConfigs[0].natIP)"
+        $natIp = gcloud compute instances describe $Instance --zone=$Zone --project=$Project --format="value(networkInterfaces[0].accessConfigs[0].natIP)"
+        Write-Output $natIp
+        if ($natIp) {
+            $odooPort = if ($env:GCP_SANDBOX_ODOO_PORT) { $env:GCP_SANDBOX_ODOO_PORT } else { '8069' }
+            Write-Output "Odoo (shared dev): http://${natIp}:${odooPort}/"
+        }
     }
 }

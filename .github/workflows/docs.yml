@@ -1,0 +1,76 @@
+# Build MkDocs Material on PRs and pushes to main/develop.
+# Publish to GitHub Pages only on push to develop (pre-production: live site mirrors develop).
+#
+# Repo admin — enable GitHub Pages:
+#   Settings → Pages → Build and deployment → Source: GitHub Actions
+# (Not the legacy "Deploy from a branch" unless you intentionally switch.)
+#
+# TODO (production docs): When the live site should track `main` instead of (or in addition to)
+# develop, pick one approach and update this workflow:
+#   - Change the deploy `if:` to `refs/heads/main` (simplest single-site switch), or
+#   - Add a second job / workflow for main (e.g. different `environment` or artifact name), or
+#   - Use branch previews on Cloudflare Pages, Netlify, or Vercel for develop while main stays on Pages.
+#
+# Fork PRs: build runs with the default token; deploy does not run on pull_request.
+
+name: Documentation
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: docs-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # upload-pages-artifact requires these on the job that uploads (skipped on PRs).
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-docs.txt
+
+      - name: Install docs dependencies
+        run: pip install -r requirements-docs.txt
+
+      - name: Build MkDocs (strict)
+        run: mkdocs build --strict
+
+      # Upload only when we will deploy (develop push), so deploy job can use the artifact.
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
