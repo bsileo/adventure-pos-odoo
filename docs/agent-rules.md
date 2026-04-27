@@ -187,6 +187,7 @@ When modifying POS:
 * make small, incremental edits
 * keep commits focused
 * update documentation when needed
+* for **feature or behavior changes**, review and update **technical documentation** (MkDocs under `docs/`, setup, architecture notes, module READMEs as appropriate) whenever the change affects how the system works or how to operate it; **confirm with human developers** that doc updates match intent before treating documentation as complete
 
 ### Never Do
 
@@ -212,11 +213,14 @@ feat(pos): add line item note support
 
 ## Documentation Rules
 
+**Published developer docs:** the site [Event Ops Developer Docs](https://bsileo.github.io/adventure-pos-odoo/) is built from this repository’s MkDocs sources. When pointing people to **existing** reference material—not ad-hoc text invented only in chat—**prefer linking to the relevant page on that site** when a matching topic exists there.
+
 Agents must update:
 
 * docs/setup.md → if setup changes
 * README.md → if architecture changes
 * docs/development-tracking.md → if GitHub Issues / PR workflow for humans changes
+* MkDocs pages under `docs/` → when user-facing or developer-facing technical behavior, workflows, or architecture change (keep source aligned with what ships to the published site)
 * module README if logic becomes complex
 
 ---
