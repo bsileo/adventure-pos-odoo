@@ -1,3 +1,5 @@
+name: adventurepos
+
 services:
   db:
     image: postgres:16

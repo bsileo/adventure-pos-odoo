@@ -10,11 +10,9 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
-if [ -z "$(docker compose ps -q db 2>/dev/null)" ]; then
-  echo "The Postgres (db) container is not running." >&2
-  echo "From the repo root:  docker compose up -d" >&2
-  exit 1
-fi
+# Do not pre-check "docker compose ps -q db". If the stack was started from Windows
+# (PowerShell) and this script runs from WSL, Compose may not list the same project,
+# but "docker compose exec" can still work. Readiness is checked below.
 
 # pg_isready checks the server is accepting connections (no password; avoids .env CRLF issues with psql).
 # Cold start on Docker Desktop + bind mounts (e.g. WSL on /mnt/c) can take well over 60s.

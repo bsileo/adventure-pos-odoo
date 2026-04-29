@@ -186,7 +186,15 @@ Postgres creates an empty database named **`odoo`**. The Odoo container connects
 make init-db
 ```
 
-Or the same command without `make`:
+**Windows (no `make`, or to match the same Docker context as PowerShell):** from the repo in PowerShell:
+
+```powershell
+pwsh -File .\scripts\odoo-init-db.ps1
+```
+
+If you start `docker compose up` in **PowerShell** and run **`make init-db` only in WSL**, Compose may not see the same project; use the PowerShell command above, or run `bash ./scripts/odoo-init-db.sh` from **Git Bash** in the same Windows session.
+
+Or the same command without `make` (one long line; set password to match your `.env`):
 
 ```bash
 docker compose exec odoo odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo -d odoo -i base --stop-after-init
