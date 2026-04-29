@@ -6,14 +6,17 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//list/header" position="inside">
-                <button name="action_adventure_pos_add_to_pos"
-                        type="object"
-                        string="Add to POS"
-                        class="btn-primary"
-                        groups="point_of_sale.group_pos_manager"
-                        invisible="not context.get('adventure_pos_catalog')"
-                        data-hotkey="y"/>
+            <!-- Odoo 19: core product list has no <header>; insert before first column -->
+            <xpath expr="//field[@name='product_variant_count']" position="before">
+                <header>
+                    <button name="action_adventure_pos_add_to_pos"
+                            type="object"
+                            string="Add to POS"
+                            class="btn-primary"
+                            groups="point_of_sale.group_pos_manager"
+                            invisible="not context.get('adventure_pos_catalog')"
+                            data-hotkey="y"/>
+                </header>
             </xpath>
             <xpath expr="//field[@name='categ_id']" position="after">
                 <field name="available_in_pos" optional="show" groups="point_of_sale.group_pos_manager"
@@ -84,7 +87,7 @@
         <field name="name">Add to POS</field>
         <field name="model_id" ref="product.model_product_template"/>
         <field name="state">code</field>
-        <field name="groups_id" eval="[(4, ref('point_of_sale.group_pos_manager'))]"/>
+        <field name="group_ids" eval="[(4, ref('point_of_sale.group_pos_manager'))]"/>
         <field name="binding_model_id" ref="product.model_product_template"/>
         <field name="binding_view_types">list</field>
         <field name="code">
