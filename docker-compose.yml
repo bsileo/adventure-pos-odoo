@@ -1,3 +1,5 @@
+name: adventurepos
+
 services:
   db:
     image: postgres:16
@@ -13,8 +15,7 @@ services:
 
   odoo:
     build: .
-    image: adventure-pos-odoo:18.0
-    restart: unless-stopped
+    image: adventure-pos-odoo:19.0
     depends_on:
       - db
     environment:

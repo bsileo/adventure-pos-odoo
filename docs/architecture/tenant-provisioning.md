@@ -141,7 +141,7 @@ Exact project layout (separate Odoo.sh projects for master vs tenants, or one pr
 
 - Deploy new **code** (Git tag / branch build) to the tenant’s Odoo instance.
 - **Upgrade modules** that changed schema or data: Apps → Upgrade, or `odoo -d <database> -u <module> --stop-after-init` as in [`docs/agent-rules.md`](../agent-rules.md) (module upgrade section).
-- Keep custom module versions in Odoo-style **`18.0.x.y.z`** format, and use the final segment as the quick in-app dev-change counter.
+- Keep custom module versions in Odoo-style **`19.0.x.y.z`** format, and use the final segment as the quick in-app dev-change counter.
 - Bump **`version`** in `__manifest__.py` when upgrades are required so environments stay auditable.
 
 ### 7.2 Ordering

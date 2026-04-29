@@ -1,8 +1,11 @@
 # Build MkDocs Material on PRs and pushes to main/develop.
 # Publish to GitHub Pages only on push to develop (pre-production: live site mirrors develop).
 #
-# Repo admin — enable GitHub Pages:
+# Repo admin — enable GitHub Pages (required or deploy fails with HTTP 404):
 #   Settings → Pages → Build and deployment → Source: GitHub Actions
+#   https://github.com/OWNER/REPO/settings/pages
+# If Source is still "Deploy from a branch", GitHub has no Actions-based Pages deployment
+# and actions/deploy-pages will return Not Found (404).
 # (Not the legacy "Deploy from a branch" unless you intentionally switch.)
 #
 # TODO (production docs): When the live site should track `main` instead of (or in addition to)
@@ -38,10 +41,10 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -56,7 +59,7 @@ jobs:
       # Upload only when we will deploy (develop push), so deploy job can use the artifact.
       - name: Upload Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
@@ -73,4 +76,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

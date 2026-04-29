@@ -126,7 +126,7 @@ After **Python model changes** (new fields, field definitions, or other schema-r
 
 * **Restarting Odoo only** does not add columns or apply module data; skipping an upgrade can surface as HTTP 500 with `UndefinedColumn` (or similar) when SQL selects fields the database never received.
 * Tell the human (or note in the PR) to **upgrade the module**: for example **Apps** → show installed modules → open the module → **Upgrade**, or from Docker: `odoo -d <database> -u <module> --stop-after-init` (then start the service as usual).
-* Use Odoo-style versions for custom modules: **`18.0.x.y.z`**.
+* Use Odoo-style versions for custom modules: **`19.0.x.y.z`**.
 * Treat the final segment (`z`) as the quick in-app dev-change counter: increment it for small custom-module updates so the Odoo Apps UI can be used to cross-check what code a database has loaded.
 * Bump **`version` in `__manifest__.py`** when a change requires an upgrade so environments can spot drift; for small additive custom-module changes, prefer incrementing the final segment.
 

@@ -59,7 +59,7 @@ Create:
 Add:
 
 OPENAI_API_KEY=
-ODOO_VERSION=18.0
+ODOO_VERSION=19.0
 POSTGRES_DB=odoo
 POSTGRES_USER=odoo
 POSTGRES_PASSWORD=change_me_local_dev
@@ -86,7 +86,7 @@ services:
       - "5432:5432"
 
   odoo:
-    image: odoo:18.0
+    image: odoo:19.0
     depends_on:
       - db
     environment:
@@ -242,6 +242,7 @@ You should now have:
 * Do NOT store secrets in repo
 * Do NOT modify Odoo core
 * Keep all logic in /addons
+* Third-party App Store themes/modules: match Odoo **19.0** and place extracted modules directly under `addons/` — see [`addons/README.md`](../addons/README.md)
 
 ---
 
