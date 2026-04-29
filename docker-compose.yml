@@ -3,6 +3,7 @@ name: adventurepos
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-odoo}
       POSTGRES_USER: ${POSTGRES_USER:-odoo}
@@ -30,4 +31,6 @@ services:
       - ./addons:/mnt/extra-addons
 
 volumes:
+  # Stable name for the shared sandbox; override with POSTGRES_VOLUME_NAME in `.env` for local multi-clone setups.
   postgres_data:
+    name: ${POSTGRES_VOLUME_NAME:-adventurepos-sandbox-postgres}

@@ -10,7 +10,7 @@ Custom Odoo 19 stack for retail POS, inventory, and related modules. Custom code
 
 1. Copy `.env.example` to `.env` and set variables as needed.
 2. Start services: `docker compose up -d` (or `make up`).
-3. **Once**, initialize the default DB: `make init-db` (macOS/Linux/WSL with `make`), or on **Windows** without `make`: `pwsh -File .\scripts\odoo-init-db.ps1` (uses Git Bash to run the same script as `make`). Avoid running `make init-db` from **WSL** if you started the stack in **PowerShell** — they can use different Docker contexts; use the PowerShell script or Git Bash from the repo on Windows instead.
+3. **Once**, initialize the default DB: `make init-db` (installs `base` **without** Odoo demonstration/sample data; avoids HTTP 500 until `base` is installed).
 4. The Postgres database now persists across `docker compose down` / `up`. To intentionally wipe and recreate local dev data, run `make reset-db`.
 5. Open [http://localhost:8069](http://localhost:8069) and sign in; install **Adventure Base** from Apps if needed.
 

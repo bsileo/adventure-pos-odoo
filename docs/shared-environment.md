@@ -242,9 +242,26 @@ From the repo root:
 docker compose up -d
 ```
 
-First-time DB init (if `/` returns 500): see [Makefile](Makefile) `init-db` — run the `docker compose exec odoo odoo ... -i base --stop-after-init` line with **`--db_password`** matching **`.env`**.
+First-time DB init (if `/` returns 500): see [Makefile](Makefile) `init-db` (uses **`--without-demo=all`**, no Odoo sample data). Or run the same `odoo ... -i base --without-demo=all --stop-after-init` command with **`--db_password`** matching **`.env`**. Creating a DB via the **Manage databases** web UI is separate—leave **Load demonstration data** unchecked if you want the same behavior.
 
 Then open `http://EXTERNAL_IP:8069`, install **Adventure Base** / **Adventure POS** per [developer-onboarding.md](developer-onboarding.md).
+
+### Postgres persistence (VM restarts and deploys)
+
+- **Data directory** is a Docker **named volume** whose default name is **`adventurepos-sandbox-postgres`** (see [docker-compose.yml](../docker-compose.yml)). It lives on the VM disk with the Docker data root, **not** inside the git tree.
+- **`restart: unless-stopped`** on **`db`** and **`odoo`** brings containers back after a **VM reboot** once Docker is running.
+- **Stopping the GCP instance** does not delete Docker volumes. **Nor does** `docker compose up -d` (as in the deploy workflow). Data is lost only if someone removes the volume on purpose (e.g. **`docker compose down -v`**, **`docker volume rm`**, or a destroyed disk).
+- **Do not** run **`docker compose down -v`** on the sandbox unless you intend to wipe the database.
+- **Optional:** set **`POSTGRES_VOLUME_NAME`** in **`.env`** only when you need a different volume (e.g. multiple local clones); on the shared sandbox, leave it unset so everyone uses the same stable name.
+
+**One-time migration (existing sandbox only):** If the VM already had data in an older project-named volume (e.g. `adventure-pos-odoo_postgres_data`) and after this change you see an **empty** Odoo DB, copy the old volume into the new name once (adjust names from `docker volume ls`):
+
+```bash
+docker compose down
+docker volume create adventurepos-sandbox-postgres
+docker run --rm -v adventure-pos-odoo_postgres_data:/from -v adventurepos-sandbox-postgres:/to alpine cp -a /from/. /to/
+docker compose up -d
+```
 
 **Note:** Hardening (`docker-compose.server.yml`, internal-only Postgres, TLS) is a follow-up in-repo task; the steps above match today’s single [docker-compose.yml](docker-compose.yml).
 
