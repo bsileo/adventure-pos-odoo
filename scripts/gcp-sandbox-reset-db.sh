@@ -41,4 +41,10 @@ EOF
   fi
 fi
 
+# Older clones used the directory name as the Compose project (e.g. adventure-pos-odoo).
+# compose.yml now sets `name: adventurepos`, so `docker compose down` alone does not
+# stop those containers: Postgres stays on 127.0.0.1:5432 and the volume stays "in use".
+echo "Stopping any leftover stack from project name adventure-pos-odoo..."
+docker compose -p adventure-pos-odoo down --volumes --remove-orphans 2>/dev/null || true
+
 exec bash "$ROOT_DIR/scripts/odoo-reset-db.sh" --yes
