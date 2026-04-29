@@ -1,4 +1,4 @@
-# Dive Shop 360 → Odoo 18 / Adventure — mapping matrix
+# Dive Shop 360 → Odoo 19 / Adventure — mapping matrix
 
 **Status:** Template — one row per source object or report column group.
 

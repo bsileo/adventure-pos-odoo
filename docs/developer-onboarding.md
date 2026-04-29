@@ -1,6 +1,6 @@
 # Developer onboarding — Adventure POS (Cursor)
 
-Step-by-step setup for a new developer using **[Cursor](https://cursor.com)** as the IDE. You will run **Odoo 18** and **PostgreSQL** with Docker, work from a local clone in Cursor, and keep secrets (especially **`.env`**) off git and out of shared AI transcripts where possible.
+Step-by-step setup for a new developer using **[Cursor](https://cursor.com)** as the IDE. You will run **Odoo 19** and **PostgreSQL** with Docker, work from a local clone in Cursor, and keep secrets (especially **`.env`**) off git and out of shared AI transcripts where possible.
 
 If your laptop is resource-constrained and you want Docker, Odoo, and Postgres to run on a **developer-owned GCP VM** instead, use [remote-development.md](remote-development.md). That path is designed for **Cursor Remote SSH** and keeps the shared sandbox separate.
 
@@ -160,7 +160,7 @@ Always open the terminal **in the repo root** (Cursor usually does this for new 
    docker compose ps
    ```
 
-You should see **`db`** (Postgres 16) and **`odoo`** (`odoo:18.0`).
+You should see **`db`** (Postgres 16) and **`odoo`** (`adventure-pos-odoo:19.0` built from `odoo:19.0`).
 
 **Ports:** **8069** (Odoo), **5432** (Postgres on the host). If something else is using them, stop that process or change ports with the team.
 
@@ -210,6 +210,8 @@ To confirm in logs: `docker compose logs odoo` should no longer show `Database o
 **Optional — extra database via the UI:** If you prefer a separate DB (e.g. `adventure_dev`), use **Manage databases** to create it; that flow sets master password and admin user in the browser. The default Postgres DB name in `docker-compose.yml` is still **`odoo`** unless you change team defaults.
 
 Custom addons: **`./addons`** in the repo → **`/mnt/extra-addons`** in the container. After Python/manifest changes, restart Odoo or **upgrade** the module from the UI.
+
+**Odoo App Store themes or other vendor modules:** match the listing’s Odoo version to this project (**19.0** today — see [`Dockerfile`](../Dockerfile)). Installation layout and steps: **[addons/README.md](../addons/README.md)**.
 
 The local Compose Postgres data persists in a Docker volume, so `docker compose down` no longer wipes the Odoo database by default. If you intentionally want a clean local database, run **`make reset-db`** to remove the Compose volume, restart the stack, and reinstall `base`.
 

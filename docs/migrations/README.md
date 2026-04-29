@@ -1,6 +1,6 @@
 # Migrations
 
-Documentation for moving customers from external systems into Adventure POS (Odoo 18).
+Documentation for moving customers from external systems into Adventure POS (Odoo 19).
 
 ## Dive Shop 360
 

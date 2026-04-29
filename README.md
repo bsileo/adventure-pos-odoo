@@ -1,6 +1,6 @@
 # Adventure POS (Odoo)
 
-Custom Odoo 18 stack for retail POS, inventory, and related modules. Custom code lives under `addons/`.
+Custom Odoo 19 stack for retail POS, inventory, and related modules. Custom code lives under `addons/`.
 
 ## Quick start
 
@@ -44,7 +44,7 @@ If the **Documentation** workflow’s deploy job fails with **HTTP 404** / “Fa
 ## Layout
 
 - `.github/` — Issue & PR templates; [deploy-gcp-sandbox workflow](.github/workflows/deploy-gcp-sandbox.yml) (push to `develop`); [documentation workflow](.github/workflows/docs.yml) (MkDocs build; Pages deploy from `develop`)
-- `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports)
+- `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, planned: inventory, customers, purchase, reports); third-party App Store modules: [addons/README.md](addons/README.md)
 - `config/` — Tooling config (e.g. OpenClaw)
 - `docs/` — Setup and agent guidelines; [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md); [FareHarbor booking sync (draft)](docs/integrations/fareharbor-pos-sync.md); [migrations (e.g. Dive Shop 360)](docs/migrations/README.md); [shared environment](docs/shared-environment.md); [sandbox deploy from Cursor](docs/sandbox-cursor-to-deploy.md)
 - `scripts/` — Helper scripts (e.g. [gcp-sandbox-vm.ps1](scripts/gcp-sandbox-vm.ps1), [gcp-sandbox-reset-db.ps1](scripts/gcp-sandbox-reset-db.ps1) / [gcp-sandbox-reset-db.sh](scripts/gcp-sandbox-reset-db.sh) for shared sandbox DB wipe; [remote-dev.ps1](scripts/remote-dev.ps1) / [remote-dev.sh](scripts/remote-dev.sh) for developer-owned remote VMs)
