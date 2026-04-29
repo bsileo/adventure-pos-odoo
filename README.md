@@ -22,7 +22,9 @@ Follow the branching and pull request rules in [CONTRIBUTING.md](CONTRIBUTING.md
 
 ## Documentation site (MkDocs Material)
 
-Markdown under [`docs/`](docs/) is published as **Event Ops Developer Docs** with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/). **Pre-production:** pushes to **`develop`** update [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) via [`.github/workflows/docs.yml`](.github/workflows/docs.yml). Pushes to **`main`** and pull requests targeting `main` or `develop` run a strict build only (no deploy from `main` until you change the workflow).
+**Online docs:** [Event Ops Developer Docs](https://bsileo.github.io/adventure-pos-odoo/) · **Repository:** [bsileo/adventure-pos-odoo](https://github.com/bsileo/adventure-pos-odoo).
+
+Markdown under [`docs/`](docs/) is built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/). **Pre-production:** pushes to **`develop`** update [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) via [`.github/workflows/docs.yml`](.github/workflows/docs.yml). Pushes to **`main`** and pull requests targeting `main` or `develop` run a strict build only (no deploy from `main` until you change the workflow).
 
 **Add or edit docs:** edit files under `docs/` (and add new pages to the `nav` section in [`mkdocs.yml`](mkdocs.yml) if you want them in the sidebar).
 
