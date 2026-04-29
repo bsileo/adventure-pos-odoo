@@ -1,2 +1,5 @@
 # Bash scripts: CRLF breaks `set -euo pipefail` under Git Bash / WSL.
 *.sh text eol=lf
+# env files: CRLF in POSTGRES_PASSWORD breaks Postgres auth in containers.
+.env.example text eol=lf
+
