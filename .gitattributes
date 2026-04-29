@@ -1,0 +1,2 @@
+# Bash scripts: CRLF breaks `set -euo pipefail` under Git Bash / WSL.
+*.sh text eol=lf
