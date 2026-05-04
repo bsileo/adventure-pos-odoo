@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="adventure_rental.RentalConfigPopup">
+        <Dialog title="props.product?.display_name || props.product?.name || 'Rental Reservation'" size="'lg'">
+            <div class="adventure-rental-popup">
+                <div t-if="state.error" class="alert alert-danger mb-3" role="alert">
+                    <t t-esc="state.error"/>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Customer</label>
+                        <input class="form-control" type="text" t-model="state.customer" placeholder="POS customer"/>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">Quantity</label>
+                        <input class="form-control" type="number" min="1" t-model="state.quantity"/>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">Deposit</label>
+                        <input class="form-control" type="number" min="0" step="0.01" t-model="state.deposit"/>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Pickup</label>
+                        <input class="form-control" type="datetime-local" t-model="state.pickupDate" t-on-change="checkAvailability"/>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Return</label>
+                        <input class="form-control" type="datetime-local" t-model="state.returnDate" t-on-change="checkAvailability"/>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Gear Preferences</label>
+                        <input class="form-control" type="text" t-model="state.preferences" placeholder="Size, configuration, notes"/>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <span t-attf-class="badge text-bg-{{ state.availability === 'available' ? 'success' : 'danger' }}">
+                        <t t-esc="state.availability"/>
+                    </span>
+                    <span class="badge text-bg-info">availability check</span>
+                    <span class="badge text-bg-warning">deposit rule</span>
+                </div>
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-secondary" t-on-click="cancel">Cancel</button>
+                <button class="btn btn-outline-primary" t-on-click="checkAvailability">Check</button>
+                <button class="btn btn-primary" t-on-click="confirm">Add Rental</button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

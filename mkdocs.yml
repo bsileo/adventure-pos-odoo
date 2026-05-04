@@ -42,6 +42,7 @@ nav:
       - Remote development: remote-development.md
       - Shared environment: shared-environment.md
       - Sandbox Cursor to deploy: sandbox-cursor-to-deploy.md
+      - Development seed data: seed-data.md
       - Development tracking: development-tracking.md
       - Agent rules: agent-rules.md
   - Architecture:

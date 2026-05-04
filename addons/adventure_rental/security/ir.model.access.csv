@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_adventure_rental_asset_user,adventure.rental.asset user,model_adventure_rental_asset,base.group_user,1,1,1,1
+access_adventure_rental_reservation_user,adventure.rental.reservation user,model_adventure_rental_reservation,base.group_user,1,1,1,1
+access_adventure_rental_line_user,adventure.rental.line user,model_adventure_rental_line,base.group_user,1,1,1,1
+access_adventure_rental_package_template_user,adventure.rental.package.template user,model_adventure_rental_package_template,base.group_user,1,1,1,1
+access_adventure_rental_condition_log_user,adventure.rental.condition.log user,model_adventure_rental_condition_log,base.group_user,1,1,1,1
+access_adventure_rental_fee_rule_user,adventure.rental.fee.rule user,model_adventure_rental_fee_rule,base.group_user,1,1,1,1
+access_adventure_rental_maintenance_event_user,adventure.rental.maintenance.event user,model_adventure_rental_maintenance_event,base.group_user,1,1,1,1
