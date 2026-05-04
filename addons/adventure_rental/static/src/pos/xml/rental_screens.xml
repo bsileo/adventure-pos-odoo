@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="adventure_rental.PickupScreen">
+        <div class="screen adventure-rental-screen h-100 bg-100">
+            <div class="screen-content d-flex flex-column h-100">
+                <div class="control-panel d-flex align-items-center gap-2 p-2 border-bottom">
+                    <h2 class="h4 m-0">Pickup</h2>
+                </div>
+                <div class="adventure-rental-columns flex-grow-1">
+                    <aside class="adventure-rental-pane border-end">
+                        <h3 class="h6 text-uppercase text-muted">Today</h3>
+                        <t t-foreach="state.reservations" t-as="reservation" t-key="reservation.id">
+                            <button t-attf-class="btn w-100 text-start mb-2 {{ reservation.id === state.selectedId ? 'btn-primary' : 'btn-light' }}"
+                                    t-on-click="() => this.select(reservation)">
+                                <span class="d-block fw-semibold" t-esc="reservation.customer"/>
+                                <small t-esc="reservation.product"/>
+                            </button>
+                        </t>
+                    </aside>
+                    <main class="adventure-rental-pane">
+                        <div t-if="selected" class="h-100 d-flex flex-column gap-3">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start gap-2">
+                                    <div>
+                                        <h3 class="h5 mb-1" t-esc="selected.product"/>
+                                        <div class="text-muted" t-esc="selected.id"/>
+                                    </div>
+                                    <span t-attf-class="badge text-bg-{{ stateClass(state.status) }}" t-esc="state.status"/>
+                                </div>
+                                <div class="mt-2">
+                                    <span t-esc="selected.customer"/>
+                                    <span class="text-muted mx-1">/</span>
+                                    <span>Qty <t t-esc="selected.qty"/></span>
+                                </div>
+                            </div>
+                            <div class="adventure-scan-area border rounded p-3">
+                                <label class="form-label">Scan Gear</label>
+                                <input class="form-control form-control-lg"
+                                       autofocus="autofocus"
+                                       t-ref="scanInput"
+                                       placeholder="Ready for scanner"
+                                       t-model="state.scannedAsset"
+                                       t-on-input="onScan"/>
+                            </div>
+                            <button class="btn btn-success btn-lg mt-auto" t-on-click="completeCheckout">
+                                Complete Checkout
+                            </button>
+                        </div>
+                    </main>
+                    <aside class="adventure-rental-pane border-start">
+                        <h3 class="h6 text-uppercase text-muted">Requirements</h3>
+                        <t t-if="selected">
+                            <t t-foreach="selected.requirements" t-as="requirement" t-key="requirement">
+                                <div class="d-flex align-items-center gap-2 py-2 border-bottom">
+                                    <i class="fa fa-check-circle text-success"/>
+                                    <span t-esc="requirement"/>
+                                </div>
+                            </t>
+                            <div class="alert alert-info mt-3 mb-0">Inspection and availability are validated before checkout.</div>
+                        </t>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="adventure_rental.ReturnScreen">
+        <div class="screen adventure-rental-screen h-100 bg-100">
+            <div class="screen-content d-flex flex-column h-100">
+                <div class="control-panel d-flex align-items-center gap-2 p-2 border-bottom">
+                    <h2 class="h4 m-0">Return</h2>
+                </div>
+                <div class="adventure-rental-columns flex-grow-1">
+                    <aside class="adventure-rental-pane border-end">
+                        <h3 class="h6 text-uppercase text-muted">Active Rentals</h3>
+                        <t t-foreach="state.rentals" t-as="rental" t-key="rental.id">
+                            <button t-attf-class="btn w-100 text-start mb-2 {{ rental.id === state.selectedId ? 'btn-primary' : 'btn-light' }}"
+                                    t-on-click="() => this.select(rental)">
+                                <span class="d-block fw-semibold" t-esc="rental.customer"/>
+                                <small>
+                                    <t t-esc="rental.asset"/>
+                                    <span class="text-muted"> / </span>
+                                    <t t-esc="rental.state"/>
+                                </small>
+                            </button>
+                        </t>
+                    </aside>
+                    <main class="adventure-rental-pane">
+                        <div t-if="selected" class="h-100 d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div>
+                                    <h3 class="h5 mb-1" t-esc="selected.product"/>
+                                    <div class="text-muted" t-esc="selected.id"/>
+                                </div>
+                                <span t-attf-class="badge text-bg-{{ stateClass(state.condition) }}" t-esc="state.condition"/>
+                            </div>
+                            <div class="adventure-scan-area border rounded p-3">
+                                <label class="form-label">Scan Returned Gear</label>
+                                <input class="form-control form-control-lg"
+                                       autofocus="autofocus"
+                                       t-ref="scanInput"
+                                       placeholder="Ready for scanner"
+                                       t-model="state.scannedAsset"
+                                       t-on-input="onScan"/>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Condition</label>
+                                    <select class="form-select" t-model="state.condition">
+                                        <option value="returned">Returned</option>
+                                        <option value="damaged">Damaged</option>
+                                        <option value="maintenance_due">Maintenance Due</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">Route</label>
+                                    <select class="form-select" t-model="state.route">
+                                        <option value="available">Available</option>
+                                        <option value="cleaning">Cleaning</option>
+                                        <option value="repair">Repair</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-lg mt-auto" t-on-click="closeRental">
+                                Charge + Close
+                            </button>
+                        </div>
+                    </main>
+                    <aside class="adventure-rental-pane border-start">
+                        <h3 class="h6 text-uppercase text-muted">Fees</h3>
+                        <t t-if="selected">
+                            <t t-foreach="selected.fees" t-as="fee" t-key="fee.label">
+                                <div class="d-flex justify-content-between py-2 border-bottom">
+                                    <span t-esc="fee.label"/>
+                                    <span>$<t t-esc="fee.amount"/></span>
+                                </div>
+                            </t>
+                            <div class="d-flex justify-content-between fw-semibold mt-3">
+                                <span>Total</span>
+                                <span>$<t t-esc="feesTotal"/></span>
+                            </div>
+                            <div class="alert alert-warning mt-3 mb-0">Late, damage, and fill fees are added to the POS order before payment.</div>
+                        </t>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

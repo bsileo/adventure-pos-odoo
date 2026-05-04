@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="adventure_rental.RentalMode">
+        <div class="screen adventure-rental-screen h-100 bg-100">
+            <div class="screen-content d-flex flex-column h-100">
+                <div class="control-panel d-flex align-items-center justify-content-between gap-2 p-2 border-bottom">
+                    <h2 class="h4 m-0">Rental</h2>
+                    <button class="btn btn-primary btn-lg" t-on-click="openRentalReservation">
+                        <i class="fa fa-calendar me-1" role="img" aria-label="Rental" title="Rental"/>
+                        New Rental
+                    </button>
+                </div>
+                <div class="adventure-rental-columns flex-grow-1">
+                    <aside class="adventure-rental-pane border-end">
+                        <h3 class="h6 text-uppercase text-muted">Upcoming</h3>
+                        <t t-foreach="reservations" t-as="reservation" t-key="reservation.id">
+                            <div class="btn btn-light w-100 text-start mb-2 pe-none">
+                                <span class="d-block fw-semibold" t-esc="reservation.customer"/>
+                                <small t-esc="reservation.product"/>
+                            </div>
+                        </t>
+                    </aside>
+                    <main class="adventure-rental-pane">
+                        <div class="h-100 d-flex flex-column gap-3">
+                            <div>
+                                <h3 class="h5 mb-1">Reservation Workflow</h3>
+                                <div class="text-muted">Configure dates, customer, quantity, deposit, and rental notes while preserving the active POS order.</div>
+                            </div>
+                            <button class="btn btn-primary btn-lg align-self-start" t-on-click="openRentalReservation">
+                                Add Rental to Current Order
+                            </button>
+                        </div>
+                    </main>
+                    <aside class="adventure-rental-pane border-start">
+                        <h3 class="h6 text-uppercase text-muted">Checks</h3>
+                        <div class="d-flex align-items-center gap-2 py-2 border-bottom">
+                            <i class="fa fa-check-circle text-success"/>
+                            <span>Availability</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 py-2 border-bottom">
+                            <i class="fa fa-check-circle text-success"/>
+                            <span>Deposit</span>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

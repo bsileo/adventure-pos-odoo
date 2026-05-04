@@ -1,0 +1,37 @@
+.pos {
+    .adventure-rental-popup {
+        max-width: map-get($container-max-widths, lg);
+    }
+
+    .adventure-rental-screen {
+        .adventure-rental-columns {
+            display: grid;
+            grid-template-columns: minmax(16rem, 1fr) minmax(24rem, 2fr) minmax(18rem, 1fr);
+            min-height: 0;
+        }
+
+        .adventure-rental-pane {
+            min-width: 0;
+            overflow: auto;
+            padding: map-get($spacers, 3);
+        }
+
+        .adventure-scan-area {
+            background-color: var(--bs-tertiary-bg);
+        }
+    }
+}
+
+@include media-breakpoint-down(lg) {
+    .pos {
+        .adventure-rental-screen {
+            .adventure-rental-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .adventure-rental-pane {
+                border: 0 !important;
+            }
+        }
+    }
+}

@@ -7,8 +7,6 @@ from odoo.exceptions import UserError
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    is_rental = fields.Boolean(string="Is rental", default=False)
-
     pos_vendor_partner_ids = fields.Many2many(
         comodel_name="res.partner",
         relation="product_tmpl_pos_vendor_partner_rel",
