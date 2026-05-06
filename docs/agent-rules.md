@@ -17,6 +17,20 @@ Agents must follow these rules unless explicitly overridden by a human.
 
 ---
 
+## Documentation-first workflow (mandatory)
+
+Before starting a **work stream**—meaning a coherent chunk of work such as a feature, a non-trivial bugfix, a migration slice, an integration, or cross-cutting refactor—agents **must** review repository documentation for guidance so changes align with agreed architecture and do not unknowingly contradict future or design-only specs.
+
+**Always do this first (minimum):**
+
+1. Re-read **this page** (`docs/agent-rules.md`) for module scope, POS/inventory constraints, Git rules, and documentation obligations.
+2. Skim the sections of **[Architecture](architecture/)** and **[Data model](data-model/)** that relate to the task; open **[Integrations](integrations/)** or **[Migrations](migrations/)** pages when the work touches those areas.
+3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
+
+**Humans** should follow the same habit; [Developer onboarding](developer-onboarding.md) points here.
+
+---
+
 ## Project Overview
 
 This repository contains a custom Odoo-based system called **Adventure POS**, focused initially on:
@@ -183,6 +197,7 @@ When modifying POS:
 
 ### Always Do
 
+* **start work streams with the [documentation-first workflow](#documentation-first-workflow-mandatory)** (architecture, data model, integrations/migrations as relevant, and any applicable future design notes)
 * explain major changes before applying
 * make small, incremental edits
 * keep commits focused
@@ -214,6 +229,8 @@ feat(pos): add line item note support
 ## Documentation Rules
 
 **Published developer docs:** the site [Event Ops Developer Docs](https://bsileo.github.io/adventure-pos-odoo/) is built from this repository’s MkDocs sources. When pointing people to **existing** reference material—not ad-hoc text invented only in chat—**prefer linking to the relevant page on that site** when a matching topic exists there.
+
+**Architecture and design plans** (including pages marked **future** or **draft**) live under `docs/architecture/`, `docs/data-model/`, and related folders. They are the shared source of truth for direction; agents must **read them at the start of relevant work streams**, not only when writing end-user docs.
 
 Agents must update:
 

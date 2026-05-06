@@ -20,6 +20,7 @@
 
 ## Rules
 
+- Before starting substantive work, follow the **documentation-first workflow** in [docs/agent-rules.md](docs/agent-rules.md#documentation-first-workflow-mandatory) (architecture, data model, integrations/migrations, and any labeled **future** design notes).
 - Never branch from `main` for feature work.
 - Always branch from `develop` for features and normal bug fixes.
 - Pull requests go to `develop` unless the change is a hotfix or a release.

@@ -4,6 +4,8 @@ Dive Shop 360 may export **certification** and related **training** records (ver
 
 Adventure POS **v1** focuses on retail POS, inventory, and customers (see [agent-rules.md](../agent-rules.md)). Native Odoo may not model every dive-agency field without customization.
 
+**Related (future greenfield design, not migration scope):** a planned **scuba training and scheduling** architecture for operational classes—not the same topic as importing D360 historical rows—is documented in [Scuba training and scheduling (future)](../architecture/scuba-training-scheduling.md). Treat that page as **design-only** until prioritized.
+
 ## Decision options
 
 ### Option 1 — Archive-only (lowest engineering)
