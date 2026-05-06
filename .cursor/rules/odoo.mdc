@@ -10,6 +10,8 @@ alwaysApply: false
 
 Derived from `docs/agent-rules.md`. Custom Odoo system: retail POS, inventory, customers, purchasing, reporting.
 
+**Before starting an Odoo work stream:** follow the [documentation-first workflow](docs/agent-rules.md#documentation-first-workflow-mandatory) (architecture pages, data model, integrations/migrations, and any **future** design notes such as [scuba training](docs/architecture/scuba-training-scheduling.md)).
+
 ## Architecture
 
 - All business logic MUST live in Odoo modules under `/addons/`.

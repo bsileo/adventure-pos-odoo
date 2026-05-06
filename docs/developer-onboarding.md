@@ -4,6 +4,10 @@ Step-by-step setup for a new developer using **[Cursor](https://cursor.com)** as
 
 If your laptop is resource-constrained and you want Docker, Odoo, and Postgres to run on a **developer-owned GCP VM** instead, use [remote-development.md](remote-development.md). That path is designed for **Cursor Remote SSH** and keeps the shared sandbox separate.
 
+### Before you write or change code
+
+Follow the **documentation-first workflow** in [Agent rules — Documentation-first workflow](agent-rules.md#documentation-first-workflow-mandatory): review `docs/agent-rules.md`, then skim relevant pages under [Architecture](architecture/), [Data model](data-model/), and [Integrations](integrations/) or [Migrations](migrations/) so your work matches agreed architecture and does not contradict labeled **future** design specs (example: [Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)).
+
 ---
 
 ## Before you start

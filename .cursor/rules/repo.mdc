@@ -11,7 +11,7 @@ Derived from `docs/agent-rules.md`.
 
 ## Agent behavior
 
-**Always:** explain major changes before applying; small incremental edits; focused commits; update docs when setup or architecture changes. For **feature or behavior changes**, review and update **technical documentation** (MkDocs under `docs/`, setup, architecture notes, module READMEs as appropriate) in the same change train when it affects how the system works or how to operate it; **confirm with the human developers** that doc updates match intent before treating documentation as complete.
+**Always:** at the **start of a work stream** (feature, non-trivial fix, integration, migration slice, or cross-cutting change), **read `docs/agent-rules.md`** and skim **relevant** docs under `docs/architecture/`, `docs/data-model/`, and `docs/integrations/` or `docs/migrations/` as applicable—including pages marked **future** or **draft**—so implementation matches agreed direction; explain major changes before applying; small incremental edits; focused commits; update docs when setup or architecture changes. For **feature or behavior changes**, review and update **technical documentation** (MkDocs under `docs/`, setup, architecture notes, module READMEs as appropriate) in the same change train when it affects how the system works or how to operate it; **confirm with the human developers** that doc updates match intent before treating documentation as complete.
 
 **Never:** large refactors without approval; delete modules or directories; silent breaking schema changes; commit secrets or credentials.
 
@@ -22,6 +22,7 @@ Derived from `docs/agent-rules.md`.
 
 ## Documentation
 
+- Before coding, use the **documentation-first workflow** in [`docs/agent-rules.md`](docs/agent-rules.md#documentation-first-workflow-mandatory) (architecture, data model, integrations/migrations, future design pages).
 - **Published developer docs:** [Event Ops Developer Docs](https://bsileo.github.io/adventure-pos-odoo/) (built from the repo’s MkDocs sources). When surfacing **existing** reference material for developers—not one-off explanations written only in chat—**link to the relevant page on that site** when a matching topic exists there.
 - Update `docs/setup.md` if setup changes.
 - Update `README.md` if architecture changes.

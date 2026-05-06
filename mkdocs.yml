@@ -49,6 +49,7 @@ nav:
       - AdventurePOS vertical module architecture: architecture/adventurepos-vertical-module-architecture.md
       - Master catalog and sync: architecture/master-catalog-and-sync.md
       - Tenant provisioning: architecture/tenant-provisioning.md
+      - Scuba training and scheduling (future): architecture/scuba-training-scheduling.md
   - Data model:
       - Core model: data-model/core-model.md
       - Product catalog: data-model/product-catalog.md
