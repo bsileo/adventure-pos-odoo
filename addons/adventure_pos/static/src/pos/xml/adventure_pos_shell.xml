@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="adventure_pos.NavbarModes"
+       t-inherit="point_of_sale.Navbar"
+       t-inherit-mode="extension">
+        <xpath expr="//div[contains(@class, 'navbar-menu')]" position="after">
+            <div class="adventure-pos-mode-switcher d-flex align-items-center gap-1 ms-2 me-2 flex-shrink-0"
+                 t-if="!ui.isSmall and adventurePOSModes.length">
+                <button t-foreach="adventurePOSModes"
+                        t-as="mode"
+                        t-key="mode.key"
+                        class="adventure-pos-mode-button btn btn-lg btn-light lh-lg"
+                        t-att-class="{'active': mode.key === adventurePOSActiveModeKey}"
+                        t-on-click="() => this.onClickAdventurePOSMode(mode)">
+                    <i t-if="mode.icon" t-attf-class="fa fa-fw {{ mode.icon }} me-1" role="img" t-att-aria-label="mode.label" t-att-title="mode.label"/>
+                    <span t-esc="mode.label"/>
+                </button>
+            </div>
+        </xpath>
+        <xpath expr="//div[contains(@class, 'navbar-menu')]" position="inside">
+            <button t-if="ui.isSmall and adventurePOSModes.length"
+                    class="adventure-pos-mode-button btn btn-lg btn-light lh-lg"
+                    t-att-class="{'active': adventurePOSActiveModeKey !== 'sale'}">
+                <span t-esc="adventurePOSActiveModeKey"/>
+            </button>
+        </xpath>
+    </t>
+
+    <t t-name="adventure_pos.ProductScreenModeWorkspace"
+       t-inherit="point_of_sale.ProductScreen"
+       t-inherit-mode="extension">
+        <xpath expr="//div[contains(@class, 'rightpane')]/div[contains(@class, 'position-relative')]" position="inside">
+            <div t-if="adventurePOSActiveComponent"
+                 class="adventure-pos-workspace position-absolute top-0 start-0 end-0 bottom-0 bg-view overflow-auto">
+                <t t-component="adventurePOSActiveComponent"/>
+            </div>
+        </xpath>
+    </t>
+</templates>

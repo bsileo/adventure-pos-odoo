@@ -21,6 +21,7 @@ shell-db:
 	docker compose exec db psql -U odoo -d odoo
 
 # Initialize Postgres DB named `odoo` with Odoo core (required once after first `up` if you get HTTP 500 on /).
+# Windows: use `pwsh -File .\scripts\odoo-init-db.ps1` if you do not have `make` (or run the same .ps1 from PowerShell).
 init-db:
 	bash ./scripts/odoo-init-db.sh
 

@@ -5,21 +5,38 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
+if ! docker compose version >/dev/null 2>&1; then
+  echo "docker compose is not available. Start Docker and ensure the compose plugin is installed." >&2
+  exit 1
+fi
+
+# Do not pre-check "docker compose ps -q db". If the stack was started from Windows
+# (PowerShell) and this script runs from WSL, Compose may not list the same project,
+# but "docker compose exec" can still work. Readiness is checked below.
+
+# pg_isready checks the server is accepting connections (no password; avoids .env CRLF issues with psql).
+# Cold start on Docker Desktop + bind mounts (e.g. WSL on /mnt/c) can take well over 60s.
 wait_for_postgres() {
-  local attempt
-  for attempt in $(seq 1 30); do
-    if docker compose exec -T db sh -lc 'PGPASSWORD="$POSTGRES_PASSWORD" psql -U "$POSTGRES_USER" -d postgres -tAc "SELECT 1"' >/dev/null 2>&1; then
+  local attempt max_attempts=90 sleep_seconds=2
+  for attempt in $(seq 1 "${max_attempts}"); do
+    if docker compose exec -T db sh -lc 'pg_isready -U "${POSTGRES_USER}" -d postgres' >/dev/null 2>&1; then
       return 0
     fi
-    sleep 2
+    sleep "${sleep_seconds}"
   done
 
-  echo "Postgres did not become ready in time." >&2
+  echo "Postgres did not become ready in time (${max_attempts} attempts, ${sleep_seconds}s apart)." >&2
+  echo "--- docker compose ps ---" >&2
+  docker compose ps 2>&1 | sed 's/^/  /' || true
+  echo "--- last db log lines (hint: first boot can be slow; ensure .env has POSTGRES_PASSWORD, Unix LF) ---" >&2
+  docker compose logs --tail=40 db 2>&1 | sed 's/^/  /' || true
+  echo "--- pg_isready (if this fails, Postgres is still starting or misconfigured) ---" >&2
+  docker compose exec -T db sh -lc 'pg_isready -U "${POSTGRES_USER}" -d postgres' 2>&1 | sed 's/^/  /' || true
   exit 1
 }
 
 database_initialized() {
-  docker compose exec -T db sh -lc 'PGPASSWORD="$POSTGRES_PASSWORD" psql -U "$POSTGRES_USER" -d "${POSTGRES_DB:-odoo}" -tAc "SELECT 1 FROM information_schema.tables WHERE table_schema = '\''public'\'' AND table_name = '\''ir_module_module'\''" | grep -q 1' >/dev/null 2>&1
+  docker compose exec -T db sh -lc 'PGPASSWORD="${POSTGRES_PASSWORD}" psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB:-odoo}" -tAc "SELECT 1 FROM information_schema.tables WHERE table_schema = '\''public'\'' AND table_name = '\''ir_module_module'\''" | grep -q 1' >/dev/null 2>&1
 }
 
 initialize_database() {

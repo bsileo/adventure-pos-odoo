@@ -10,6 +10,8 @@ alwaysApply: false
 
 Derived from `docs/agent-rules.md`. Custom Odoo system: retail POS, inventory, customers, purchasing, reporting.
 
+**Before starting an Odoo work stream:** follow the [documentation-first workflow](docs/agent-rules.md#documentation-first-workflow-mandatory) (architecture pages, data model, integrations/migrations, and any **future** design notes such as [scuba training](docs/architecture/scuba-training-scheduling.md)).
+
 ## Architecture
 
 - All business logic MUST live in Odoo modules under `/addons/`.
@@ -38,7 +40,7 @@ Initial modules: `adventure_base`, `adventure_pos`, `adventure_inventory`, `adve
 ## Module upgrade (local dev)
 
 - After **model fields** or module **data/XML** changes, the module must be **upgraded** (`Apps` → Upgrade, or `odoo -u <module> --stop-after-init`); **restart alone** does not migrate the DB and can cause `UndefinedColumn` / HTTP 500.
-- Use Odoo-style versions for custom modules: **`18.0.x.y.z`**.
+- Use Odoo-style versions for custom modules: **`19.0.x.y.z`**.
 - The final segment (`z`) is the quick in-app dev-change counter. Increment it for small custom-module updates so the Odoo Apps UI can be used to cross-check what code a database has loaded.
 - When an upgrade is required for testers or deploys, bump **`version`** in that module’s `__manifest__.py` rather than leaving it unchanged.
 

@@ -103,8 +103,8 @@ The bootstrap script:
 
 If GitHub access is not ready yet, bootstrap prints the VM public key and you can add it in GitHub at:
 
-- **Repo -> Settings -> Deploy keys -> Add deploy key**, or
-- **GitHub user settings -> SSH and GPG keys**
+- **Repo → Settings → Deploy keys → Add deploy key** — enable **Allow write access** so you can `git push` and use Cursor’s remote Git/PR workflow from the VM. The key is still limited to this repository.
+- **GitHub user settings → SSH and GPG keys** — only if you prefer account-level SSH access instead of a deploy key (broader access across repos that user can reach).
 
 The `create` step uses these defaults unless you override them with environment variables:
 
@@ -126,7 +126,7 @@ The `create` step uses these defaults unless you override them with environment 
 
 After bootstrap, SSH back in once if Docker was just installed so the `docker` group takes effect.
 
-If bootstrap cannot clone the repo yet, it will print the VM's GitHub public key. Add that key to GitHub as either a repo deploy key or an SSH key on your user account, then rerun `bootstrap`.
+If bootstrap cannot clone the repo yet, it will print the VM's GitHub public key. Add that key to GitHub as a **deploy key with Allow write access** (recommended) or as an SSH key on your user account, then rerun `bootstrap`.
 
 ## Daily workflow
 
@@ -257,19 +257,15 @@ or:
 bash ./scripts/remote-dev.sh stop
 ```
 
-## Pushing Work From The VM
+## Pushing work from the VM
 
-The remote dev VM uses a **read-only GitHub deploy key** by default. It can clone and pull, but `git push origin ...` from the VM will fail with:
+**Recommended:** Register the VM’s SSH public key as a repo **deploy key** with **Allow write access** checked. You can still clone and pull; you can also `git push` from the VM and use Cursor’s remote source control / branch sync without copying commits through your laptop first. The credential remains scoped to **this repository** only.
 
-```text
-ERROR: The key you are authenticating with has been marked as read only.
-```
+Use **[branch protection](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)** on branches such as `develop` and `main` so pushes from the VM (or anywhere) follow the same review and merge rules you want for the team.
 
-That is intentional. Keep GitHub write credentials on your laptop and push from there.
+### Typical flow (write-enabled deploy key)
 
-Recommended flow when your feature branch work is committed on the VM:
-
-1. On the VM, make sure your work is committed:
+1. On the VM, commit your work:
 
    ```bash
    cd /srv/adventurepos/adventure-pos-odoo
@@ -278,51 +274,50 @@ Recommended flow when your feature branch work is committed on the VM:
    git commit -m "your message"
    ```
 
-2. On your laptop, fetch the VM branch over SSH and push it to GitHub:
-
-   ```powershell
-   .\scripts\remote-dev.ps1 fetch-branch feature/d360-customer-workflow
-   ```
-
-   Or from Bash:
+2. Push your branch and open a PR as you would locally, for example:
 
    ```bash
-   bash ./scripts/remote-dev.sh fetch-branch feature/d360-customer-workflow
+   git push -u origin your-feature-branch
    ```
 
-   The helper creates or updates a local `gcp-dev` Git remote that points at the current VM IP, fetches the branch, creates the same local branch from `FETCH_HEAD`, and pushes it to `origin`.
+3. Open the PR on GitHub (web UI, `gh pr create`, or Cursor’s GitHub integration if signed in).
 
-   If you need to do the same flow manually:
+After the PR is merged, sync both laptop and VM checkouts to `develop` as usual (`git checkout develop`, `git pull`, delete the merged feature branch).
 
-   ```powershell
-   git remote add gcp-dev deploy@adventurepos-dev-brad:/srv/adventurepos/adventure-pos-odoo
-   git fetch gcp-dev feature/d360-customer-workflow
-   git checkout -b feature/d360-customer-workflow FETCH_HEAD
-   git push -u origin feature/d360-customer-workflow
-   ```
+### Optional: read-only deploy key + push from laptop
 
-   If you already added the `gcp-dev` remote earlier, skip `git remote add`.
+If the deploy key does **not** have write access, `git push` from the VM fails with:
 
-3. Open the PR from GitHub as usual.
+```text
+ERROR: The key you are authenticating with has been marked as read only.
+```
 
-After the PR is merged, sync both copies back to `develop`:
+That is stricter for security (a compromised VM cannot push) at the cost of workflow friction. In that case, keep commits on the VM, then on your **laptop** use `fetch-branch` to pull the branch over SSH from the VM and push to `origin`:
 
 ```powershell
-git checkout develop
-git pull origin develop
-git branch -d feature/d360-customer-workflow
+.\scripts\remote-dev.ps1 fetch-branch feature/your-branch
 ```
 
-On the VM:
+Or from Bash:
 
 ```bash
-cd /srv/adventurepos/adventure-pos-odoo
-git checkout develop
-git pull origin develop
-git branch -d feature/d360-customer-workflow
+bash ./scripts/remote-dev.sh fetch-branch feature/your-branch
 ```
 
-Do **not** make the VM deploy key writable unless there is a specific reason and the security tradeoff is accepted.
+The helper creates or updates a local `gcp-dev` remote pointing at the VM, fetches the branch, checks it out locally, and pushes to `origin`.
+
+If you need the same flow manually (replace host, user, path, and branch):
+
+```powershell
+git remote add gcp-dev deploy@adventurepos-dev-yourname:/srv/adventurepos/adventure-pos-odoo
+git fetch gcp-dev feature/your-branch
+git checkout -b feature/your-branch FETCH_HEAD
+git push -u origin feature/your-branch
+```
+
+If `gcp-dev` already exists, skip `git remote add`.
+
+After the PR is merged, sync both environments to `develop` and delete the merged feature branch on each machine you use.
 
 ## Security and data notes
 
