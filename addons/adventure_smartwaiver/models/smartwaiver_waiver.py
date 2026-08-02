@@ -137,13 +137,10 @@ class SmartwaiverWaiver(models.Model):
     )
     display_name = fields.Char(compute="_compute_display_name", store=True)
 
-    _sql_constraints = [
-        (
-            "smartwaiver_waiver_id_uniq",
-            "unique(waiver_id)",
-            "Smartwaiver waiver ID must be unique.",
-        ),
-    ]
+    _waiver_id_uniq = models.Constraint(
+        "UNIQUE(waiver_id)",
+        "Smartwaiver waiver ID must be unique.",
+    )
 
     @api.depends("title", "first_name", "last_name", "waiver_id")
     def _compute_display_name(self):
