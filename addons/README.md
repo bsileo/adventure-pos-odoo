@@ -21,6 +21,10 @@ This directory is bind-mounted to **`/mnt/extra-addons`** in the Odoo container 
 
 Confirm your license allows committing vendor code to your git repo and deploying from CI if you track it in source control.
 
+## Optional Adventure integrations
+
+First-party optional apps under this tree (for example `adventure_smartwaiver`, `adventure_d360_migration`) are enabled **per tenant** by installing the module on that database. Leave them uninstalled when the shop does not use the feature. See [Smartwaiver waiver sync](../docs/integrations/smartwaiver.md).
+
 ## Updates
 
 When the vendor publishes a new ZIP, replace the module directory (or merge changes), bump/review `__manifest__.py` version if needed, restart Odoo, and **Upgrade** the module from **Apps**.

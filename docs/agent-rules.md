@@ -72,6 +72,11 @@ Initial modules:
 * adventure_purchase
 * adventure_reports
 
+Optional integration modules (install per tenant when needed):
+
+* adventure_smartwaiver — Smartwaiver signed-waiver sync (see [Smartwaiver waiver sync](integrations/smartwaiver.md))
+* adventure_d360_migration — Dive Shop 360 migration tooling
+
 Future modules (do not implement unless instructed):
 
 * adventure_rental
@@ -80,6 +85,7 @@ Future modules (do not implement unless instructed):
 * adventure_training
 * adventure_trips
 * adventure_multi_store
+* adventure_fareharbor
 
 ---
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_smartwaiver" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.smartwaiver</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Smartwaiver" name="adventure_smartwaiver"
+                     groups="base.group_system">
+                    <block title="Smartwaiver API" name="smartwaiver_api_settings">
+                        <setting string="API key"
+                                 help="Use Settings storage or SMARTWAIVER_API_KEY env var. Never commit secrets.">
+                            <field name="smartwaiver_api_key" password="True"/>
+                        </setting>
+                        <setting string="Enable sync"
+                                 help="When enabled, cron jobs poll waivers and drain the webhook queue.">
+                            <field name="smartwaiver_sync_enabled"/>
+                        </setting>
+                        <setting string="API base URL">
+                            <field name="smartwaiver_base_url" placeholder="https://api.smartwaiver.com"/>
+                        </setting>
+                        <setting string="Template allowlist"
+                                 help="Comma-separated template IDs. Leave empty to accept all templates.">
+                            <field name="smartwaiver_template_ids" placeholder="templateId1,templateId2"/>
+                        </setting>
+                        <setting string="PDF preference">
+                            <field name="smartwaiver_fetch_pdf_default"/>
+                        </setting>
+                        <setting string="Manual sync">
+                            <button name="action_smartwaiver_sync_now"
+                                    type="object"
+                                    string="Sync now"
+                                    class="btn-primary"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

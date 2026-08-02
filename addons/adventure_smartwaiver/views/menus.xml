@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_smartwaiver_root"
+              name="Smartwaiver"
+              groups="adventure_smartwaiver.group_smartwaiver_user"
+              sequence="45"
+              web_icon="adventure_smartwaiver,static/description/icon.png"/>
+
+    <menuitem id="menu_smartwaiver_waivers"
+              name="Waivers"
+              parent="menu_smartwaiver_root"
+              action="action_smartwaiver_waiver"
+              sequence="10"/>
+
+    <menuitem id="menu_smartwaiver_unmatched"
+              name="Unmatched"
+              parent="menu_smartwaiver_root"
+              action="action_smartwaiver_waiver_unmatched"
+              sequence="20"/>
+</odoo>

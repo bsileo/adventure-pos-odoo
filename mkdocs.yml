@@ -55,6 +55,7 @@ nav:
       - Product catalog: data-model/product-catalog.md
   - Integrations:
       - FareHarbor POS sync: integrations/fareharbor-pos-sync.md
+      - Smartwaiver waiver sync: integrations/smartwaiver.md
   - Migrations:
       - Overview: migrations/README.md
       - Catalog strategy (migrated shops): migrations/catalog-strategy-migrated-shops.md

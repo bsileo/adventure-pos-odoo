@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_smartwaiver_waiver_list" model="ir.ui.view">
+        <field name="name">smartwaiver.waiver.list</field>
+        <field name="model">smartwaiver.waiver</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="created_on"/>
+                <field name="title"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="email"/>
+                <field name="partner_id"/>
+                <field name="match_state"/>
+                <field name="match_method"/>
+                <field name="expired"/>
+                <field name="verified"/>
+                <field name="waiver_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_smartwaiver_waiver_form" model="ir.ui.view">
+        <field name="name">smartwaiver.waiver.form</field>
+        <field name="model">smartwaiver.waiver</field>
+        <field name="arch" type="xml">
+            <form string="Smartwaiver waiver">
+                <header>
+                    <button name="action_open_link_wizard"
+                            type="object"
+                            string="Link to customer"
+                            class="btn-primary"/>
+                    <button name="action_unlink_partner"
+                            type="object"
+                            string="Unlink customer"
+                            invisible="not partner_id"/>
+                    <button name="action_rematch"
+                            type="object"
+                            string="Auto-match"
+                            invisible="match_state == 'manual'"/>
+                    <button name="action_fetch_pdf"
+                            type="object"
+                            string="Fetch PDF"
+                            groups="adventure_smartwaiver.group_smartwaiver_manager"/>
+                    <field name="match_state" widget="statusbar"
+                            statusbar_visible="unmatched,ambiguous,matched,manual"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Waiver">
+                            <field name="waiver_id" readonly="1"/>
+                            <field name="template_id" readonly="1"/>
+                            <field name="title" readonly="1"/>
+                            <field name="created_on" readonly="1"/>
+                            <field name="expiration_date" readonly="1"/>
+                            <field name="expired" readonly="1"/>
+                            <field name="verified" readonly="1"/>
+                            <field name="kiosk" readonly="1"/>
+                            <field name="last_sync_at" readonly="1"/>
+                        </group>
+                        <group string="Customer match">
+                            <field name="partner_id"/>
+                            <field name="match_method" readonly="1"/>
+                            <field name="match_notes" readonly="1"/>
+                            <field name="email"/>
+                            <field name="first_name"/>
+                            <field name="middle_name"/>
+                            <field name="last_name"/>
+                            <field name="pdf_attachment_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Participants" name="participants">
+                            <field name="participant_payload" readonly="1"/>
+                        </page>
+                        <page string="Custom fields" name="custom_fields">
+                            <field name="custom_fields" readonly="1"/>
+                        </page>
+                        <page string="Raw" name="raw" groups="base.group_system">
+                            <field name="raw_payload" readonly="1"/>
+                            <field name="email_normalized" readonly="1"/>
+                            <field name="name_normalized" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_smartwaiver_waiver_search" model="ir.ui.view">
+        <field name="name">smartwaiver.waiver.search</field>
+        <field name="model">smartwaiver.waiver</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="waiver_id"/>
+                <field name="email"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="partner_id"/>
+                <field name="title"/>
+                <filter name="filter_unmatched" string="Unmatched"
+                        domain="[('match_state', '=', 'unmatched')]"/>
+                <filter name="filter_ambiguous" string="Ambiguous"
+                        domain="[('match_state', '=', 'ambiguous')]"/>
+                <filter name="filter_matched" string="Matched"
+                        domain="[('match_state', 'in', ('matched', 'manual'))]"/>
+                <filter name="filter_expired" string="Expired"
+                        domain="[('expired', '=', True)]"/>
+                <separator/>
+                <filter name="group_match_state" string="Match state"
+                        context="{'group_by': 'match_state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_smartwaiver_waiver" model="ir.actions.act_window">
+        <field name="name">Waivers</field>
+        <field name="res_model">smartwaiver.waiver</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_smartwaiver_waiver_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Smartwaiver waivers yet.
+            </p>
+            <p>
+                Enable sync in Settings and run Sync now, or wait for the scheduled poll.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_smartwaiver_waiver_unmatched" model="ir.actions.act_window">
+        <field name="name">Unmatched waivers</field>
+        <field name="res_model">smartwaiver.waiver</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('match_state', 'in', ('unmatched', 'ambiguous'))]</field>
+        <field name="context">{'search_default_filter_unmatched': 1}</field>
+    </record>
+</odoo>
