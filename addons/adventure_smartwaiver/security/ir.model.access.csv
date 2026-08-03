@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_smartwaiver_waiver_user,smartwaiver.waiver user,model_smartwaiver_waiver,group_smartwaiver_user,1,1,0,0
-access_smartwaiver_waiver_manager,smartwaiver.waiver manager,model_smartwaiver_waiver,group_smartwaiver_manager,1,1,1,1
-access_smartwaiver_link_wizard_user,smartwaiver.link.wizard user,model_smartwaiver_link_wizard,group_smartwaiver_user,1,1,1,1
-access_smartwaiver_link_wizard_manager,smartwaiver.link.wizard manager,model_smartwaiver_link_wizard,group_smartwaiver_manager,1,1,1,1

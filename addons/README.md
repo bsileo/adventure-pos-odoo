@@ -23,7 +23,7 @@ Confirm your license allows committing vendor code to your git repo and deployin
 
 ## Optional Adventure integrations
 
-First-party optional apps under this tree (for example `adventure_smartwaiver`, `adventure_d360_migration`) are enabled **per tenant** by installing the module on that database. Leave them uninstalled when the shop does not use the feature. See [Smartwaiver waiver sync](../docs/integrations/smartwaiver.md).
+First-party optional apps under this tree (for example `adventure_waiver`, `adventure_smartwaiver`, `adventure_d360_migration`) are enabled **per tenant** by installing the module on that database. Leave them uninstalled when the shop does not use the feature. See [Smartwaiver waiver sync](../docs/integrations/smartwaiver.md) for the waiver domain + provider split.
 
 ## Updates
 

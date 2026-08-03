@@ -8,13 +8,13 @@
             <xpath expr="//form" position="inside">
                 <app string="Smartwaiver" name="adventure_smartwaiver"
                      groups="base.group_system">
-                    <block title="Smartwaiver API" name="smartwaiver_api_settings">
+                    <block title="Smartwaiver provider" name="smartwaiver_api_settings">
                         <setting string="API key"
                                  help="Use Settings storage or SMARTWAIVER_API_KEY env var. Never commit secrets.">
                             <field name="smartwaiver_api_key" password="True"/>
                         </setting>
                         <setting string="Enable sync"
-                                 help="When enabled, cron jobs poll waivers and drain the webhook queue.">
+                                 help="When enabled, cron jobs poll waivers and drain the webhook queue into Adventure Waiver.">
                             <field name="smartwaiver_sync_enabled"/>
                         </setting>
                         <setting string="API base URL">

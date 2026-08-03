@@ -2,7 +2,7 @@
 
 from odoo import fields, models
 
-from .smartwaiver_waiver import (
+from .adventure_waiver import (
     PARAM_API_KEY,
     PARAM_BASE_URL,
     PARAM_ENABLED,
@@ -42,4 +42,4 @@ class ResConfigSettings(models.TransientModel):
 
     def action_smartwaiver_sync_now(self):
         self.ensure_one()
-        return self.env["smartwaiver.waiver"].action_sync_now()
+        return self.env["adventure.waiver"].action_smartwaiver_sync_now()

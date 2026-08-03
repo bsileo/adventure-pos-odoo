@@ -3,12 +3,12 @@
 from odoo import _, fields, models
 
 
-class SmartwaiverLinkWizard(models.TransientModel):
-    _name = "smartwaiver.link.wizard"
-    _description = "Link Smartwaiver waiver to customer"
+class AdventureWaiverLinkWizard(models.TransientModel):
+    _name = "adventure.waiver.link.wizard"
+    _description = "Link waiver to customer"
 
     waiver_id = fields.Many2one(
-        "smartwaiver.waiver",
+        "adventure.waiver",
         required=True,
         ondelete="cascade",
     )

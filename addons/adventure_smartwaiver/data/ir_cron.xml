@@ -2,9 +2,9 @@
 <odoo noupdate="1">
     <record id="ir_cron_smartwaiver_poll" model="ir.cron">
         <field name="name">Smartwaiver: poll signed waivers</field>
-        <field name="model_id" ref="model_smartwaiver_waiver"/>
+        <field name="model_id" ref="adventure_waiver.model_adventure_waiver"/>
         <field name="state">code</field>
-        <field name="code">model.cron_poll_waivers()</field>
+        <field name="code">model.cron_smartwaiver_poll_waivers()</field>
         <field name="interval_number">15</field>
         <field name="interval_type">minutes</field>
         <field name="active">True</field>
@@ -12,9 +12,9 @@
 
     <record id="ir_cron_smartwaiver_webhook_drain" model="ir.cron">
         <field name="name">Smartwaiver: drain webhook queue</field>
-        <field name="model_id" ref="model_smartwaiver_waiver"/>
+        <field name="model_id" ref="adventure_waiver.model_adventure_waiver"/>
         <field name="state">code</field>
-        <field name="code">model.cron_drain_webhook_queue()</field>
+        <field name="code">model.cron_smartwaiver_drain_webhook_queue()</field>
         <field name="interval_number">5</field>
         <field name="interval_type">minutes</field>
         <field name="active">True</field>

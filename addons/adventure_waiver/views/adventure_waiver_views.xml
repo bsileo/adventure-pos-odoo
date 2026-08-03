@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_smartwaiver_waiver_list" model="ir.ui.view">
-        <field name="name">smartwaiver.waiver.list</field>
-        <field name="model">smartwaiver.waiver</field>
+    <record id="view_adventure_waiver_list" model="ir.ui.view">
+        <field name="name">adventure.waiver.list</field>
+        <field name="model">adventure.waiver</field>
         <field name="arch" type="xml">
             <list>
                 <field name="created_on"/>
+                <field name="provider"/>
                 <field name="title"/>
                 <field name="first_name"/>
                 <field name="last_name"/>
@@ -15,16 +16,16 @@
                 <field name="match_method"/>
                 <field name="expired"/>
                 <field name="verified"/>
-                <field name="waiver_id"/>
+                <field name="external_id"/>
             </list>
         </field>
     </record>
 
-    <record id="view_smartwaiver_waiver_form" model="ir.ui.view">
-        <field name="name">smartwaiver.waiver.form</field>
-        <field name="model">smartwaiver.waiver</field>
+    <record id="view_adventure_waiver_form" model="ir.ui.view">
+        <field name="name">adventure.waiver.form</field>
+        <field name="model">adventure.waiver</field>
         <field name="arch" type="xml">
-            <form string="Smartwaiver waiver">
+            <form string="Waiver">
                 <header>
                     <button name="action_open_link_wizard"
                             type="object"
@@ -41,7 +42,7 @@
                     <button name="action_fetch_pdf"
                             type="object"
                             string="Fetch PDF"
-                            groups="adventure_smartwaiver.group_smartwaiver_manager"/>
+                            groups="adventure_waiver.group_waiver_manager"/>
                     <field name="match_state" widget="statusbar"
                             statusbar_visible="unmatched,ambiguous,matched,manual"/>
                 </header>
@@ -53,8 +54,9 @@
                     </div>
                     <group>
                         <group string="Waiver">
-                            <field name="waiver_id" readonly="1"/>
-                            <field name="template_id" readonly="1"/>
+                            <field name="provider" readonly="1"/>
+                            <field name="external_id" readonly="1"/>
+                            <field name="template_ref" readonly="1"/>
                             <field name="title" readonly="1"/>
                             <field name="created_on" readonly="1"/>
                             <field name="expiration_date" readonly="1"/>
@@ -92,17 +94,18 @@
         </field>
     </record>
 
-    <record id="view_smartwaiver_waiver_search" model="ir.ui.view">
-        <field name="name">smartwaiver.waiver.search</field>
-        <field name="model">smartwaiver.waiver</field>
+    <record id="view_adventure_waiver_search" model="ir.ui.view">
+        <field name="name">adventure.waiver.search</field>
+        <field name="model">adventure.waiver</field>
         <field name="arch" type="xml">
             <search>
-                <field name="waiver_id"/>
+                <field name="external_id"/>
                 <field name="email"/>
                 <field name="first_name"/>
                 <field name="last_name"/>
                 <field name="partner_id"/>
                 <field name="title"/>
+                <field name="provider"/>
                 <filter name="filter_unmatched" string="Unmatched"
                         domain="[('match_state', '=', 'unmatched')]"/>
                 <filter name="filter_ambiguous" string="Ambiguous"
@@ -114,29 +117,32 @@
                 <separator/>
                 <filter name="group_match_state" string="Match state"
                         context="{'group_by': 'match_state'}"/>
+                <filter name="group_provider" string="Provider"
+                        context="{'group_by': 'provider'}"/>
             </search>
         </field>
     </record>
 
-    <record id="action_smartwaiver_waiver" model="ir.actions.act_window">
+    <record id="action_adventure_waiver" model="ir.actions.act_window">
         <field name="name">Waivers</field>
-        <field name="res_model">smartwaiver.waiver</field>
+        <field name="res_model">adventure.waiver</field>
         <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="view_smartwaiver_waiver_search"/>
+        <field name="search_view_id" ref="view_adventure_waiver_search"/>
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No Smartwaiver waivers yet.
+                No waivers yet.
             </p>
             <p>
-                Enable sync in Settings and run Sync now, or wait for the scheduled poll.
+                Install a provider connector (for example Adventure Smartwaiver)
+                and sync, or link waivers manually.
             </p>
         </field>
     </record>
 
-    <record id="action_smartwaiver_waiver_unmatched" model="ir.actions.act_window">
+    <record id="action_adventure_waiver_unmatched" model="ir.actions.act_window">
         <field name="name">Unmatched waivers</field>
-        <field name="res_model">smartwaiver.waiver</field>
+        <field name="res_model">adventure.waiver</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('match_state', 'in', ('unmatched', 'ambiguous'))]</field>
         <field name="context">{'search_default_filter_unmatched': 1}</field>

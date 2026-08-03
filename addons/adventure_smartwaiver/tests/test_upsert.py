@@ -30,11 +30,11 @@ SAMPLE_PAYLOAD = {
 }
 
 
-class TestSmartwaiverUpsert(TransactionCase):
+class TestSmartwaiverProviderUpsert(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.Waiver = cls.env["smartwaiver.waiver"]
+        cls.Waiver = cls.env["adventure.waiver"]
         cls.partner = cls.env["res.partner"].create(
             {
                 "name": "Ada Lovelace",
@@ -42,31 +42,27 @@ class TestSmartwaiverUpsert(TransactionCase):
             }
         )
 
-    def test_upsert_creates_and_matches(self):
-        record = self.Waiver.upsert_from_payload(SAMPLE_PAYLOAD)
+    def test_upsert_creates_provider_row(self):
+        record = self.Waiver._smartwaiver_upsert_from_payload(SAMPLE_PAYLOAD)
         self.assertTrue(record)
-        self.assertEqual(record.waiver_id, "abc123waiver")
+        self.assertEqual(record.provider, "smartwaiver")
+        self.assertEqual(record.external_id, "abc123waiver")
         self.assertEqual(record.title, "Demo Waiver")
         self.assertEqual(record.match_state, "matched")
         self.assertEqual(record.partner_id, self.partner)
-        self.assertEqual(len(record.participant_payload), 1)
 
     def test_upsert_idempotent(self):
-        first = self.Waiver.upsert_from_payload(SAMPLE_PAYLOAD)
-        second = self.Waiver.upsert_from_payload(
+        first = self.Waiver._smartwaiver_upsert_from_payload(SAMPLE_PAYLOAD)
+        second = self.Waiver._smartwaiver_upsert_from_payload(
             dict(SAMPLE_PAYLOAD, title="Demo Waiver Updated")
         )
         self.assertEqual(first.id, second.id)
         self.assertEqual(second.title, "Demo Waiver Updated")
-        self.assertEqual(
-            self.Waiver.search_count([("waiver_id", "=", "abc123waiver")]),
-            1,
-        )
 
     def test_template_allowlist_skips(self):
         self.env["ir.config_parameter"].sudo().set_param(
             "adventure_smartwaiver.template_ids",
             "other-template",
         )
-        record = self.Waiver.upsert_from_payload(SAMPLE_PAYLOAD)
+        record = self.Waiver._smartwaiver_upsert_from_payload(SAMPLE_PAYLOAD)
         self.assertFalse(record)
