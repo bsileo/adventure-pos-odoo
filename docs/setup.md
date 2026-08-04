@@ -59,6 +59,8 @@ Create:
 Add:
 
 OPENAI_API_KEY=
+# Optional when using adventure_smartwaiver (or configure the key in Odoo Settings):
+# SMARTWAIVER_API_KEY=
 ODOO_VERSION=19.0
 POSTGRES_DB=odoo
 POSTGRES_USER=odoo

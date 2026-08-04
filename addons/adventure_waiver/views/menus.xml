@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_adventure_waiver_root"
+              name="Waivers"
+              groups="adventure_waiver.group_waiver_user"
+              sequence="45"
+              web_icon="adventure_waiver,static/description/icon.png"/>
+
+    <menuitem id="menu_adventure_waiver_waivers"
+              name="All waivers"
+              parent="menu_adventure_waiver_root"
+              action="action_adventure_waiver"
+              sequence="10"/>
+
+    <menuitem id="menu_adventure_waiver_unmatched"
+              name="Unmatched"
+              parent="menu_adventure_waiver_root"
+              action="action_adventure_waiver_unmatched"
+              sequence="20"/>
+</odoo>

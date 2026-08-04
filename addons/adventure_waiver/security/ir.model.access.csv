@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_adventure_waiver_user,adventure.waiver user,model_adventure_waiver,group_waiver_user,1,1,0,0
+access_adventure_waiver_manager,adventure.waiver manager,model_adventure_waiver,group_waiver_manager,1,1,1,1
+access_adventure_waiver_link_wizard_user,adventure.waiver.link.wizard user,model_adventure_waiver_link_wizard,group_waiver_user,1,1,1,1
+access_adventure_waiver_link_wizard_manager,adventure.waiver.link.wizard manager,model_adventure_waiver_link_wizard,group_waiver_manager,1,1,1,1
