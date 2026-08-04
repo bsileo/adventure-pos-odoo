@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_adventure_equipment" model="ir.module.category">
+        <field name="name">Equipment</field>
+        <field name="description">Access to customer equipment registry</field>
+        <field name="sequence">45</field>
+    </record>
+
+    <record id="res_groups_privilege_equipment" model="res.groups.privilege">
+        <field name="name">Equipment</field>
+        <field name="category_id" ref="module_category_adventure_equipment"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="group_equipment_viewer" model="res.groups">
+        <field name="name">Viewer</field>
+        <field name="sequence">5</field>
+        <field name="privilege_id" ref="res_groups_privilege_equipment"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_equipment_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_equipment"/>
+        <field name="implied_ids" eval="[(4, ref('group_equipment_viewer'))]"/>
+    </record>
+
+    <record id="group_equipment_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_equipment"/>
+        <field name="implied_ids" eval="[(4, ref('group_equipment_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

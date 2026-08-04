@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "Adventure Equipment",
+    "summary": "Customer-owned equipment lifecycle registry for Adventure POS.",
+    "version": "19.0.1.0.0",
+    "category": "Adventure POS",
+    "author": "Adventure POS",
+    "license": "LGPL-3",
+    "depends": [
+        "adventure_base",
+        "contacts",
+        "product",
+        "mail",
+    ],
+    "data": [
+        "security/equipment_security.xml",
+        "security/ir.model.access.csv",
+        "security/equipment_record_rules.xml",
+        "data/ir_sequence_data.xml",
+        "data/equipment_category_data.xml",
+        "views/equipment_category_views.xml",
+        "views/equipment_tag_views.xml",
+        "views/equipment_asset_views.xml",
+        "views/equipment_ownership_views.xml",
+        "views/equipment_document_views.xml",
+        "views/equipment_event_views.xml",
+        "views/res_partner_views.xml",
+        "views/menus.xml",
+        "wizards/ownership_transfer_wizard_views.xml",
+    ],
+    "installable": True,
+    "application": True,
+}

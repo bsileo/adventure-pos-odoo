@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="equipment_category_regulator" model="adventure.equipment.category">
+        <field name="name">Regulator</field>
+        <field name="code">REG</field>
+        <field name="sequence">10</field>
+        <field name="is_serviceable" eval="True"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+
+    <record id="equipment_category_dive_computer" model="adventure.equipment.category">
+        <field name="name">Dive Computer</field>
+        <field name="code">DC</field>
+        <field name="sequence">20</field>
+        <field name="is_serviceable" eval="True"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+
+    <record id="equipment_category_bcd" model="adventure.equipment.category">
+        <field name="name">BCD</field>
+        <field name="code">BCD</field>
+        <field name="sequence">30</field>
+        <field name="is_serviceable" eval="True"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+
+    <record id="equipment_category_cylinder" model="adventure.equipment.category">
+        <field name="name">Cylinder</field>
+        <field name="code">CYL</field>
+        <field name="sequence">40</field>
+        <field name="is_serviceable" eval="True"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+
+    <record id="equipment_category_exposure_suit" model="adventure.equipment.category">
+        <field name="name">Exposure Suit</field>
+        <field name="code">SUIT</field>
+        <field name="sequence">50</field>
+        <field name="is_serviceable" eval="True"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+
+    <record id="equipment_category_dive_light" model="adventure.equipment.category">
+        <field name="name">Dive Light</field>
+        <field name="code">LIGHT</field>
+        <field name="sequence">60</field>
+        <field name="is_serviceable" eval="True"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+
+    <record id="equipment_category_mask_fins_snorkel" model="adventure.equipment.category">
+        <field name="name">Mask/Fins/Snorkel</field>
+        <field name="code">MFS</field>
+        <field name="sequence">70</field>
+        <field name="is_serviceable" eval="False"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+
+    <record id="equipment_category_other" model="adventure.equipment.category">
+        <field name="name">Other</field>
+        <field name="code">OTHER</field>
+        <field name="sequence">99</field>
+        <field name="is_serviceable" eval="True"/>
+        <field name="is_durable" eval="True"/>
+    </record>
+</odoo>
