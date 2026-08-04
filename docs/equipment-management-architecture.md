@@ -6,4 +6,5 @@
 
 **Canonical document:** [Equipment Management Architecture](architecture/equipment-management.md)
 
-That page covers vision, repository assessment, proposed `adventure_equipment*` modules, domain model, Mermaid ER and dependency diagrams, Odoo integration, security, lifecycle rules, roadmap, risks, and open questions.
+That page covers vision, **confirmed review decisions**, repository assessment, proposed `adventure_equipment*` modules, domain model, Mermaid ER and dependency diagrams, Odoo integration, security, lifecycle rules, roadmap, risks, and remaining open questions.
+
