@@ -8,8 +8,8 @@
 
 | Module | Role |
 |--------|------|
-| [`adventure_waiver`](../../addons/adventure_waiver/) | Generic signed-waiver CRM: `adventure.waiver`, partner matching, unmatched queue, menus, PDF hook, provider search hook |
-| [`adventure_smartwaiver`](../../addons/adventure_smartwaiver/) | Smartwaiver connector: API client, poll/webhook crons, payload mapping → `upsert_provider_waiver`, Settings |
+| `adventure_waiver` | Generic signed-waiver CRM: `adventure.waiver`, partner matching, unmatched queue, menus, PDF hook, provider search hook |
+| `adventure_smartwaiver` | Smartwaiver connector: API client, poll/webhook crons, payload mapping → `upsert_provider_waiver`, Settings |
 
 Staff-facing CRM is always **Waivers** (`adventure.waiver`), regardless of provider. Future connectors (e.g. WaiverSign) should follow the same pattern: depend on `adventure_waiver`, `selection_add` on `provider`, map payloads, override hooks — without changing the generic UI.
 
