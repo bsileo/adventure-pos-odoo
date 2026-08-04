@@ -542,18 +542,30 @@ class AdventureEquipmentAsset(models.Model):
                 )
             )
 
-    def _log_event(self, event_type, description, extra_vals=None):
+    def _log_event(self, event_type, summary, extra_vals=None):
         Event = self.env["adventure.equipment.event"]
         for asset in self:
             vals = {
                 "asset_id": asset.id,
                 "event_type": event_type,
-                "description": description,
+                "summary": summary,
                 "company_id": asset.company_id.id,
             }
             if extra_vals:
                 vals.update(extra_vals)
             Event.create(vals)
+
+    def _sync_ownership_history_after_partner_change(self, transfer_date=None):
+        Ownership = self.env["adventure.equipment.ownership"]
+        transfer_date = transfer_date or fields.Date.context_today(self)
+        for asset in self:
+            Ownership._transfer_ownership(
+                asset,
+                asset.partner_id,
+                transfer_date,
+                change_type="transfer",
+                verification_state=asset.ownership_verification_state,
+            )
 
     def _ensure_primary_serial_identifier(self):
         Identifier = self.env["adventure.equipment.identifier"]
@@ -585,6 +597,8 @@ class AdventureEquipmentAsset(models.Model):
                     "partner_id": asset.partner_id.id,
                     "date_from": asset.ownership_start_date or fields.Date.context_today(asset),
                     "change_type": "registration",
+                    "is_current": True,
+                    "verification_state": asset.ownership_verification_state,
                     "company_id": asset.company_id.id,
                 }
             )
@@ -628,6 +642,13 @@ class AdventureEquipmentAsset(models.Model):
         result = super().write(vals)
         if "serial_number" in vals:
             self._ensure_primary_serial_identifier()
+        if (
+            "partner_id" in vals
+            and not self.env.context.get("equipment_skip_ownership_sync")
+        ):
+            self._sync_ownership_history_after_partner_change(
+                transfer_date=vals.get("ownership_start_date")
+            )
         return result
 
     def unlink(self):
@@ -734,34 +755,58 @@ class AdventureEquipmentAsset(models.Model):
 
     def action_activate(self):
         today = fields.Date.context_today(self)
-        for asset in self:
-            vals = {"lifecycle_state": "active"}
-            if not asset.in_service_date:
-                vals["in_service_date"] = today
-            asset.write(vals)
-            asset._log_event("activated", _("Equipment activated"))
+        to_activate = self.filtered(lambda asset: asset.lifecycle_state != "active")
+        if not to_activate:
+            return True
+        without_in_service = to_activate.filtered(lambda asset: not asset.in_service_date)
+        if without_in_service:
+            without_in_service.write(
+                {"lifecycle_state": "active", "in_service_date": today}
+            )
+        (to_activate - without_in_service).write({"lifecycle_state": "active"})
+        to_activate._log_event(
+            "lifecycle_changed",
+            _("Equipment activated"),
+            {"payload": {"lifecycle_state": "active"}},
+        )
         return True
 
     def action_mark_out_for_service(self):
         self.write({"lifecycle_state": "out_for_service"})
-        self._log_event("out_for_service", _("Marked out for service"))
+        self._log_event(
+            "lifecycle_changed",
+            _("Marked out for service"),
+            {"payload": {"lifecycle_state": "out_for_service"}},
+        )
         return True
 
     def action_mark_returned_from_service(self):
         self.write({"lifecycle_state": "active"})
-        self._log_event("returned_from_service", _("Returned from service"))
+        self._log_event(
+            "lifecycle_changed",
+            _("Returned from service"),
+            {"payload": {"lifecycle_state": "active"}},
+        )
         return True
 
     def action_retire(self):
         today = fields.Date.context_today(self)
         self.write({"lifecycle_state": "retired", "retired_on": today})
-        self._log_event("retired", _("Equipment retired"))
+        self._log_event(
+            "retired",
+            _("Equipment retired"),
+            {"payload": {"lifecycle_state": "retired", "retired_on": str(today)}},
+        )
         return True
 
     def action_mark_lost(self):
         today = fields.Date.context_today(self)
         self.write({"lifecycle_state": "lost", "lost_on": today})
-        self._log_event("lost", _("Equipment marked as lost"))
+        self._log_event(
+            "lifecycle_changed",
+            _("Equipment marked as lost"),
+            {"payload": {"lifecycle_state": "lost", "lost_on": str(today)}},
+        )
         return True
 
     def action_reactivate(self):
@@ -779,7 +824,8 @@ class AdventureEquipmentAsset(models.Model):
             "target": "new",
             "context": {
                 "default_asset_id": self.id,
-                "default_partner_id": self.partner_id.id,
-                "default_company_id": self.company_id.id,
+                "default_from_partner_id": self.partner_id.id,
+                "default_transfer_date": fields.Date.context_today(self),
+                "default_verification_state": self.ownership_verification_state,
             },
         }
