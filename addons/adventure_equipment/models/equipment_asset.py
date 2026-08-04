@@ -28,9 +28,9 @@ LIFECYCLE_TRANSITIONS = {
     },
     "out_for_service": {"active", "in_service", "retired", "disposed"},
     "loaned": {"active", "lost", "stolen", "transferred"},
-    "transferred": set(),
+    "transferred": {"active"},  # reclaim / correction
     "lost": {"active", "retired", "disposed"},
-    "stolen": {"retired", "disposed"},
+    "stolen": {"active", "retired", "disposed"},
     "retired": {"active", "disposed"},
     "disposed": set(),
 }
@@ -434,9 +434,10 @@ class AdventureEquipmentAsset(models.Model):
         for record in (product, template):
             if not record:
                 continue
-            for field_name in ("model_name", "default_code"):
-                if field_name in record._fields and record[field_name]:
-                    return record[field_name]
+            if "model_name" in record._fields and record.model_name:
+                return record.model_name
+        if template:
+            return template.name
         return False
 
     def _snapshot_category_name(self, asset):

@@ -67,11 +67,11 @@ class TestAdventureEquipmentAsset(TransactionCase):
             }
         )
         asset = self._create_asset(product_id=product.id)
-        self.assertEqual(asset.model_name, "CAT-REG-99")
+        self.assertEqual(asset.model_name, "Catalog Regulator")
         self.assertEqual(asset.manufacturer_sku, "CAT-REG-99")
         self.assertEqual(asset.barcode, "9876543210987")
         self.assertEqual(asset.snapshot_product_name, product.display_name)
-        self.assertEqual(asset.snapshot_model, "CAT-REG-99")
+        self.assertEqual(asset.snapshot_model, "Catalog Regulator")
         self.assertEqual(asset.snapshot_sku, "CAT-REG-99")
 
     def test_refresh_product_defaults_overwrites(self):
@@ -85,12 +85,16 @@ class TestAdventureEquipmentAsset(TransactionCase):
             product_id=product.id,
             brand_name="Manual Brand",
             model_name="Manual Model",
+            manufacturer_sku="OLD-SKU",
         )
-        product.write({"default_code": "REF-UPDATED"})
+        product.write({"default_code": "REF-UPDATED", "name": "Refresh Product Updated"})
+        # product.product name write updates template in Odoo for single-variant
         asset.action_refresh_product_defaults()
-        self.assertEqual(asset.model_name, "REF-UPDATED")
+        self.assertEqual(asset.model_name, product.product_tmpl_id.name)
         self.assertEqual(asset.manufacturer_sku, "REF-UPDATED")
-        self.assertEqual(asset.snapshot_model, "REF-UPDATED")
+        self.assertEqual(asset.snapshot_sku, "REF-UPDATED")
+        self.assertEqual(asset.snapshot_model, product.product_tmpl_id.name)
+        self.assertNotEqual(asset.model_name, "Manual Model")
 
     def test_product_archive_does_not_archive_equipment(self):
         product = self.Product.create({"name": "Archivable Product"})
