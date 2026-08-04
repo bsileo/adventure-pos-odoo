@@ -42,7 +42,7 @@
 | **Enrollment** | One student’s lifecycle for a program + commercial line (`sale.order.line` or `pos.order.line`): progression state, agency candidate id, referral flags, restrictions. |
 | **Session registration** | **Many per enrollment** — links a **session**; supports scheduled vs makeup vs no-show vs attended; instructor signoff; links to **supersedes** / **makeup_of** for audit and analytics. |
 | **Instructor assignment** | Lead and assistants on a session; optional child model if substitution history must be fully audited. |
-| **Equipment reservation** | Prefer extending **[`adventure_rental`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_rental)** so class logistics and rental pick/return stay one system. |
+| **Equipment reservation** | Prefer extending **[`adventure_rental`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_rental)** so class logistics and rental pick/return stay one system. Student **owned** gear (when tracked) should reference the future **[customer equipment](equipment-management.md)** domain—not rental fleet assets. |
 | **Waiver / compliance** | Early phases: documents + chatter; later: e-sign or vendor waiver with external ids on **enrollment**. |
 | **Travel / charter event** | Optional specialization when a session is travel-heavy; relate to **session** without forcing all sessions through a trip system (future alignment with [FareHarbor](../integrations/fareharbor-pos-sync.md) or similar). |
 

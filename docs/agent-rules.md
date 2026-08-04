@@ -25,7 +25,7 @@ Before starting a **work stream**—meaning a coherent chunk of work such as a f
 
 1. Re-read **this page** (`docs/agent-rules.md`) for module scope, POS/inventory constraints, Git rules, and documentation obligations.
 2. Skim the sections of **[Architecture](architecture/)** and **[Data model](data-model/)** that relate to the task; open **[Integrations](integrations/)** or **[Migrations](migrations/)** pages when the work touches those areas.
-3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
+3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Equipment management (future)](architecture/equipment-management.md)** and **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
 
 **Humans** should follow the same habit; [Developer onboarding](developer-onboarding.md) points here.
 
@@ -80,8 +80,9 @@ Optional integration modules (install per tenant when needed):
 
 Future modules (do not implement unless instructed):
 
-* adventure_rental
+* adventure_rental — **note:** scaffolding already exists under `addons/adventure_rental`; treat further work as extending that module, not inventing a parallel rental stack
 * adventure_service
+* adventure_equipment / adventure_equipment_service / adventure_equipment_portal / adventure_equipment_configuration / adventure_equipment_notifications / adventure_equipment_scuba — customer-owned **Equipment Lifecycle Management** (design only: [equipment management architecture](architecture/equipment-management.md)); do **not** conflate with shop rental fleet assets
 * adventure_loyalty
 * adventure_training
 * adventure_trips
