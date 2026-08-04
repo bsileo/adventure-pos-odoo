@@ -18,6 +18,18 @@
 
 ---
 
+## Decisions confirmed (review)
+
+| # | Decision | Status |
+|---|----------|--------|
+| 1 | Customer-owned equipment is a **separate domain** from shop rental fleet (`adventure.rental.asset`). Do not overload rental assets as customer gear. | **Confirmed** |
+| 2 | **Community-first** service records inside Adventure equipment modules. Optional loose links to Enterprise Repair (or similar) only when those apps are installed—never a hard dependency for the core path. | **Confirmed** |
+| 3 | Put customer-equipment maintenance in **`adventure_equipment_service`**. Do **not** invent a parallel stack under `adventure_service` until a general shop **work-order / bench** product is explicitly prioritized. The name `adventure_service` in [agent-rules](../agent-rules.md) remains an undefined placeholder only. | **Confirmed** |
+
+Remaining open questions (household sharing, auto-create on sale, etc.) are listed below and do not block documenting Phase 1 as a staff registry.
+
+---
+
 ## Vision
 
 AdventurePOS must manage the **complete lifecycle of equipment that customers own**, not only products that were sold.
@@ -252,14 +264,15 @@ flowchart TD
 
 **Hard rule:** `adventure_equipment` must **not** depend on `adventure_pos` or `adventure_rental`. POS/rental integrate via optional bridge modules or loose Many2one links from equipment → orders/assets.
 
-### Relationship to future `adventure_service`
+### Relationship to future `adventure_service` (resolved)
 
-[agent-rules](../agent-rules.md) lists a future `adventure_service` module. Recommendation:
+[agent-rules](../agent-rules.md) lists a future `adventure_service` module name with **no design and no scope**. Confirmed approach:
 
-- **Customer equipment identity & history** live in `adventure_equipment*`
-- **Shop work-order / bench workflow / invoicing packaging** may later live in `adventure_service` **or** fold into `adventure_equipment_service` if the team prefers fewer modules
+- **Customer equipment identity, policies, due dates, and service history** live in `adventure_equipment` + `adventure_equipment_service`
+- **Do not** create `adventure_service` as a duplicate equipment-maintenance stack
+- If the product later needs a general **shop work-order / bench queue** (tech assignment, parts, invoicing across customer gear, rental fleet, and other jobs), introduce that as a separate initiative—likely linking *to* equipment and rental records rather than owning their history
 
-Open question (see below): keep `adventure_service` as a separate work-order layer vs consolidate.
+Until then, treat `adventure_service` as an unused placeholder name only.
 
 ---
 
@@ -527,13 +540,13 @@ Follow existing `TransactionCase` style; add `HttpCase` when portal exists.
 
 | Risk | Mitigation |
 |------|------------|
-| Conflating rental fleet with customer equipment | Separate models; explicit docs; no shared table in Phase 1 |
+| Conflating rental fleet with customer equipment | **Resolved:** separate models; no shared table in Phase 1 |
 | Catalog sync wiping history | Snapshots + `ondelete='set null'`; no cascade from product |
-| Premature Enterprise dependency | Community-first; optional bridges |
+| Premature Enterprise dependency | **Resolved:** Community-first; optional bridges only |
 | Portal attachment leaks | Record rules + document visibility flags; security tests |
 | Serial uniqueness fights real data | Soft unique + manager override |
 | Scope explosion (AI, IoT, configs) | Phased roadmap; core ships without configuration module |
-| Duplicate `adventure_service` vs equipment_service | Resolve open question before Phase 2 coding |
+| Duplicate `adventure_service` vs equipment_service | **Resolved:** `adventure_equipment_service` owns gear maintenance; `adventure_service` stays undefined until work-orders are prioritized |
 | POS performance | Async/lazy asset creation; do not block checkout on heavy logic |
 | Guiding principle tension (“POS first”) | Keep Phase 1 registry thin; defer portal/config until POS+customers stable enough |
 
@@ -612,16 +625,18 @@ Complexity is relative (S/M/L), not calendar time.
 
 ## Open architectural questions
 
-1. **Single vs dual service module:** Keep future `adventure_service` as work-orders separate from `adventure_equipment_service`, or consolidate?
-2. **Household sharing:** One owner only in Phase 1, or partner-child sharing from the start?
-3. **Auto-create on every sale:** Which product categories/flags opt in? Default off vs on for scuba gear categories?
-4. **`stock.lot` usage:** Never for customer gear, or allowed when serial already exists in shop stock?
-5. **Enterprise Repair:** First-class optional dependency, or forever loose reference fields?
-6. **Merge with rental abstractions:** Introduce a shared mixin module later (`adventure_asset_mixin`) or keep permanent separation?
-7. **D360 equipment migration:** Is there an export of customer-owned tanks/regs, or only sales history serials?
-8. **Verification SLA:** Can overdue forecasting include customer-claimed unverified items?
-9. **Document storage limits:** Attachments in DB/filestore quotas for portal photo uploads?
-10. **agent-rules future list:** Update to add `adventure_equipment*` and correct `adventure_rental` status when this design is accepted?
+**Resolved above:** rental vs customer equipment; Community-first service records; `adventure_equipment_service` owns gear maintenance (`adventure_service` deferred).
+
+Still open (do not block Phase 1 design, but decide before or during the named phase):
+
+1. **Household sharing:** One owner only in Phase 1, or partner-child sharing from the start?
+2. **Auto-create on every sale:** Which product categories/flags opt in? Default off vs on for scuba gear categories? *(Phase 3)*
+3. **`stock.lot` usage:** Never for customer gear, or allowed when serial already exists in shop stock?
+4. **Shared mixin later:** Keep permanent separation from rental, or eventually extract a neutral mixin (`adventure_asset_mixin`) for serial/condition helpers only—without merging tables?
+5. **D360 equipment migration:** Is there an export of customer-owned tanks/regs, or only sales history serials?
+6. **Verification SLA:** Can overdue forecasting include customer-claimed unverified items? *(Phase 2 / 4)*
+7. **Document storage limits:** Attachments in DB/filestore quotas for portal photo uploads? *(Phase 4)*
+8. **Phase 1 scope:** Confirm staff registry only (no portal) as the first implementation slice?
 
 ---
 
@@ -638,6 +653,6 @@ Complexity is relative (S/M/L), not calendar time.
 
 ## Final recommendation for review
 
-Approve (or amend) this design **before** any `adventure_equipment*` code lands. Highest-priority review decisions: (1) rental vs customer equipment separation, (2) Community-first service records vs Enterprise Repair, (3) module naming/`adventure_service` overlap, (4) Phase 1 scope limited to staff registry.
+Core platform decisions **(1)–(3) are confirmed** (see [Decisions confirmed](#decisions-confirmed-review)). Remaining open questions can be answered as phases approach; the main pending product call is whether **Phase 1 = staff registry only**.
 
-Until then: **no models, menus, controllers, or security rules** for this domain.
+**Do not** land `adventure_equipment*` models, menus, controllers, or security rules until Phase 1 implementation is explicitly kicked off after this architecture review.
