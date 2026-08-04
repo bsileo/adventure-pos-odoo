@@ -451,34 +451,41 @@ class AdventureEquipmentAsset(models.Model):
     def _apply_product_defaults(self, overwrite=False):
         for asset in self:
             product = asset.product_id
-            if not product:
+            template = product.product_tmpl_id if product else asset.product_tmpl_id
+            if not template:
                 continue
-            template = product.product_tmpl_id
             vals = {}
-            if overwrite or not asset.product_tmpl_id:
+            if product and (overwrite or not asset.product_tmpl_id):
                 vals["product_tmpl_id"] = template.id
             if overwrite or not asset.brand_name:
-                brand = asset._product_brand_name(product)
+                brand = asset._product_brand_name(product) if product else False
                 if brand:
                     vals["brand_name"] = brand
             if overwrite or not asset.manufacturer_name:
-                manufacturer = asset._product_manufacturer_name(product)
+                manufacturer = (
+                    asset._product_manufacturer_name(product) if product else False
+                )
                 if manufacturer:
                     vals["manufacturer_name"] = manufacturer
             if overwrite or not asset.model_name:
-                model = asset._product_model_name(product)
+                if product:
+                    model = asset._product_model_name(product)
+                else:
+                    model = template.name
                 if model:
                     vals["model_name"] = model
             if overwrite or not asset.manufacturer_sku:
-                sku = product.default_code or template.default_code
+                sku = (product.default_code if product else False) or template.default_code
                 if sku:
                     vals["manufacturer_sku"] = sku
             if overwrite or not asset.barcode:
-                barcode = product.barcode or template.barcode
+                barcode = (product.barcode if product else False) or template.barcode
                 if barcode:
                     vals["barcode"] = barcode
             if overwrite or not asset.snapshot_product_name:
-                vals["snapshot_product_name"] = product.display_name
+                vals["snapshot_product_name"] = (
+                    product.display_name if product else template.display_name
+                )
             if overwrite or not asset.snapshot_brand:
                 brand = vals.get("brand_name") or asset.brand_name
                 if brand:
@@ -499,11 +506,22 @@ class AdventureEquipmentAsset(models.Model):
                 category_name = asset._snapshot_category_name(asset)
                 if category_name:
                     vals["snapshot_category"] = category_name
+            if (
+                "image_1920" in asset._fields
+                and template.image_1920
+                and (overwrite or not asset.image_1920)
+            ):
+                vals["image_1920"] = template.image_1920
             if vals:
-                asset.write(vals)
+                # Avoid re-entering ownership/lifecycle side effects.
+                asset.with_context(
+                    equipment_skip_ownership_sync=True,
+                    equipment_skip_lifecycle_check=True,
+                ).write(vals)
 
     def action_refresh_product_defaults(self):
         self._apply_product_defaults(overwrite=True)
+        self._log_event("product_refreshed", _("Catalog defaults refreshed from product"))
         return True
 
     @api.onchange("product_id")

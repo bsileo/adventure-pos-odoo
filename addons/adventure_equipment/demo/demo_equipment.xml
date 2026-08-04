@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <!-- Demo customers (dedicated partners; do not reuse base demo contacts). -->
+    <record id="demo_partner_equipment_alice" model="res.partner">
+        <field name="name">Demo Diver Alice</field>
+        <field name="email">alice.equipment.demo@example.com</field>
+    </record>
+
+    <record id="demo_partner_equipment_bob" model="res.partner">
+        <field name="name">Demo Diver Bob</field>
+        <field name="email">bob.equipment.demo@example.com</field>
+    </record>
+
+    <record id="demo_partner_equipment_carol" model="res.partner">
+        <field name="name">Demo Diver Carol</field>
+        <field name="email">carol.equipment.demo@example.com</field>
+    </record>
+
+    <!-- Catalog products linked to some demo equipment. -->
+    <record id="demo_product_scubapro_mk25" model="product.product">
+        <field name="name">Scubapro MK25 Regulator</field>
+        <field name="default_code">SP-MK25</field>
+        <field name="type">consu</field>
+    </record>
+
+    <record id="demo_product_shearwater_perdix" model="product.product">
+        <field name="name">Shearwater Perdix 2</field>
+        <field name="default_code">SW-PERDIX2</field>
+        <field name="type">consu</field>
+    </record>
+
+    <!-- Shop sale, linked product, serial, active lifecycle, active warranty. -->
+    <record id="demo_equipment_alice_regulator" model="adventure.equipment.asset">
+        <field name="name">EQ-DEMO-001</field>
+        <field name="partner_id" ref="demo_partner_equipment_alice"/>
+        <field name="category_id" ref="equipment_category_regulator"/>
+        <field name="product_id" ref="demo_product_scubapro_mk25"/>
+        <field name="serial_number">MK25-SN-10001</field>
+        <field name="acquisition_source">shop_sale</field>
+        <field name="lifecycle_state">active</field>
+        <field name="in_service_date">2026-02-01</field>
+        <field name="origin_sale_ref">POS/2026/0042</field>
+        <field name="warranty_registered" eval="True"/>
+        <field name="warranty_start_date">2026-01-15</field>
+        <field name="warranty_end_date">2028-01-15</field>
+        <field name="condition_state">excellent</field>
+        <field name="nickname">Primary reg</field>
+    </record>
+
+    <!-- Shop sale, linked product, serial, active warranty expired. -->
+    <record id="demo_equipment_bob_computer" model="adventure.equipment.asset">
+        <field name="name">EQ-DEMO-002</field>
+        <field name="partner_id" ref="demo_partner_equipment_bob"/>
+        <field name="category_id" ref="equipment_category_dive_computer"/>
+        <field name="product_id" ref="demo_product_shearwater_perdix"/>
+        <field name="serial_number">SW-PERDIX-77821</field>
+        <field name="acquisition_source">shop_sale</field>
+        <field name="lifecycle_state">active</field>
+        <field name="in_service_date">2024-06-01</field>
+        <field name="origin_sale_ref">S00087</field>
+        <field name="warranty_registered" eval="True"/>
+        <field name="warranty_start_date">2024-06-01</field>
+        <field name="warranty_end_date">2025-06-01</field>
+        <field name="condition_state">good</field>
+    </record>
+
+    <!-- Other shop purchase, no catalog product, with serial. -->
+    <record id="demo_equipment_alice_bcd" model="adventure.equipment.asset">
+        <field name="name">EQ-DEMO-003</field>
+        <field name="partner_id" ref="demo_partner_equipment_alice"/>
+        <field name="category_id" ref="equipment_category_bcd"/>
+        <field name="brand_name">Aqualung</field>
+        <field name="model_name">Pro HD</field>
+        <field name="serial_number">AL-BCD-44210</field>
+        <field name="acquisition_source">other_shop</field>
+        <field name="original_seller">Island Dive Supply</field>
+        <field name="purchase_date">2023-11-20</field>
+        <field name="lifecycle_state">active</field>
+        <field name="in_service_date">2023-11-20</field>
+        <field name="warranty_registered" eval="False"/>
+        <field name="condition_state">good</field>
+    </record>
+
+    <!-- Other shop, no product, no serial (non-serialized gear). -->
+    <record id="demo_equipment_bob_mask" model="adventure.equipment.asset">
+        <field name="name">EQ-DEMO-004</field>
+        <field name="partner_id" ref="demo_partner_equipment_bob"/>
+        <field name="category_id" ref="equipment_category_mask_fins_snorkel"/>
+        <field name="brand_name">Cressi</field>
+        <field name="model_name">F1 Frameless</field>
+        <field name="acquisition_source">other_shop</field>
+        <field name="lifecycle_state">active</field>
+        <field name="in_service_date">2025-03-10</field>
+        <field name="warranty_not_applicable" eval="True"/>
+        <field name="condition_state">excellent</field>
+    </record>
+
+    <!-- Retired equipment (history preserved). -->
+    <record id="demo_equipment_carol_old_suit" model="adventure.equipment.asset">
+        <field name="name">EQ-DEMO-005</field>
+        <field name="partner_id" ref="demo_partner_equipment_carol"/>
+        <field name="category_id" ref="equipment_category_exposure_suit"/>
+        <field name="brand_name">Henderson</field>
+        <field name="model_name">Thermoprene 3mm</field>
+        <field name="acquisition_source">used</field>
+        <field name="lifecycle_state">retired</field>
+        <field name="retired_on">2025-12-01</field>
+        <field name="retirement_reason">Replaced with newer suit</field>
+        <field name="warranty_not_applicable" eval="True"/>
+        <field name="condition_state">fair</field>
+    </record>
+
+    <!-- Lifetime warranty example. -->
+    <record id="demo_equipment_carol_cylinder" model="adventure.equipment.asset">
+        <field name="name">EQ-DEMO-006</field>
+        <field name="partner_id" ref="demo_partner_equipment_carol"/>
+        <field name="category_id" ref="equipment_category_cylinder"/>
+        <field name="brand_name">Luxfer</field>
+        <field name="model_name">S080</field>
+        <field name="serial_number">LX-S080-99102</field>
+        <field name="acquisition_source">shop_sale</field>
+        <field name="lifecycle_state">active</field>
+        <field name="in_service_date">2022-05-01</field>
+        <field name="warranty_registered" eval="True"/>
+        <field name="warranty_lifetime" eval="True"/>
+        <field name="condition_state">good</field>
+    </record>
+
+    <!-- Draft equipment (not yet activated). -->
+    <record id="demo_equipment_alice_light_draft" model="adventure.equipment.asset">
+        <field name="name">EQ-DEMO-007</field>
+        <field name="partner_id" ref="demo_partner_equipment_alice"/>
+        <field name="category_id" ref="equipment_category_dive_light"/>
+        <field name="brand_name">BigBlue</field>
+        <field name="model_name">AL1200NP</field>
+        <field name="acquisition_source">customer_reported</field>
+        <field name="lifecycle_state">draft</field>
+        <field name="ownership_verification_state">pending</field>
+        <field name="condition_state">unknown</field>
+    </record>
+</odoo>

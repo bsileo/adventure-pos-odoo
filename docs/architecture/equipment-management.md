@@ -1,8 +1,10 @@
 # AdventurePOS Equipment Management Architecture
 
-!!! warning "Future / not implemented"
+!!! warning "Partially implemented"
 
-    This page is an **architecture and foundation design** for customer-owned equipment lifecycle management. It is **not** a description of shipped behavior. Do **not** implement models, views, controllers, menus, security rules, or migrations until the team explicitly reviews and approves this design (or an agreed revision). Treat all model and module names as **proposals**.
+    The **core registry module** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment) is **implemented** (Phase 1: assets, categories, ownership, identifiers, documents/events metadata, staff UI, security groups). **Service lifecycle**, **portal**, **configurations**, **notifications**, **scuba vertical pack**, and **POS/sale bridges** remain **future** work described on this page—do not assume those behaviors exist until their modules ship.
+
+    Treat model names and fields on this page as the **platform direction**; compare with the live module and its README when implementing or testing.
 
 **Audience:** Product, operations, and developers planning Equipment Lifecycle Management as a platform pillar of Adventure POS.
 
@@ -118,8 +120,9 @@ Present under `addons/`:
 | `adventure_product_category` | Catalog category matching / vendor import helpers |
 | `adventure_waiver` / `adventure_smartwaiver` | Provider-neutral domain + connector pattern (good template for equipment vendor connectors later) |
 | `adventure_d360_migration` | D360 partner/history import; serial numbers on **history lines**, not customer equipment assets |
+| **`adventure_equipment`** | **Implemented (Phase 1):** customer-owned equipment registry — assets, categories, ownership history, identifiers, staff UI |
 
-**Not present:** `adventure_service`, `adventure_equipment_*`, portal/website custom modules, repair/maintenance custom modules.
+**Not present (future):** `adventure_service`, `adventure_equipment_service`, `adventure_equipment_portal`, `adventure_equipment_configuration`, `adventure_equipment_notifications`, `adventure_equipment_scuba`, `adventure_equipment_pos`, portal/website custom modules, repair/maintenance custom modules.
 
 **Doc drift note:** [agent-rules](../agent-rules.md) still lists `adventure_rental` under “Future modules,” but the module **already exists** in the tree (scaffolding). Equipment design must treat rental as a **sibling domain**, not invent a second fleet model under another name.
 
@@ -404,9 +407,9 @@ erDiagram
 | Area | Integration approach |
 |------|----------------------|
 | **Products** | Optional Many2one + **immutable snapshots** on asset; catalog sync/archive must not delete assets |
-| **Sales** | On confirmed SO line for equipment-class products, optional auto-create asset + ownership row; wizard for serial capture |
-| **POS** | Bridge module: after paid order, create/link assets; cashier prompts for serial when policy requires |
-| **Stock** | Customer equipment is **not** shop inventory. Use `stock.lot` only when the same serial is also a shop lot (rare; e.g. consignment edge cases). Do not move customer gear through stock locations as ownership transfer |
+| **Sales** | On confirmed SO line for equipment-class products, optional auto-create asset + ownership row; wizard for serial capture. **Phase 1:** `origin_sale_ref` (Char) only — typed `sale.order` / POS line links deferred to `adventure_equipment_pos` / sale bridge |
+| **POS** | Bridge module: after paid order, create/link assets; cashier prompts for serial when policy requires (**deferred**; no POS dependency in core) |
+| **Stock** | Customer equipment is **not** shop inventory. **`stock.lot` link deferred** in Phase 1 (no `stock` dependency on `adventure_equipment`). Use `stock.lot` only when the same serial is also a shop lot (rare; e.g. consignment edge cases). Do not move customer gear through stock locations as ownership transfer |
 | **Portal / website** | `adventure_equipment_portal` Controllers; portal user sees only own partner’s (and family) equipment; QWeb templates |
 | **Service** | Adventure service records first; optional Enterprise `repair` link later |
 | **Rentals** | Sibling domain. Possible later links: “customer brought own regulator on rental booking” → equipment asset id on rental line payload—not the same as assigning a rental asset |
@@ -465,7 +468,7 @@ Follow Odoo 19 `res.groups.privilege` pattern from waivers.
 | **Retirement** | State `retired`; keep history; remove from active configurations |
 | **Duplicates** | Manager merge wizard: surviving asset keeps history; identifiers moved; loser archived with pointer |
 | **Serial numbers** | Soft uniqueness by category/type; allow duplicates only with manager override + event (real-world collisions / unknown serials) |
-| **Shared ownership** | Phase 1: single `partner_id`. Later: household sharing via partner child or explicit share table—do not invent multi-owner without product decision |
+| **Shared ownership** | Phase 1: single `partner_id` (**contact-only**; no commercial-partner rollup on smart-button counts). Later: household sharing via partner child or explicit share table—do not invent multi-owner without product decision |
 | **Historical preservation** | Unlink restricted; product_id ondelete `set null`; snapshots retained |
 | **Catalog product deleted** | Asset remains; snapshot fields remain searchable |
 
@@ -563,13 +566,16 @@ Complexity is relative (S/M/L), not calendar time.
 - **Acceptance:** Product/eng sign-off; agent-rules / mkdocs updated to reference this page  
 - **Complexity:** S  
 
-### Phase 1 — Equipment registry foundation
+### Phase 1 — Equipment registry foundation ✅ **Shipped**
 
 - **Purpose:** Staff can record customer-owned equipment  
-- **Models:** asset, category, ownership, identifier; attachment conventions  
-- **UI:** Backend list/form, partner smart button  
-- **Dependencies:** `adventure_base`, `contacts`, `product`, `mail`  
-- **Acceptance:** Create/archive assets; product archive does not delete assets; ownership history on create; security groups  
+- **Module:** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment)  
+- **Models:** asset, category, ownership, identifier, document/event metadata  
+- **UI:** Backend list/form, partner smart button, ownership transfer wizard  
+- **Dependencies:** `adventure_base`, `contacts`, `product`, `mail` (no `stock`, `sale`, or `point_of_sale`)  
+- **Ownership scope:** **Contact-only** (`partner_id`); partner equipment count does not aggregate child contacts  
+- **Deferred from Phase 1:** `stock.lot` link, typed sale/POS origin fields (use `origin_sale_ref` Char), portal, service policies  
+- **Acceptance:** Create/archive assets; product archive does not delete assets; ownership history on create; security groups; demo + tests in module  
 - **Complexity:** M  
 
 ### Phase 2 — Service lifecycle
@@ -631,12 +637,12 @@ Still open (do not block Phase 1 design, but decide before or during the named p
 
 1. **Household sharing:** One owner only in Phase 1, or partner-child sharing from the start?
 2. **Auto-create on every sale:** Which product categories/flags opt in? Default off vs on for scuba gear categories? *(Phase 3)*
-3. **`stock.lot` usage:** Never for customer gear, or allowed when serial already exists in shop stock?
+3. **`stock.lot` usage:** **Deferred in Phase 1** (`adventure_equipment` has no stock dependency). Decide before a later phase whether customer gear ever links to shop lots.
 4. **Shared mixin later:** Keep permanent separation from rental, or eventually extract a neutral mixin (`adventure_asset_mixin`) for serial/condition helpers only—without merging tables?
 5. **D360 equipment migration:** Is there an export of customer-owned tanks/regs, or only sales history serials?
 6. **Verification SLA:** Can overdue forecasting include customer-claimed unverified items? *(Phase 2 / 4)*
 7. **Document storage limits:** Attachments in DB/filestore quotas for portal photo uploads? *(Phase 4)*
-8. **Phase 1 scope:** Confirm staff registry only (no portal) as the first implementation slice?
+8. **Phase 1 scope:** **Resolved — staff registry only** (no portal); shipped in `adventure_equipment`.
 
 ---
 
@@ -653,6 +659,4 @@ Still open (do not block Phase 1 design, but decide before or during the named p
 
 ## Final recommendation for review
 
-Core platform decisions **(1)–(3) are confirmed** (see [Decisions confirmed](#decisions-confirmed-review)). Remaining open questions can be answered as phases approach; the main pending product call is whether **Phase 1 = staff registry only**.
-
-**Do not** land `adventure_equipment*` models, menus, controllers, or security rules until Phase 1 implementation is explicitly kicked off after this architecture review.
+Core platform decisions **(1)–(3) are confirmed** (see [Decisions confirmed](#decisions-confirmed-review)). Phase 1 **`adventure_equipment`** is shipped; extend via `adventure_equipment_*` modules per roadmap phases 2+.

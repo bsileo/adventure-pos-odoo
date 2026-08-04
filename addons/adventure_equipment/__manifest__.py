@@ -2,7 +2,7 @@
 {
     "name": "Adventure Equipment",
     "summary": "Customer-owned equipment lifecycle registry for Adventure POS.",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
@@ -27,6 +27,9 @@
         "views/res_partner_views.xml",
         "views/menus.xml",
         "wizards/ownership_transfer_wizard_views.xml",
+    ],
+    "demo": [
+        "demo/demo_equipment.xml",
     ],
     "installable": True,
     "application": True,
