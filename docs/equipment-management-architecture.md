@@ -1,10 +1,9 @@
 # Equipment Management Architecture
 
-!!! warning "Future / not implemented"
+!!! tip "Core module shipped"
 
-    This is a **pointer** to the full design. Do not implement equipment modules until that design is reviewed.
+    The staff registry module [`adventure_equipment`](../architecture/equipment-management.md) is implemented. Service, portal, configuration, and scuba extension modules remain future work.
 
 **Canonical document:** [Equipment Management Architecture](architecture/equipment-management.md)
 
-That page covers vision, **confirmed review decisions**, repository assessment, proposed `adventure_equipment*` modules, domain model, Mermaid ER and dependency diagrams, Odoo integration, security, lifecycle rules, roadmap, risks, and remaining open questions.
-
+That page covers vision, confirmed review decisions, the shipped Phase 1 registry, remaining roadmap phases, domain model, diagrams, and open questions.
