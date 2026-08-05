@@ -171,6 +171,34 @@ class TestAdventureEquipmentAsset(TransactionCase):
         with self.assertRaises(UserError):
             asset.unlink()
 
+    def test_product_change_does_not_overwrite_snapshots(self):
+        product_a = self.Product.create({"name": "Product Alpha", "default_code": "PA-01"})
+        product_b = self.Product.create({"name": "Product Beta", "default_code": "PB-01"})
+        asset = self._create_asset(
+            product_id=product_a.id,
+            brand_name="Manual Brand",
+            model_name="Manual Model",
+        )
+        self.assertEqual(asset.brand_name, "Manual Brand")
+        asset.write({"product_id": product_b.id})
+        self.assertEqual(asset.product_id, product_b)
+        self.assertEqual(asset.brand_name, "Manual Brand")
+        self.assertEqual(asset.model_name, "Manual Model")
+
+    def test_archive_distinct_from_retire(self):
+        asset = self._create_asset(
+            lifecycle_state="active",
+            in_service_date="2026-01-01",
+        )
+        asset.write({"active": False})
+        self.assertFalse(asset.active)
+        self.assertEqual(asset.lifecycle_state, "active")
+        asset.write({"active": True})
+        asset.action_retire()
+        self.assertEqual(asset.lifecycle_state, "retired")
+        self.assertTrue(asset.active)
+        self.assertTrue(asset.retired_on)
+
     def test_serial_duplicate_validation(self):
         self._create_asset(
             brand_name="Scubapro",

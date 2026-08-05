@@ -632,8 +632,12 @@ class AdventureEquipmentAsset(models.Model):
         for vals in vals_list:
             name = vals.get("name") or _("New")
             if name in (_("New"), "New"):
+                company = vals.get("company_id") or self.env.company.id
                 vals["name"] = (
-                    sequence.next_by_code("adventure.equipment.asset") or _("New")
+                    sequence.with_company(company).next_by_code(
+                        "adventure.equipment.asset"
+                    )
+                    or _("New")
                 )
             if vals.get("product_id") and not vals.get("product_tmpl_id"):
                 product = self.env["product.product"].browse(vals["product_id"])

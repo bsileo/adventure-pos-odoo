@@ -54,6 +54,7 @@ nav:
   - Data model:
       - Core model: data-model/core-model.md
       - Product catalog: data-model/product-catalog.md
+      - Equipment registry: data-model/equipment.md
   - Integrations:
       - FareHarbor POS sync: integrations/fareharbor-pos-sync.md
       - Smartwaiver waiver sync: integrations/smartwaiver.md

@@ -51,3 +51,18 @@ Typed links to `sale.order` / POS lines and `stock.lot` are **not** implemented 
 odoo -d <database> -u adventure_equipment --test-enable --stop-after-init \
   --test-tags /adventure_equipment
 ```
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [STAFF_GUIDE.md](doc/STAFF_GUIDE.md) | Registering equipment (with/without product, serial, transfer, activate/retire/archive) |
+| [DATA_MODEL.md](doc/DATA_MODEL.md) | Models and key fields |
+| [LIFECYCLE.md](doc/LIFECYCLE.md) | Lifecycle states and transition table |
+| [OWNERSHIP.md](doc/OWNERSHIP.md) | Contact-only scope, history, transfer wizard, verification |
+| [PRODUCT_SNAPSHOTS.md](doc/PRODUCT_SNAPSHOTS.md) | Blank-fill vs refresh, ondelete set null |
+| [SERIAL_POLICY.md](doc/SERIAL_POLICY.md) | Soft serial uniqueness and bypass context |
+| [IMPORT.md](doc/IMPORT.md) | CSV import and field tips |
+| [SECURITY.md](doc/SECURITY.md) | Groups, company rules, restricted fields |
+| [LIMITATIONS.md](doc/LIMITATIONS.md) | Deferred features (portal, service, stock.lot, …) |
+| [UPGRADE.md](doc/UPGRADE.md) | Module upgrade and versioning |

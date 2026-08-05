@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase
 from odoo.tests import tagged
 
@@ -11,6 +12,7 @@ class TestAdventureEquipmentSecurity(TransactionCase):
         super().setUpClass()
         cls.Asset = cls.env["adventure.equipment.asset"]
         cls.viewer_group = cls.env.ref("adventure_equipment.group_equipment_viewer")
+        cls.user_group = cls.env.ref("adventure_equipment.group_equipment_user")
         cls.manager_group = cls.env.ref("adventure_equipment.group_equipment_manager")
         cls.partner = cls.env["res.partner"].create({"name": "Security Test Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_other")
@@ -42,3 +44,47 @@ class TestAdventureEquipmentSecurity(TransactionCase):
         read_data = self.Asset.with_user(viewer_user).browse(asset.id).read(["name"])
         self.assertEqual(len(read_data), 1)
         self.assertEqual(read_data[0]["id"], asset.id)
+
+    def test_viewer_cannot_write(self):
+        asset = self.Asset.create(
+            {
+                "partner_id": self.partner.id,
+                "category_id": self.category.id,
+                "brand_name": "Test Brand",
+                "model_name": "Test Model",
+                "lifecycle_state": "draft",
+            }
+        )
+        viewer_user = self.env["res.users"].create(
+            {
+                "name": "Equipment Viewer Write Test",
+                "login": "equipment_viewer_write_test",
+                "company_id": self.env.company.id,
+                "company_ids": [(6, 0, [self.env.company.id])],
+                "groups_id": [(6, 0, [self.viewer_group.id])],
+            }
+        )
+        with self.assertRaises(AccessError):
+            asset.with_user(viewer_user).write({"nickname": "Should Fail"})
+
+    def test_user_cannot_unlink_asset(self):
+        asset = self.Asset.create(
+            {
+                "partner_id": self.partner.id,
+                "category_id": self.category.id,
+                "brand_name": "Test Brand",
+                "model_name": "Test Model",
+                "lifecycle_state": "draft",
+            }
+        )
+        equipment_user = self.env["res.users"].create(
+            {
+                "name": "Equipment User Unlink Test",
+                "login": "equipment_user_unlink_test",
+                "company_id": self.env.company.id,
+                "company_ids": [(6, 0, [self.env.company.id])],
+                "groups_id": [(6, 0, [self.user_group.id])],
+            }
+        )
+        with self.assertRaises(AccessError):
+            asset.with_user(equipment_user).unlink()

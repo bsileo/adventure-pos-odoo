@@ -90,6 +90,16 @@ class TestAdventureEquipmentOwnership(TransactionCase):
         self.assertEqual(len(asset.ownership_ids.filtered("is_current")), 1)
         self.assertEqual(current, asset.ownership_ids.filtered("is_current"))
 
+    def test_organization_ownership_type_create(self):
+        asset = self._create_asset(
+            partner=self.parent_company,
+            ownership_type="organization",
+            brand_name="Club BCD",
+            model_name="Shared",
+        )
+        self.assertEqual(asset.ownership_type, "organization")
+        self.assertEqual(asset.partner_id, self.parent_company)
+
     def test_partner_equipment_asset_count_contact_only(self):
         self._create_asset(
             partner=self.child_contact,
