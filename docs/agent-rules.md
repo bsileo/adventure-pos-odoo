@@ -26,6 +26,7 @@ Before starting a **work stream**—meaning a coherent chunk of work such as a f
 1. Re-read **this page** (`docs/agent-rules.md`) for module scope, POS/inventory constraints, Git rules, and documentation obligations.
 2. Skim the sections of **[Architecture](architecture/)** and **[Data model](data-model/)** that relate to the task; open **[Integrations](integrations/)** or **[Migrations](migrations/)** pages when the work touches those areas.
 3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
+4. For **new modules or user-visible functionality**, plan **Tidewater Dive Shop** seed / demo coverage via the **module-owned contributor** pattern in the same work stream (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features) and [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md)).
 
 **Humans** should follow the same habit; [Developer onboarding](developer-onboarding.md) points here.
 
@@ -127,6 +128,43 @@ Pull requests that introduce or rely on **team-mandatory** configuration without
 
 ---
 
+### 5. Tidewater demo seed (mandatory for features)
+
+**Tidewater Dive Shop** (Pittsburgh, PA) is the canonical fictional tenant for demos, QA, and the shared GCP sandbox (**sandbox-diveshop**). Commands and identity: [seed-data.md](seed-data.md). Architecture: [Tidewater demo seed architecture](architecture/tidewater-demo-seed.md).
+
+When agents build **new modules**, **extend existing modules**, or ship **user-visible behavior** that operators would exercise in a real shop, they **MUST** consider and usually deliver **Tidewater seed (or demo) coverage** in the same change train so the feature can be tested and demonstrated after `seed-tidewater` / sandbox bootstrap—not only via empty UI or ad-hoc manual setup.
+
+#### Architecture (ongoing)
+
+Use **module-owned Tidewater contributors** plus a **thin central orchestrator**—not one mega-seed that hard-depends on every optional app, and not disconnected per-module demo companies.
+
+| Kind of data | Where it belongs |
+|--------------|------------------|
+| Company, slug, place, logo, shared XML-id conventions | Central Tidewater identity |
+| Shared story anchors (named customers, POS config others link to) | Central / platform contributor |
+| Records for models owned by a module (waivers, rentals, future domains, …) | **That module’s** Tidewater contributor / seed hook |
+| Optional integration fixtures | That integration module — run only when installed |
+
+**On every feature work stream that needs demo state, agents MUST:**
+
+1. Ask: “How would someone see and exercise this in Tidewater after a seed?”
+2. Put module-specific demo rows **in the module that owns the models** (contributor), linked to Tidewater identity XML ids—not a second fictional shop.
+3. Ensure the **orchestrator** (`seed-tidewater` / sandbox bootstrap) will run the contributor when the module is installed, and skip cleanly when it is not.
+4. Keep seed data **fictional**, **idempotent** (stable XML ids), and free of real customer PII; use `--reset-seed` only for that contributor’s scenario/runtime records.
+5. Remember **schema vs data**: install/upgrade owns DDL; seed owns demo rows. Normal sandbox **deploys do not reseed**—bootstrap/reset and explicit reseed scripts do.
+6. Update [seed-data.md](seed-data.md) (and the architecture page if ownership patterns change) when the Tidewater surface changes in a way operators or agents need to know.
+
+**Never:**
+
+* Dump unrelated module demo data into `dive_shop_pos` (or any single pack) by default when the models live elsewhere.
+* Treat “feature works on an empty DB if you click around” as sufficient demo coverage when deterministic sample data would make the feature obvious.
+* Put production or real-shop data into Tidewater seed.
+* Assume installing a module alone mutates an existing Tidewater DB—re-run seed (or a documented demo post-install hook) so the new contributor can upsert.
+
+**Acceptable exceptions** (note in the PR): pure refactors with no new user-facing surface; infra-only / docs-only changes; spikes that will add a Tidewater contributor in a follow-up before merge to shared demo branches.
+
+---
+
 ## Coding Standards
 
 ### Python
@@ -210,6 +248,7 @@ When modifying POS:
 * keep commits focused
 * update documentation when needed
 * for **feature or behavior changes**, review and update **technical documentation** (MkDocs under `docs/`, setup, architecture notes, module READMEs as appropriate) whenever the change affects how the system works or how to operate it; **confirm with human developers** that doc updates match intent before treating documentation as complete
+* for **new modules or user-visible functionality**, add or extend a **module-owned Tidewater contributor** linked to shared Tidewater identity when demo state is needed (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features), [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md), and [seed-data.md](seed-data.md))
 
 ### Never Do
 

@@ -267,7 +267,7 @@ docker compose up -d
 
 ### Reset sandbox database (destructive)
 
-To **wipe the Postgres volume** and re-run **`base`** install (no Odoo demos, same as [`odoo-init-db.sh`](../scripts/odoo-init-db.sh)):
+To **wipe the Postgres volume**, re-run **`base`** install (no Odoo demos, same as [`odoo-init-db.sh`](../scripts/odoo-init-db.sh)), and **bootstrap Tidewater Dive Shop** (sandbox-diveshop seed):
 
 **On the VM** (SSH as `deploy`, repo root):
 
@@ -276,7 +276,7 @@ cd /srv/adventurepos/adventure-pos-odoo   # or your GCP_SANDBOX_DEPLOY_PATH
 bash ./scripts/gcp-sandbox-reset-db.sh
 ```
 
-You must type **`reset-sandbox`** when prompted. Non-interactive (e.g. automation): `bash ./scripts/gcp-sandbox-reset-db.sh --yes` (still wipes all Odoo DB data on that VM).
+You must type **`reset-sandbox`** when prompted. Non-interactive (e.g. automation): `bash ./scripts/gcp-sandbox-reset-db.sh --yes` (still wipes all Odoo DB data on that VM). Pass **`--skip-seed`** with or without `--yes` if you only want an empty `base` DB.
 
 **From Windows** (interactive SSH; set **`GCP_SANDBOX_SSH_HOST`** to the current VM IP, optional **`GCP_SANDBOX_DEPLOY_PATH`**):
 
@@ -284,7 +284,23 @@ You must type **`reset-sandbox`** when prompted. Non-interactive (e.g. automatio
 .\scripts\gcp-sandbox-reset-db.ps1
 ```
 
-This runs **`docker compose down --volumes`** then **`up -d`** and **`odoo-init-db.sh`** — coordinate with the team before using it. For **local** disposable data only, use **`make reset-db`** instead (does not target GCP by itself).
+This runs **`docker compose down --volumes`** then **`up -d`**, **`odoo-init-db.sh`**, and **`gcp-sandbox-seed-tidewater.sh`** — coordinate with the team before using it. For **local** disposable data only, use **`make reset-db`** instead (does not target GCP by itself; local Tidewater seed is **`make seed-tidewater`**).
+
+### Refresh Tidewater seed (non-destructive)
+
+To reload or refresh the Tidewater demo pack **without** wiping Postgres:
+
+```bash
+bash ./scripts/gcp-sandbox-seed-tidewater.sh
+bash ./scripts/gcp-sandbox-seed-tidewater.sh --reset-seed
+```
+
+```powershell
+.\scripts\gcp-sandbox-seed-tidewater.ps1
+.\scripts\gcp-sandbox-seed-tidewater.ps1 -ResetSeed
+```
+
+Normal **`develop` deploys do not reseed**. See [seed-data.md](seed-data.md) for profile details.
 
 ---
 

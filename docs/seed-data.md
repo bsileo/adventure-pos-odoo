@@ -1,14 +1,43 @@
 # Development Seed Data
 
-AdventurePOS seed data is explicit dev tooling, not Odoo demo data. The seed runner is intended for local and disposable development databases, and for future automated system tests that need deterministic records.
+AdventurePOS seed data is explicit dev tooling, not Odoo demo data. The seed runner is intended for local and disposable development databases, the shared GCP sandbox, and future automated system tests that need deterministic records.
+
+## Tidewater Dive Shop (sandbox-diveshop)
+
+The canonical example tenant is **Tidewater Dive Shop** — a fictional Pittsburgh, PA dive shop used for demos, QA, and sandbox walkthroughs.
+
+| Field | Value |
+|-------|--------|
+| Display name | Tidewater Dive Shop |
+| Tenant slug | `shop_tidewater` |
+| Seed profile | `tidewater` (`tideledger` and `dive_shop` are legacy aliases) |
+| Location | Pittsburgh, PA |
+| Contact | `ops@tidewater.example` / `+1 555-0412` |
+
+**Sandbox role:** Tidewater is the **sandbox-diveshop** story tenant — open the shared GCP sandbox and expect a working dive shop, not an empty company.
+
+Identity constants live in [`addons/dive_shop_pos/seeds/tidewater_identity.py`](../addons/dive_shop_pos/seeds/tidewater_identity.py).
+
+**Agent rule:** when shipping new modules or user-visible functionality, add or extend a **module-owned Tidewater contributor** (linked to shared Tidewater identity) so the feature is testable and demonstrable after seed. See [agent-rules.md — Tidewater demo seed](agent-rules.md#tidewater-demo-seed-mandatory-for-features) and [Tidewater demo seed architecture](architecture/tidewater-demo-seed.md).
+
+## Architecture (module-owned contributors)
+
+Tidewater seed is **not** a single dump owned forever by one vertical pack.
+
+- **Central:** company identity, shared XML-id conventions, story anchors others link to.
+- **Per module:** demo rows for that module’s models (rentals, waivers, future domains, …), registered with the seed orchestrator.
+- **Orchestrator:** `seed-tidewater` / sandbox bootstrap runs installed contributors in order; skips modules that are not installed.
+- **Lifecycle:** deploys ship code only; reseed or sandbox reset loads data; re-run seed after installing a new module onto an existing Tidewater DB.
+
+Full pattern, ownership table, and ongoing checklist: [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md).
 
 ## Profiles
 
-The first supported profile is `dive_shop`, owned by the `dive_shop_pos` vertical module.
+The supported profile is `tidewater` (aliases: `tideledger`, `dive_shop`), owned by the `dive_shop_pos` vertical module.
 
 It creates:
 
-- A stable dive shop company.
+- The Tidewater company (Pittsburgh).
 - Rental and fee products.
 - Scuba rental package templates.
 - Physical rental assets with representative states.
@@ -16,23 +45,45 @@ It creates:
 - Reservations for pickup, return, overdue, and damaged-return workflows.
 - Condition logs and maintenance events.
 
-## Usage
+## Usage (local)
 
 PowerShell:
 
 ```powershell
-.\scripts\seed-dev-db.ps1 -Profile dive_shop
-.\scripts\seed-dev-db.ps1 -Profile dive_shop -ResetSeed
+.\scripts\seed-dev-db.ps1
+.\scripts\seed-dev-db.ps1 -Profile tidewater -ResetSeed
 ```
 
-Bash:
+Bash / Make:
 
 ```bash
-bash ./scripts/seed-dev-db.sh --profile dive_shop
-bash ./scripts/seed-dev-db.sh --profile dive_shop --reset-seed
+bash ./scripts/seed-dev-db.sh --profile tidewater
+bash ./scripts/seed-dev-db.sh --profile tidewater --reset-seed
+make seed-tidewater
+make seed-tidewater RESET_SEED=1
 ```
 
 The runner installs or updates `dive_shop_pos` before loading the seed profile.
+
+## Sandbox
+
+Normal **`develop` deploys do not reseed** — they ship code only and leave live sandbox data alone.
+
+| Goal | Command |
+|------|---------|
+| Refresh Tidewater without wiping the DB | `bash ./scripts/gcp-sandbox-seed-tidewater.sh` (optional `--reset-seed`) |
+| Wipe sandbox DB and bootstrap Tidewater | `bash ./scripts/gcp-sandbox-reset-db.sh` |
+| Wipe only (no seed) | `bash ./scripts/gcp-sandbox-reset-db.sh --skip-seed` |
+
+From Windows against the VM (set `GCP_SANDBOX_SSH_HOST`):
+
+```powershell
+.\scripts\gcp-sandbox-seed-tidewater.ps1
+.\scripts\gcp-sandbox-seed-tidewater.ps1 -ResetSeed
+.\scripts\gcp-sandbox-reset-db.ps1
+```
+
+See [shared-environment.md](shared-environment.md) for VM access and reset details.
 
 ## Idempotency
 

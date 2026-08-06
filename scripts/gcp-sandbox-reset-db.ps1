@@ -5,6 +5,7 @@
 
 .DESCRIPTION
   Runs scripts/gcp-sandbox-reset-db.sh on the VM (requires TTY for confirmation).
+  Wipes Postgres, reinitializes base, then bootstraps Tidewater Dive Shop seed.
   Set GCP_SANDBOX_SSH_HOST to the VM IP/hostname (same as GitHub secret).
   Optional: GCP_SANDBOX_DEPLOY_PATH if your clone is not the default.
 
