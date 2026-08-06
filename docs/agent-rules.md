@@ -26,6 +26,7 @@ Before starting a **work stream**—meaning a coherent chunk of work such as a f
 1. Re-read **this page** (`docs/agent-rules.md`) for module scope, POS/inventory constraints, Git rules, and documentation obligations.
 2. Skim the sections of **[Architecture](architecture/)** and **[Data model](data-model/)** that relate to the task; open **[Integrations](integrations/)** or **[Migrations](migrations/)** pages when the work touches those areas.
 3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
+4. For **new modules or user-visible functionality**, plan **Tidewater Dive Shop** seed / demo coverage in the same work stream (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features)).
 
 **Humans** should follow the same habit; [Developer onboarding](developer-onboarding.md) points here.
 
@@ -127,6 +128,29 @@ Pull requests that introduce or rely on **team-mandatory** configuration without
 
 ---
 
+### 5. Tidewater demo seed (mandatory for features)
+
+**Tidewater Dive Shop** (Pittsburgh, PA) is the canonical fictional tenant for demos, QA, and the shared GCP sandbox (**sandbox-diveshop**). Details: [seed-data.md](seed-data.md).
+
+When agents build **new modules**, **extend existing modules**, or ship **user-visible behavior** that operators would exercise in a real shop, they **MUST** consider and usually deliver **Tidewater seed (or demo) coverage** in the same change train so the feature can be tested and demonstrated after `seed-tidewater` / sandbox bootstrap—not only via empty UI or ad-hoc manual setup.
+
+**Always:**
+
+* Ask: “How would someone see and exercise this in Tidewater after a seed?”
+* Extend the Tidewater / `dive_shop_pos` seed pack (or add a documented seed hook owned by the new module) with representative records, scenarios, or POS-ready data when the feature needs sample state to make sense.
+* Keep seed data **fictional**, **idempotent**, and free of real customer PII.
+* Update [seed-data.md](seed-data.md) when the seed surface for Tidewater changes in a way operators or agents need to know.
+
+**Never:**
+
+* Treat “feature works on an empty DB if you click around” as sufficient demo coverage when deterministic sample data would make the feature obvious.
+* Put production or real-shop data into the Tidewater seed.
+* Assume normal sandbox **deploys** reseed—seed runs on bootstrap/reset or explicit reseed scripts only.
+
+**Acceptable exceptions** (note in the PR): pure refactors with no new user-facing surface; infra-only / docs-only changes; spikes that will add Tidewater seed in a follow-up before merge to shared demo branches.
+
+---
+
 ## Coding Standards
 
 ### Python
@@ -210,6 +234,7 @@ When modifying POS:
 * keep commits focused
 * update documentation when needed
 * for **feature or behavior changes**, review and update **technical documentation** (MkDocs under `docs/`, setup, architecture notes, module READMEs as appropriate) whenever the change affects how the system works or how to operate it; **confirm with human developers** that doc updates match intent before treating documentation as complete
+* for **new modules or user-visible functionality**, extend **Tidewater Dive Shop** seed/demo data when needed so the feature is testable and demonstrable after seed (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features) and [seed-data.md](seed-data.md))
 
 ### Never Do
 

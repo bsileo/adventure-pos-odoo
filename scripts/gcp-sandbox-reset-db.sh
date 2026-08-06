@@ -9,7 +9,7 @@
 #
 # This removes the Docker Postgres volume, restarts the stack, runs
 # odoo-init-db.sh (base only, --without-demo=all), then bootstraps the
-# Tideledger Dive Co. seed pack so the sandbox comes back as a working shop.
+# Tidewater Dive Shop seed pack so the sandbox comes back as a working shop.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -37,7 +37,7 @@ WARNING — Shared GCP sandbox database reset
 
 This will PERMANENTLY delete the Postgres Docker volume for this stack and
 reinitialize an empty Odoo database (base module only, no demonstration data),
-then load the Tideledger Dive Co. seed (sandbox-diveshop) unless --skip-seed
+then load the Tidewater Dive Shop seed (sandbox-diveshop) unless --skip-seed
 is passed.
 
 All Odoo data on this sandbox is lost for everyone: partners, products, POS,
@@ -64,10 +64,10 @@ docker compose -p adventure-pos-odoo down --volumes --remove-orphans 2>/dev/null
 bash "$ROOT_DIR/scripts/odoo-reset-db.sh" --yes
 
 if [[ "$SKIP_SEED" -eq 1 ]]; then
-  echo "Skipping Tideledger seed (--skip-seed)."
+  echo "Skipping Tidewater seed (--skip-seed)."
   exit 0
 fi
 
-echo "Bootstrapping Tideledger Dive Co. (sandbox-diveshop)..."
-bash "$ROOT_DIR/scripts/gcp-sandbox-seed-tideledger.sh"
-echo "Sandbox reset + Tideledger bootstrap complete."
+echo "Bootstrapping Tidewater Dive Shop (sandbox-diveshop)..."
+bash "$ROOT_DIR/scripts/gcp-sandbox-seed-tidewater.sh"
+echo "Sandbox reset + Tidewater bootstrap complete."

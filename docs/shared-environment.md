@@ -267,7 +267,7 @@ docker compose up -d
 
 ### Reset sandbox database (destructive)
 
-To **wipe the Postgres volume**, re-run **`base`** install (no Odoo demos, same as [`odoo-init-db.sh`](../scripts/odoo-init-db.sh)), and **bootstrap Tideledger Dive Co.** (sandbox-diveshop seed):
+To **wipe the Postgres volume**, re-run **`base`** install (no Odoo demos, same as [`odoo-init-db.sh`](../scripts/odoo-init-db.sh)), and **bootstrap Tidewater Dive Shop** (sandbox-diveshop seed):
 
 **On the VM** (SSH as `deploy`, repo root):
 
@@ -284,20 +284,20 @@ You must type **`reset-sandbox`** when prompted. Non-interactive (e.g. automatio
 .\scripts\gcp-sandbox-reset-db.ps1
 ```
 
-This runs **`docker compose down --volumes`** then **`up -d`**, **`odoo-init-db.sh`**, and **`gcp-sandbox-seed-tideledger.sh`** — coordinate with the team before using it. For **local** disposable data only, use **`make reset-db`** instead (does not target GCP by itself; local Tideledger seed is **`make seed-tideledger`**).
+This runs **`docker compose down --volumes`** then **`up -d`**, **`odoo-init-db.sh`**, and **`gcp-sandbox-seed-tidewater.sh`** — coordinate with the team before using it. For **local** disposable data only, use **`make reset-db`** instead (does not target GCP by itself; local Tidewater seed is **`make seed-tidewater`**).
 
-### Refresh Tideledger seed (non-destructive)
+### Refresh Tidewater seed (non-destructive)
 
-To reload or refresh the Tideledger demo pack **without** wiping Postgres:
+To reload or refresh the Tidewater demo pack **without** wiping Postgres:
 
 ```bash
-bash ./scripts/gcp-sandbox-seed-tideledger.sh
-bash ./scripts/gcp-sandbox-seed-tideledger.sh --reset-seed
+bash ./scripts/gcp-sandbox-seed-tidewater.sh
+bash ./scripts/gcp-sandbox-seed-tidewater.sh --reset-seed
 ```
 
 ```powershell
-.\scripts\gcp-sandbox-seed-tideledger.ps1
-.\scripts\gcp-sandbox-seed-tideledger.ps1 -ResetSeed
+.\scripts\gcp-sandbox-seed-tidewater.ps1
+.\scripts\gcp-sandbox-seed-tidewater.ps1 -ResetSeed
 ```
 
 Normal **`develop` deploys do not reseed**. See [seed-data.md](seed-data.md) for profile details.

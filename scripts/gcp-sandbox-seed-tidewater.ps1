@@ -1,18 +1,18 @@
 #requires -Version 5.1
 <#
 .SYNOPSIS
-  Seed or refresh Tideledger on the shared GCP sandbox (non-destructive).
+  Seed or refresh Tidewater on the shared GCP sandbox (non-destructive).
 
 .DESCRIPTION
-  SSHs to the sandbox VM and runs scripts/gcp-sandbox-seed-tideledger.sh.
+  SSHs to the sandbox VM and runs scripts/gcp-sandbox-seed-tidewater.sh.
   Does not wipe Postgres. Use -ResetSeed to recreate scenario seed records.
 
 .EXAMPLE
   $env:GCP_SANDBOX_SSH_HOST = '203.0.113.50'
-  .\scripts\gcp-sandbox-seed-tideledger.ps1
+  .\scripts\gcp-sandbox-seed-tidewater.ps1
 
 .EXAMPLE
-  .\scripts\gcp-sandbox-seed-tideledger.ps1 -ResetSeed
+  .\scripts\gcp-sandbox-seed-tidewater.ps1 -ResetSeed
 #>
 param(
     [string] $SshHost = $env:GCP_SANDBOX_SSH_HOST,
@@ -31,4 +31,4 @@ if ($ResetSeed) {
     $remoteArgs = ' --reset-seed'
 }
 
-ssh -t "${SshUser}@${SshHost}" "cd '$DeployPath' && bash ./scripts/gcp-sandbox-seed-tideledger.sh$remoteArgs"
+ssh -t "${SshUser}@${SshHost}" "cd '$DeployPath' && bash ./scripts/gcp-sandbox-seed-tidewater.sh$remoteArgs"

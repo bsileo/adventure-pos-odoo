@@ -2,29 +2,31 @@
 
 AdventurePOS seed data is explicit dev tooling, not Odoo demo data. The seed runner is intended for local and disposable development databases, the shared GCP sandbox, and future automated system tests that need deterministic records.
 
-## Tideledger Dive Co. (sandbox-diveshop)
+## Tidewater Dive Shop (sandbox-diveshop)
 
-The canonical example tenant is **Tideledger Dive Co.** — a fictional Pittsburgh, PA dive shop used for demos, QA, and sandbox walkthroughs.
+The canonical example tenant is **Tidewater Dive Shop** — a fictional Pittsburgh, PA dive shop used for demos, QA, and sandbox walkthroughs.
 
 | Field | Value |
 |-------|--------|
-| Display name | Tideledger Dive Co. |
-| Tenant slug | `shop_tideledger` |
-| Seed profile | `tideledger` (`dive_shop` is a legacy alias) |
+| Display name | Tidewater Dive Shop |
+| Tenant slug | `shop_tidewater` |
+| Seed profile | `tidewater` (`tideledger` and `dive_shop` are legacy aliases) |
 | Location | Pittsburgh, PA |
-| Contact | `ops@tideledger.example` / `+1 555-0412` |
+| Contact | `ops@tidewater.example` / `+1 555-0412` |
 
-**Sandbox role:** Tideledger is the **sandbox-diveshop** story tenant — open the shared GCP sandbox and expect a working dive shop, not an empty company.
+**Sandbox role:** Tidewater is the **sandbox-diveshop** story tenant — open the shared GCP sandbox and expect a working dive shop, not an empty company.
 
-Identity constants live in [`addons/dive_shop_pos/seeds/tideledger_identity.py`](../addons/dive_shop_pos/seeds/tideledger_identity.py).
+Identity constants live in [`addons/dive_shop_pos/seeds/tidewater_identity.py`](../addons/dive_shop_pos/seeds/tidewater_identity.py).
+
+**Agent rule:** when shipping new modules or user-visible functionality, extend Tidewater seed/demo data so the feature is testable and demonstrable after seed. See [agent-rules.md — Tidewater demo seed](agent-rules.md#tidewater-demo-seed-mandatory-for-features).
 
 ## Profiles
 
-The supported profile is `tideledger` (alias: `dive_shop`), owned by the `dive_shop_pos` vertical module.
+The supported profile is `tidewater` (aliases: `tideledger`, `dive_shop`), owned by the `dive_shop_pos` vertical module.
 
 It creates:
 
-- The Tideledger company (Pittsburgh).
+- The Tidewater company (Pittsburgh).
 - Rental and fee products.
 - Scuba rental package templates.
 - Physical rental assets with representative states.
@@ -38,16 +40,16 @@ PowerShell:
 
 ```powershell
 .\scripts\seed-dev-db.ps1
-.\scripts\seed-dev-db.ps1 -Profile tideledger -ResetSeed
+.\scripts\seed-dev-db.ps1 -Profile tidewater -ResetSeed
 ```
 
 Bash / Make:
 
 ```bash
-bash ./scripts/seed-dev-db.sh --profile tideledger
-bash ./scripts/seed-dev-db.sh --profile tideledger --reset-seed
-make seed-tideledger
-make seed-tideledger RESET_SEED=1
+bash ./scripts/seed-dev-db.sh --profile tidewater
+bash ./scripts/seed-dev-db.sh --profile tidewater --reset-seed
+make seed-tidewater
+make seed-tidewater RESET_SEED=1
 ```
 
 The runner installs or updates `dive_shop_pos` before loading the seed profile.
@@ -58,15 +60,15 @@ Normal **`develop` deploys do not reseed** — they ship code only and leave liv
 
 | Goal | Command |
 |------|---------|
-| Refresh Tideledger without wiping the DB | `bash ./scripts/gcp-sandbox-seed-tideledger.sh` (optional `--reset-seed`) |
-| Wipe sandbox DB and bootstrap Tideledger | `bash ./scripts/gcp-sandbox-reset-db.sh` |
+| Refresh Tidewater without wiping the DB | `bash ./scripts/gcp-sandbox-seed-tidewater.sh` (optional `--reset-seed`) |
+| Wipe sandbox DB and bootstrap Tidewater | `bash ./scripts/gcp-sandbox-reset-db.sh` |
 | Wipe only (no seed) | `bash ./scripts/gcp-sandbox-reset-db.sh --skip-seed` |
 
 From Windows against the VM (set `GCP_SANDBOX_SSH_HOST`):
 
 ```powershell
-.\scripts\gcp-sandbox-seed-tideledger.ps1
-.\scripts\gcp-sandbox-seed-tideledger.ps1 -ResetSeed
+.\scripts\gcp-sandbox-seed-tidewater.ps1
+.\scripts\gcp-sandbox-seed-tidewater.ps1 -ResetSeed
 .\scripts\gcp-sandbox-reset-db.ps1
 ```
 

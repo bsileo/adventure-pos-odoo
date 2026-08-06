@@ -32,6 +32,12 @@ Initial modules: `adventure_base`, `adventure_pos`, `adventure_inventory`, `adve
 - When agreed Odoo configuration must exist in every environment (or every new dev DB), encode it in git: module `data/` (XML/CSV), manifest hooks, or documented scripts—not UI-only on one machine.
 - Do not treat UI-only setup as complete without a repeatable artifact. See `docs/agent-rules.md` (Configuration as code).
 
+## Tidewater demo seed
+
+- **Tidewater Dive Shop** is the canonical sandbox/demo tenant (Pittsburgh). See `docs/seed-data.md`.
+- When adding modules or user-visible functionality, extend the Tidewater seed pack (or a module-owned seed hook) so the feature is testable and demonstrable after seed—not only via empty UI. See `docs/agent-rules.md` § Tidewater demo seed.
+- Keep seed data fictional, idempotent, and free of real customer PII. Deploys do not reseed; bootstrap/reset and explicit reseed scripts do.
+
 ## Coding standards
 
 - Python: Odoo conventions, small readable methods.

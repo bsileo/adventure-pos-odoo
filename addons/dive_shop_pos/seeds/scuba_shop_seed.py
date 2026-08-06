@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 
-from . import tideledger_identity as identity
+from . import tidewater_identity as identity
 from .registry import SeedRegistry
 
 
@@ -10,7 +10,7 @@ SEED_MODULE = "dive_shop_pos_seed"
 
 
 class ScubaShopSeed:
-    """Tideledger Dive Co. seed pack (sandbox-diveshop / dive_shop profile)."""
+    """Tidewater Dive Shop seed pack (sandbox-diveshop / tidewater profile)."""
 
     def __init__(self, env, reset=False):
         self.env = env
@@ -62,19 +62,22 @@ class ScubaShopSeed:
             if state:
                 values["state_id"] = state.id
 
-        # Rebrand existing seeded DBs in place: point the Tideledger XML id at
-        # the legacy company record when only the old id exists.
-        legacy = self.registry.ref("company_adventure_dive_center_dev")
-        if legacy and legacy.exists() and not self.registry.ref(identity.COMPANY_XML_ID):
-            self.registry.imd.create(
-                {
-                    "module": SEED_MODULE,
-                    "name": identity.COMPANY_XML_ID,
-                    "model": "res.company",
-                    "res_id": legacy.id,
-                    "noupdate": True,
-                }
-            )
+        # Rebrand existing seeded DBs in place: point the Tidewater XML id at
+        # a prior company record when only a legacy id exists.
+        if not self.registry.ref(identity.COMPANY_XML_ID):
+            for legacy_name in identity.LEGACY_COMPANY_XML_IDS:
+                legacy = self.registry.ref(legacy_name)
+                if legacy and legacy.exists():
+                    self.registry.imd.create(
+                        {
+                            "module": SEED_MODULE,
+                            "name": identity.COMPANY_XML_ID,
+                            "model": "res.company",
+                            "res_id": legacy.id,
+                            "noupdate": True,
+                        }
+                    )
+                    break
 
         self.records["company"] = self.registry.upsert(
             "res.company",
@@ -208,7 +211,7 @@ class ScubaShopSeed:
                     "customer_rank": 1,
                     "email": "%s@example.test" % key.replace("customer_", ""),
                     "phone": "+1 555-%04d" % (1000 + len(self.records)),
-                    "comment": "Tideledger seed customer. Requirements: %s" % payload,
+                    "comment": "Tidewater seed customer. Requirements: %s" % payload,
                 },
             )
 
