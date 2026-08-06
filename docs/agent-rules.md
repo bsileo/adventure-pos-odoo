@@ -26,7 +26,7 @@ Before starting a **work stream**—meaning a coherent chunk of work such as a f
 1. Re-read **this page** (`docs/agent-rules.md`) for module scope, POS/inventory constraints, Git rules, and documentation obligations.
 2. Skim the sections of **[Architecture](architecture/)** and **[Data model](data-model/)** that relate to the task; open **[Integrations](integrations/)** or **[Migrations](migrations/)** pages when the work touches those areas.
 3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
-4. For **new modules or user-visible functionality**, plan **Tidewater Dive Shop** seed / demo coverage in the same work stream (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features)).
+4. For **new modules or user-visible functionality**, plan **Tidewater Dive Shop** seed / demo coverage via the **module-owned contributor** pattern in the same work stream (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features) and [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md)).
 
 **Humans** should follow the same habit; [Developer onboarding](developer-onboarding.md) points here.
 
@@ -248,7 +248,7 @@ When modifying POS:
 * keep commits focused
 * update documentation when needed
 * for **feature or behavior changes**, review and update **technical documentation** (MkDocs under `docs/`, setup, architecture notes, module READMEs as appropriate) whenever the change affects how the system works or how to operate it; **confirm with human developers** that doc updates match intent before treating documentation as complete
-* for **new modules or user-visible functionality**, extend **Tidewater Dive Shop** seed/demo data when needed so the feature is testable and demonstrable after seed (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features) and [seed-data.md](seed-data.md))
+* for **new modules or user-visible functionality**, add or extend a **module-owned Tidewater contributor** linked to shared Tidewater identity when demo state is needed (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features), [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md), and [seed-data.md](seed-data.md))
 
 ### Never Do
 
