@@ -18,7 +18,18 @@ The canonical example tenant is **Tidewater Dive Shop** — a fictional Pittsbur
 
 Identity constants live in [`addons/dive_shop_pos/seeds/tidewater_identity.py`](../addons/dive_shop_pos/seeds/tidewater_identity.py).
 
-**Agent rule:** when shipping new modules or user-visible functionality, extend Tidewater seed/demo data so the feature is testable and demonstrable after seed. See [agent-rules.md — Tidewater demo seed](agent-rules.md#tidewater-demo-seed-mandatory-for-features).
+**Agent rule:** when shipping new modules or user-visible functionality, add or extend a **module-owned Tidewater contributor** (linked to shared Tidewater identity) so the feature is testable and demonstrable after seed. See [agent-rules.md — Tidewater demo seed](agent-rules.md#tidewater-demo-seed-mandatory-for-features) and [Tidewater demo seed architecture](architecture/tidewater-demo-seed.md).
+
+## Architecture (module-owned contributors)
+
+Tidewater seed is **not** a single dump owned forever by one vertical pack.
+
+- **Central:** company identity, shared XML-id conventions, story anchors others link to.
+- **Per module:** demo rows for that module’s models (rentals, waivers, future domains, …), registered with the seed orchestrator.
+- **Orchestrator:** `seed-tidewater` / sandbox bootstrap runs installed contributors in order; skips modules that are not installed.
+- **Lifecycle:** deploys ship code only; reseed or sandbox reset loads data; re-run seed after installing a new module onto an existing Tidewater DB.
+
+Full pattern, ownership table, and ongoing checklist: [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md).
 
 ## Profiles
 
