@@ -69,6 +69,7 @@ Check **GitHub → Actions → Deploy GCP sandbox** for the run. If it failed, f
 1. Use the VM’s **public IP** (`gcp-sandbox-vm.ps1 ip` / `make gcp-vm-ip`).
 2. Open **`http://<IP>:8069`** (firewall must allow **8069** — see [shared-environment.md](shared-environment.md#4-gcp-firewall-for-odoo-port-8069)).
 3. **Python / XML / manifest** changes to addons often need **Apps → upgrade** the module (or `-u module` on the server); simple file sync alone is not always enough for Odoo to reload everything.
+4. For a **working Tideledger dive shop** after a wipe (or first bootstrap), run the seed on the VM — see [seed-data.md](seed-data.md) / [shared-environment.md](shared-environment.md). Deploys alone do not reseed.
 
 ---
 
@@ -84,4 +85,4 @@ You can still **SSH** as `deploy` and run the same commands by hand on the VM if
 
 ## 6. Reset the shared sandbox database (destructive)
 
-Only when the team agrees: wipe Postgres and re-init **`base`** (see [shared-environment.md — Reset sandbox database](shared-environment.md#reset-sandbox-database-destructive)). **`make reset-db`** is for **local** Docker only.
+Only when the team agrees: wipe Postgres, re-init **`base`**, and bootstrap **Tideledger** (see [shared-environment.md — Reset sandbox database](shared-environment.md#reset-sandbox-database-destructive)). **`make reset-db`** is for **local** Docker only. For a non-destructive Tideledger refresh, use **`gcp-sandbox-seed-tideledger.sh`**.

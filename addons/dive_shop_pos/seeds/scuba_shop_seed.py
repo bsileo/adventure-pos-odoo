@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 
+from . import tideledger_identity as identity
 from .registry import SeedRegistry
 
 
@@ -9,6 +10,8 @@ SEED_MODULE = "dive_shop_pos_seed"
 
 
 class ScubaShopSeed:
+    """Tideledger Dive Co. seed pack (sandbox-diveshop / dive_shop profile)."""
+
     def __init__(self, env, reset=False):
         self.env = env
         self.registry = SeedRegistry(env, SEED_MODULE)
@@ -30,22 +33,54 @@ class ScubaShopSeed:
         self._seed_condition_and_maintenance()
         self.stats.update(self.registry.summary())
         self.stats.update(self._counts())
+        self.stats["tenant_slug"] = identity.TENANT_SLUG
+        self.stats["company"] = identity.COMPANY_NAME
         return self.stats
 
     def _seed_company(self):
-        company = self.registry.upsert(
-            "res.company",
-            "company_adventure_dive_center_dev",
-            {
-                "name": "Adventure Dive Center - Dev",
-                "email": "ops@adventuredive.example",
-                "phone": "+1 555-0100",
-                "street": "100 Marina Way",
-                "city": "Key Largo",
-                "zip": "33037",
-            },
+        values = {
+            "name": identity.COMPANY_NAME,
+            "email": identity.COMPANY_EMAIL,
+            "phone": identity.COMPANY_PHONE,
+            "street": identity.COMPANY_STREET,
+            "city": identity.COMPANY_CITY,
+            "zip": identity.COMPANY_ZIP,
+        }
+        country = self.env["res.country"].sudo().search(
+            [("code", "=", identity.COMPANY_COUNTRY_CODE)],
+            limit=1,
         )
-        self.records["company"] = company
+        if country:
+            values["country_id"] = country.id
+            state = self.env["res.country.state"].sudo().search(
+                [
+                    ("code", "=", identity.COMPANY_STATE_CODE),
+                    ("country_id", "=", country.id),
+                ],
+                limit=1,
+            )
+            if state:
+                values["state_id"] = state.id
+
+        # Rebrand existing seeded DBs in place: point the Tideledger XML id at
+        # the legacy company record when only the old id exists.
+        legacy = self.registry.ref("company_adventure_dive_center_dev")
+        if legacy and legacy.exists() and not self.registry.ref(identity.COMPANY_XML_ID):
+            self.registry.imd.create(
+                {
+                    "module": SEED_MODULE,
+                    "name": identity.COMPANY_XML_ID,
+                    "model": "res.company",
+                    "res_id": legacy.id,
+                    "noupdate": True,
+                }
+            )
+
+        self.records["company"] = self.registry.upsert(
+            "res.company",
+            identity.COMPANY_XML_ID,
+            values,
+        )
 
     def _seed_categories(self):
         categories = {
@@ -173,7 +208,7 @@ class ScubaShopSeed:
                     "customer_rank": 1,
                     "email": "%s@example.test" % key.replace("customer_", ""),
                     "phone": "+1 555-%04d" % (1000 + len(self.records)),
-                    "comment": "Dive shop seed customer. Requirements: %s" % payload,
+                    "comment": "Tideledger seed customer. Requirements: %s" % payload,
                 },
             )
 

@@ -1,4 +1,4 @@
-.PHONY: up down logs ps shell-db init-db reset-db gcp-vm-start gcp-vm-stop gcp-vm-status gcp-vm-ip remote-dev-init-ssh remote-dev-create remote-dev-start remote-dev-stop remote-dev-status remote-dev-ip remote-dev-url remote-dev-open remote-dev-ssh remote-dev-cursor remote-dev-up remote-dev-init-db remote-dev-bootstrap
+.PHONY: up down logs ps shell-db init-db reset-db seed-tideledger gcp-vm-start gcp-vm-stop gcp-vm-status gcp-vm-ip remote-dev-init-ssh remote-dev-create remote-dev-start remote-dev-stop remote-dev-status remote-dev-ip remote-dev-url remote-dev-open remote-dev-ssh remote-dev-cursor remote-dev-up remote-dev-init-db remote-dev-bootstrap
 
 # Shared GCP sandbox VM (override per developer if needed: make gcp-vm-stop GCP_ZONE=us-east1-b)
 GCP_PROJECT ?= adventure-pos-sandbox
@@ -28,6 +28,11 @@ init-db:
 # Drop the local compose Postgres volume, restart services, and reinitialize Odoo.
 reset-db:
 	bash ./scripts/odoo-reset-db.sh
+
+# Load Tideledger Dive Co. seed into the current local/sandbox DB (non-destructive).
+# Optional: make seed-tideledger RESET_SEED=1
+seed-tideledger:
+	bash ./scripts/seed-dev-db.sh --profile tideledger $(if $(RESET_SEED),--reset-seed,)
 
 gcp-vm-start:
 	gcloud compute instances start $(GCP_INSTANCE) --zone=$(GCP_ZONE) --project=$(GCP_PROJECT)
