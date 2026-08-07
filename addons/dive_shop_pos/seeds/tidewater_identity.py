@@ -26,6 +26,9 @@ COMPANY_ZIP = "15212"
 COMPANY_STATE_CODE = "PA"
 COMPANY_COUNTRY_CODE = "US"
 
+# Served as res.company logo (main login + POS login use /web/binary/company_logo).
+COMPANY_LOGO_MODULE_PATH = "dive_shop_pos/static/img/tidewater_logo.png"
+
 # Prior company XML ids from earlier seed branding; migrate in place.
 LEGACY_COMPANY_XML_IDS = (
     "company_tideledger",
