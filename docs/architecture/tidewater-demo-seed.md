@@ -39,7 +39,7 @@ flowchart TD
 
 | Concern | Owner |
 |---------|--------|
-| Company, slug, place, logo, shared XML-id conventions | Central Tidewater identity (`tidewater_identity` and related) |
+| Company, slug, place, logo, shared XML-id conventions | Central Tidewater identity (`tidewater_identity` and related). Seed **rebrands `base.main_company`** — do not create a second `res.company` for Tidewater. |
 | Shared story anchors (named customers, POS config ids others link to) | Central / platform contributor |
 | Domain records (rentals, waivers, future training, etc.) | The module that owns those models |
 | Optional integration fixtures (e.g. Smartwaiver) | That integration module — only when installed |

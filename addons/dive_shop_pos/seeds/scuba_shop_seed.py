@@ -38,6 +38,7 @@ class ScubaShopSeed:
         return self.stats
 
     def _seed_company(self):
+        """Rebrand the DB main company as Tidewater — never create a second company."""
         values = {
             "name": identity.COMPANY_NAME,
             "email": identity.COMPANY_EMAIL,
@@ -62,28 +63,55 @@ class ScubaShopSeed:
             if state:
                 values["state_id"] = state.id
 
-        # Rebrand existing seeded DBs in place: point the Tidewater XML id at
-        # a prior company record when only a legacy id exists.
-        if not self.registry.ref(identity.COMPANY_XML_ID):
-            for legacy_name in identity.LEGACY_COMPANY_XML_IDS:
-                legacy = self.registry.ref(legacy_name)
-                if legacy and legacy.exists():
-                    self.registry.imd.create(
-                        {
-                            "module": SEED_MODULE,
-                            "name": identity.COMPANY_XML_ID,
-                            "model": "res.company",
-                            "res_id": legacy.id,
-                            "noupdate": True,
-                        }
-                    )
-                    break
+        main = self.env.ref("base.main_company").sudo()
+        self._bind_tidewater_company_xml_ids(main)
+        self._retire_orphan_tidewater_companies(main)
 
-        self.records["company"] = self.registry.upsert(
-            "res.company",
-            identity.COMPANY_XML_ID,
-            values,
+        write_vals = {key: value for key, value in values.items() if key in main._fields}
+        main.write(write_vals)
+        self.registry.updated.append(("res.company", identity.COMPANY_XML_ID))
+        self.records["company"] = main
+
+    def _bind_tidewater_company_xml_ids(self, company):
+        """Point Tidewater / legacy seed XML ids at the main company only."""
+        names = (identity.COMPANY_XML_ID,) + tuple(identity.LEGACY_COMPANY_XML_IDS)
+        for name in names:
+            xml = self.registry.imd.search(
+                [("module", "=", SEED_MODULE), ("name", "=", name)],
+                limit=1,
+            )
+            if xml:
+                if xml.res_id != company.id:
+                    xml.write({"res_id": company.id})
+                continue
+            # Only create the canonical Tidewater id (and any legacy id that
+            # already existed elsewhere is ignored — we do not invent legacy ids).
+            if name == identity.COMPANY_XML_ID:
+                self.registry.imd.create(
+                    {
+                        "module": SEED_MODULE,
+                        "name": name,
+                        "model": "res.company",
+                        "res_id": company.id,
+                        "noupdate": True,
+                    }
+                )
+
+    def _retire_orphan_tidewater_companies(self, main):
+        """Rename extra Tidewater companies left from older seed runs."""
+        orphans = self.env["res.company"].sudo().search(
+            [
+                ("id", "!=", main.id),
+                ("name", "=", identity.COMPANY_NAME),
+            ]
         )
+        for orphan in orphans:
+            orphan.write(
+                {
+                    "name": "%s (unused seed company — safe to delete)"
+                    % identity.COMPANY_NAME,
+                }
+            )
 
     def _seed_categories(self):
         categories = {
