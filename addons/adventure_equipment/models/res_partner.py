@@ -14,6 +14,7 @@ class ResPartner(models.Model):
     equipment_asset_count = fields.Integer(
         string="Equipment Count",
         compute="_compute_equipment_asset_count",
+        store=True,
     )
 
     @api.depends("equipment_asset_ids")

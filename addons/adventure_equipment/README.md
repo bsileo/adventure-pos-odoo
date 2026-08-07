@@ -66,3 +66,20 @@ odoo -d <database> -u adventure_equipment --test-enable --stop-after-init \
 | [SECURITY.md](doc/SECURITY.md) | Groups, company rules, restricted fields |
 | [LIMITATIONS.md](doc/LIMITATIONS.md) | Deferred features (portal, service, stock.lot, …) |
 | [UPGRADE.md](doc/UPGRADE.md) | Module upgrade and versioning |
+
+## Local smoke stack (optional)
+
+This agent/CI helper uses the stock `odoo:19.0` image (no custom Dockerfile build):
+
+```bash
+docker compose -f docker-compose.smoke.yml up -d db
+docker compose -f docker-compose.smoke.yml run --rm --no-deps odoo odoo \
+  --db_host=127.0.0.1 --db_user=odoo --db_password=change_me_local_dev \
+  -d smoke_equipment -i adventure_base,adventure_equipment --stop-after-init
+docker compose -f docker-compose.smoke.yml run --rm --no-deps odoo odoo \
+  --db_host=127.0.0.1 --db_user=odoo --db_password=change_me_local_dev \
+  -d smoke_equipment -u adventure_equipment --test-enable --stop-after-init \
+  --test-tags=/adventure_equipment
+```
+
+Requires host networking (as in `docker-compose.smoke.yml`) when Docker bridge networking is unavailable.
