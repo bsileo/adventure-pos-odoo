@@ -4,6 +4,9 @@
 Tidewater is the fictional sandbox dive shop (sandbox-diveshop story tenant):
 Pittsburgh, PA — used for shared demos, QA, and deterministic seed scenarios.
 
+The seed rebrands the database main company (`base.main_company`). It must not
+create a second `res.company` for Tidewater.
+
 When adding modules or user-visible functionality, extend the Tidewater seed
 pack so the feature is testable and demonstrable after seed (see agent-rules).
 """

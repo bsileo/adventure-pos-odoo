@@ -35,9 +35,9 @@ Full pattern, ownership table, and ongoing checklist: [architecture/tidewater-de
 
 The supported profile is `tidewater` (aliases: `tideledger`, `dive_shop`), owned by the `dive_shop_pos` vertical module.
 
-It creates:
+It creates / updates:
 
-- The Tidewater company (Pittsburgh).
+- Rebrands the database **main company** as Tidewater Dive Shop (Pittsburgh). It does **not** create a second company.
 - Rental and fee products.
 - Scuba rental package templates.
 - Physical rental assets with representative states.
