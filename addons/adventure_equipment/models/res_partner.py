@@ -29,16 +29,13 @@ class ResPartner(models.Model):
             return
 
         Asset = self.env["adventure.equipment.asset"]
-        grouped = Asset.read_group(
+        # Odoo 19: prefer _read_group over deprecated read_group.
+        grouped = Asset._read_group(
             [("partner_id", "in", self.ids)],
-            ["partner_id"],
-            ["partner_id"],
+            groupby=["partner_id"],
+            aggregates=["__count"],
         )
-        count_by_partner = {
-            row["partner_id"][0]: row["partner_id_count"]
-            for row in grouped
-            if row.get("partner_id")
-        }
+        count_by_partner = {partner.id: count for partner, count in grouped}
         for partner in self:
             partner.equipment_asset_count = count_by_partner.get(partner.id, 0)
 

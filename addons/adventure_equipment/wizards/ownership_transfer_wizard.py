@@ -79,6 +79,17 @@ class AdventureEquipmentOwnershipTransferWizard(models.TransientModel):
             )
 
         Ownership = self.env["adventure.equipment.ownership"]
+        current = asset.ownership_ids.filtered("is_current")[:1]
+        if current and self.transfer_date and current.date_from and self.transfer_date < current.date_from:
+            raise UserError(
+                _(
+                    "Transfer date (%(transfer)s) cannot be before the current "
+                    "ownership start date (%(start)s).",
+                    transfer=self.transfer_date,
+                    start=current.date_from,
+                )
+            )
+
         Ownership._transfer_ownership(
             asset,
             self.to_partner_id,

@@ -2,10 +2,19 @@
 {
     "name": "Adventure Equipment",
     "summary": "Customer-owned equipment lifecycle registry for Adventure POS.",
-    "version": "19.0.1.0.2",
+    "version": "19.0.1.0.3",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
+    "summary": "Customer-owned equipment lifecycle registry for Adventure POS.",
+    "description": """
+Adventure Equipment
+===================
+
+Staff registry for customer-owned physical equipment assets.
+See the module README and docs/ for guides. Portal and service
+workflows live in later adventure_equipment_* modules.
+""",
     "depends": [
         "adventure_base",
         "contacts",

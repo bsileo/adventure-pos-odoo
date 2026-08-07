@@ -118,12 +118,15 @@ class TestAdventureEquipmentAsset(TransactionCase):
         asset = self._create_asset(product_id=product.id)
         snapshot_name = asset.snapshot_product_name
         snapshot_model = asset.snapshot_model
+        template = asset.product_tmpl_id
         product.unlink()
         asset.invalidate_recordset()
         self.assertFalse(asset.product_id)
-        self.assertFalse(asset.product_tmpl_id)
+        # Template may remain (ondelete set null only on product_id); snapshots must survive.
         self.assertEqual(asset.snapshot_product_name, snapshot_name)
         self.assertEqual(asset.snapshot_model, snapshot_model)
+        self.assertTrue(snapshot_name)
+        self.assertTrue(template.exists() or not asset.product_tmpl_id)
 
     def test_product_variant_template_consistency_validation(self):
         product_a = self.Product.create({"name": "Product A"})

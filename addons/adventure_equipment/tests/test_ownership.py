@@ -51,6 +51,7 @@ class TestAdventureEquipmentOwnership(TransactionCase):
         asset = self._create_asset(
             lifecycle_state="active",
             in_service_date="2026-01-01",
+            ownership_start_date="2026-01-01",
         )
         wizard = self.Wizard.create(
             {
