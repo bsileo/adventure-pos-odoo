@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import base64
 from datetime import datetime, timedelta
+
+from odoo.tools import file_open
 
 from . import tidewater_identity as identity
 from .registry import SeedRegistry
@@ -67,10 +70,22 @@ class ScubaShopSeed:
         self._bind_tidewater_company_xml_ids(main)
         self._retire_orphan_tidewater_companies(main)
 
+        logo = self._tidewater_logo_b64()
+        if logo:
+            values["logo"] = logo
+
         write_vals = {key: value for key, value in values.items() if key in main._fields}
         main.write(write_vals)
         self.registry.updated.append(("res.company", identity.COMPANY_XML_ID))
         self.records["company"] = main
+
+    def _tidewater_logo_b64(self):
+        """Load Tidewater logo from module static assets for company branding."""
+        try:
+            with file_open(identity.COMPANY_LOGO_MODULE_PATH, "rb") as handle:
+                return base64.b64encode(handle.read())
+        except (FileNotFoundError, OSError, ValueError):
+            return False
 
     def _bind_tidewater_company_xml_ids(self, company):
         """Point Tidewater / legacy seed XML ids at the main company only."""
