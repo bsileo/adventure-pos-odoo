@@ -57,4 +57,4 @@ jobs:
             seed_args+=(--reset-seed)
           fi
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "deploy@${SANDBOX_SSH_HOST}" \
-            "set -euo pipefail; cd \"${SANDBOX_DEPLOY_PATH}\"; git fetch origin; git checkout develop; git reset --hard origin/develop; bash ./scripts/gcp-sandbox-seed-tidewater.sh ${seed_args[*]+"${seed_args[*]}"}"
+            "set -euo pipefail; cd \"${SANDBOX_DEPLOY_PATH}\"; git fetch --force origin develop:refs/remotes/origin/develop; git checkout develop; git reset --hard origin/develop; bash ./scripts/gcp-sandbox-seed-tidewater.sh ${seed_args[*]+"${seed_args[*]}"}"
