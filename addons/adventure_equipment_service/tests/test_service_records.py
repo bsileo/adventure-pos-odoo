@@ -21,6 +21,7 @@ class TestAdventureEquipmentServiceRecords(TransactionCase):
         cls.Policy = cls.env["adventure.equipment.service.policy"]
         cls.Requirement = cls.env["adventure.equipment.service.requirement"]
         cls.Record = cls.env["adventure.equipment.service.record"]
+        cls.Policy.search([]).write({"active": False})
         cls.annual = cls.env["adventure.equipment.service.type"].create(
             {
                 "name": "Record Test Annual",

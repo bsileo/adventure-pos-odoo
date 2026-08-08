@@ -20,6 +20,8 @@ class TestAdventureEquipmentServiceRequirements(TransactionCase):
         cls.Policy = cls.env["adventure.equipment.service.policy"]
         cls.Requirement = cls.env["adventure.equipment.service.requirement"]
         cls.Type = cls.env["adventure.equipment.service.type"]
+        # Isolate from demo/data policies loaded with the module.
+        cls.Policy.search([]).write({"active": False})
         # Dedicated type avoids collisions with demo Annual Inspection policies.
         cls.annual = cls.Type.create(
             {

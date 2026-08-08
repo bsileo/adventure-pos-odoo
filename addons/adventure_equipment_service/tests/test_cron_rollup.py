@@ -20,6 +20,7 @@ class TestAdventureEquipmentServiceCronRollup(TransactionCase):
         cls.Requirement = cls.env["adventure.equipment.service.requirement"]
         cls.Policy = cls.env["adventure.equipment.service.policy"]
         cls.Asset = cls.env["adventure.equipment.asset"]
+        cls.Policy.search([]).write({"active": False})
         cls.annual = cls.env["adventure.equipment.service.type"].create(
             {
                 "name": "Cron Test Annual",

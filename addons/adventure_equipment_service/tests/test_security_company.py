@@ -12,6 +12,7 @@ class TestAdventureEquipmentServiceSecurityCompany(TransactionCase):
         super().setUpClass()
         cls.partner = cls.env["res.partner"].create({"name": "Sec Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_regulator")
+        cls.env["adventure.equipment.service.policy"].search([]).write({"active": False})
         cls.annual = cls.env["adventure.equipment.service.type"].create(
             {
                 "name": "Security Test Annual",

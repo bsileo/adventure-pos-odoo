@@ -16,11 +16,20 @@ class TestAdventureEquipmentServicePolicyMatching(TransactionCase):
         cls.partner = cls.Partner.create({"name": "Policy Match Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_regulator")
         cls.other_category = cls.env.ref("adventure_equipment.equipment_category_bcd")
-        cls.annual = cls.env.ref(
-            "adventure_equipment_service.service_type_annual_inspection"
+        cls.Policy.search([]).write({"active": False})
+        cls.annual = cls.Type.create(
+            {
+                "name": "Match Annual",
+                "code": "MATCH_ANNUAL",
+                "classification": "inspection",
+            }
         )
-        cls.cert = cls.env.ref(
-            "adventure_equipment_service.service_type_safety_certification"
+        cls.cert = cls.Type.create(
+            {
+                "name": "Match Cert",
+                "code": "MATCH_CERT",
+                "classification": "certification",
+            }
         )
         cls.tag = cls.env["adventure.equipment.tag"].create({"name": "Service Tag"})
         cls.product = cls.env["product.product"].create({"name": "Policy Product"})
