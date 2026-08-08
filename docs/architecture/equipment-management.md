@@ -122,7 +122,7 @@ Present under `addons/`:
 | `adventure_d360_migration` | D360 partner/history import; serial numbers on **history lines**, not customer equipment assets |
 | **`adventure_equipment`** | **Implemented (Phase 1):** customer-owned equipment registry — assets, categories, ownership history, identifiers, staff UI |
 
-**Not present (future):** `adventure_service`, `adventure_equipment_service`, `adventure_equipment_portal`, `adventure_equipment_configuration`, `adventure_equipment_notifications`, `adventure_equipment_scuba`, `adventure_equipment_pos`, portal/website custom modules, repair/maintenance custom modules.
+**Not present (future):** `adventure_service`, `adventure_equipment_portal`, `adventure_equipment_configuration`, `adventure_equipment_notifications`, `adventure_equipment_pos`, portal/website custom modules, repair/maintenance custom modules.
 
 **Doc drift note:** [agent-rules](../agent-rules.md) still lists `adventure_rental` under “Future modules,” but the module **already exists** in the tree (scaffolding). Equipment design must treat rental as a **sibling domain**, not invent a second fleet model under another name.
 
