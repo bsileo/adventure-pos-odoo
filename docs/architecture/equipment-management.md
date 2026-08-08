@@ -2,7 +2,7 @@
 
 !!! warning "Partially implemented"
 
-    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment) and the **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service) are **implemented** (Phases 1–2 / product Phase 3A). **Portal**, **configurations**, **notifications**, **scuba vertical pack**, and **POS/sale bridges** remain **future** work—do not assume those behaviors exist until their modules ship.
+    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment), **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service), and **scuba vertical pack** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba) are **implemented**. **Portal**, **configurations**, **notifications**, and **POS/sale bridges** remain **future** work—do not assume those behaviors exist until their modules ship.
 
     Treat remaining model names and fields on this page as the **platform direction**; compare with the live modules and their READMEs when implementing or testing.
 
@@ -212,7 +212,7 @@ Equipment should follow **waiver-style privilege groups** plus **portal record r
 | **`adventure_equipment_portal`** | Portal/website controllers, customer UX, portal security | Customer self-service enabled |
 | **`adventure_equipment_configuration`** | Kits/configurations, membership, scenarios, readiness evaluation | Configurations / trip prep |
 | **`adventure_equipment_notifications`** | Mail templates, cron reminders, activity scheduling | Reminders / campaigns |
-| **`adventure_equipment_scuba`** | Scuba fields, tank VIP/hydro policies, regulator service defaults, scuba scenarios | Dive shops |
+| **`adventure_equipment_scuba`** | **Implemented (Phase 3B):** scuba service types/policies (VIP, hydro, regulator/BCD, …), cylinder/regulator asset fields, scuba service-record metadata | Dive shops |
 | **`adventure_equipment_pos`** (optional thin) | POS hooks: create equipment from POS sale, open customer equipment from register | POS-driven registration |
 | Future sport packs | e.g. ski / paddle extensions | As verticals expand |
 
@@ -618,11 +618,15 @@ Complexity is relative (S/M/L), not calendar time.
 - **Acceptance:** Build config; evaluate scenario; surface overdue members  
 - **Complexity:** L  
 
-### Phase 7 — Scuba vertical pack
+### Phase 7 — Scuba vertical pack ✅ **Shipped as Phase 3B**
 
-- **Purpose:** VIP/hydro/regulator defaults, scuba categories/scenarios  
-- **Module:** `adventure_equipment_scuba` (+ `dive_shop_pos` glue if needed)  
-- **Acceptance:** Dive-shop seed/demo shows tanks/regs with correct policies without polluting core  
+- **Purpose:** VIP/hydro/regulator defaults and scuba asset metadata  
+- **Module:** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba)  
+- **Depends:** `adventure_equipment_service`  
+- **Delivered:** scuba service types + category policies; cylinder/regulator/BCD/suit/computer fields; VIP/hydro denorm on completed records; demo assets; ORM tests  
+- **Deferred:** scenario/readiness kits, `dive_shop_pos` glue, portal VIP submission  
+- **Docs:** `addons/adventure_equipment_scuba/doc/SCUBA_PACK.md`  
+- **Acceptance:** Cylinder sync creates VIP + hydro requirements; regulator gets annual service policy; generic engine remains sport-neutral  
 - **Complexity:** M  
 
 ### Phase 8+ — Integrations & intelligence

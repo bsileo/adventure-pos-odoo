@@ -4,6 +4,7 @@
 
 - `adventure_equipment` — customer-owned gear lifecycle registry (not rental fleet)
 - `adventure_equipment_service` — generic service types, policies, requirements, records
+- `adventure_equipment_scuba` — scuba service types/policies and scuba asset/record fields
 
 ## Registry scope (Phase 1)
 
@@ -11,7 +12,11 @@ Records physical items owned by contacts: regulators, computers, BCDs, cylinders
 
 ## Service scope (Phase 3A / architecture Phase 2)
 
-Sport-neutral maintenance forecasting and history. Scuba VIP/hydro/regulator semantics belong in `adventure_equipment_scuba`, not the generic engine.
+Sport-neutral maintenance forecasting and history.
+
+## Scuba scope (Phase 3B)
+
+VIP, hydrostatic, regulator/BCD/computer/drysuit service types and default category policies; cylinder gas/pressure/oxygen-clean fields; VIP/hydro denormalized dates. See `addons/adventure_equipment_scuba/doc/SCUBA_PACK.md`.
 
 **Still deferred:** portal, notifications, work orders, `stock.lot`, typed sale/POS auto-registration, kit configurations. See [Equipment management](../architecture/equipment-management.md).
 

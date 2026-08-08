@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Cylinder VIP: annual -->
+    <record id="policy_cylinder_vip_annual" model="adventure.equipment.service.policy">
+        <field name="name">Cylinder VIP — Annual</field>
+        <field name="code">SCUBA_POL_VIP</field>
+        <field name="service_type_id" ref="service_type_cylinder_vip"/>
+        <field name="policy_source">regulatory</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_cylinder"/>
+        <field name="priority">50</field>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">12</field>
+        <field name="interval_unit">months</field>
+        <field name="warning_lead_days">30</field>
+        <field name="grace_days">14</field>
+        <field name="first_due_basis">in_service_date</field>
+        <field name="description">Annual Visual Plus inspection for scuba cylinders.</field>
+    </record>
+
+    <!-- Cylinder Hydro: 5 years -->
+    <record id="policy_cylinder_hydro_5y" model="adventure.equipment.service.policy">
+        <field name="name">Cylinder Hydrostatic — 5 Years</field>
+        <field name="code">SCUBA_POL_HYDRO</field>
+        <field name="service_type_id" ref="service_type_hydrostatic_test"/>
+        <field name="policy_source">regulatory</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_cylinder"/>
+        <field name="priority">50</field>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">5</field>
+        <field name="interval_unit">years</field>
+        <field name="warning_lead_days">90</field>
+        <field name="grace_days">0</field>
+        <field name="first_due_basis">in_service_date</field>
+        <field name="description">Five-year hydrostatic requalification for scuba cylinders.</field>
+    </record>
+
+    <!-- Regulator annual service -->
+    <record id="policy_regulator_service_annual" model="adventure.equipment.service.policy">
+        <field name="name">Regulator Service — Annual</field>
+        <field name="code">SCUBA_POL_REG</field>
+        <field name="service_type_id" ref="service_type_regulator_service"/>
+        <field name="policy_source">manufacturer</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_regulator"/>
+        <field name="priority">50</field>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">12</field>
+        <field name="interval_unit">months</field>
+        <field name="warning_lead_days">45</field>
+        <field name="grace_days">14</field>
+        <field name="first_due_basis">in_service_date</field>
+    </record>
+
+    <!-- BCD annual service -->
+    <record id="policy_bcd_service_annual" model="adventure.equipment.service.policy">
+        <field name="name">BCD Service — Annual</field>
+        <field name="code">SCUBA_POL_BCD</field>
+        <field name="service_type_id" ref="service_type_bcd_service"/>
+        <field name="policy_source">manufacturer</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_bcd"/>
+        <field name="priority">50</field>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">12</field>
+        <field name="interval_unit">months</field>
+        <field name="warning_lead_days">45</field>
+        <field name="grace_days">14</field>
+        <field name="first_due_basis">in_service_date</field>
+    </record>
+
+    <!-- Dive computer manufacturer service (24 months default) -->
+    <record id="policy_dive_computer_service_24m" model="adventure.equipment.service.policy">
+        <field name="name">Dive Computer Service — 24 Months</field>
+        <field name="code">SCUBA_POL_DC</field>
+        <field name="service_type_id" ref="service_type_dive_computer_service"/>
+        <field name="policy_source">manufacturer</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_dive_computer"/>
+        <field name="priority">50</field>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">24</field>
+        <field name="interval_unit">months</field>
+        <field name="warning_lead_days">45</field>
+        <field name="grace_days">0</field>
+        <field name="first_due_basis">in_service_date</field>
+    </record>
+
+    <!-- Drysuit leak test annual (exposure suit category; shops can narrow later) -->
+    <record id="policy_drysuit_leak_annual" model="adventure.equipment.service.policy">
+        <field name="name">Drysuit Leak Test — Annual</field>
+        <field name="code">SCUBA_POL_DRYSUIT</field>
+        <field name="service_type_id" ref="service_type_drysuit_leak_test"/>
+        <field name="policy_source">shop</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_exposure_suit"/>
+        <field name="priority">40</field>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">12</field>
+        <field name="interval_unit">months</field>
+        <field name="warning_lead_days">30</field>
+        <field name="grace_days">0</field>
+        <field name="first_due_basis">in_service_date</field>
+        <field name="description">Default annual leak-test policy for exposure suits. Narrow with brand/model policies as needed.</field>
+    </record>
+</odoo>

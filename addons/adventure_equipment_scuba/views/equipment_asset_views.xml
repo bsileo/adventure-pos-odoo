@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_asset_form_scuba" model="ir.ui.view">
+        <field name="name">adventure.equipment.asset.form.scuba</field>
+        <field name="model">adventure.equipment.asset</field>
+        <field name="inherit_id" ref="adventure_equipment.view_adventure_equipment_asset_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_sync_scuba_service_dates_from_history"
+                        type="object"
+                        string="Sync VIP/Hydro Dates"
+                        groups="adventure_equipment.group_equipment_user"
+                        invisible="not is_scuba_cylinder"/>
+            </xpath>
+            <xpath expr="//page[@name='warranty']" position="after">
+                <page string="Scuba" name="scuba" invisible="not show_scuba_panel">
+                    <group invisible="not is_scuba_cylinder" string="Cylinder">
+                        <group>
+                            <field name="scuba_cylinder_material"/>
+                            <field name="scuba_water_capacity_l"/>
+                            <field name="scuba_working_pressure_bar"/>
+                            <field name="scuba_working_pressure_psi"/>
+                            <field name="scuba_test_pressure_bar"/>
+                            <field name="scuba_valve_type"/>
+                        </group>
+                        <group>
+                            <field name="scuba_gas_compatibility"/>
+                            <field name="scuba_oxygen_clean"/>
+                            <field name="scuba_oxygen_clean_date"/>
+                            <field name="scuba_hydro_stamp"/>
+                            <field name="scuba_last_vip_date"/>
+                            <field name="scuba_last_hydro_date"/>
+                        </group>
+                    </group>
+                    <group invisible="not is_scuba_regulator" string="Regulator">
+                        <group>
+                            <field name="scuba_regulator_configuration"/>
+                            <field name="scuba_oxygen_clean"/>
+                            <field name="scuba_oxygen_clean_date"/>
+                        </group>
+                    </group>
+                    <group invisible="not is_scuba_bcd" string="BCD">
+                        <field name="scuba_bcd_type"/>
+                    </group>
+                    <group invisible="not is_scuba_computer" string="Dive Computer">
+                        <field name="scuba_computer_battery_type"/>
+                    </group>
+                    <group invisible="not is_scuba_exposure_suit" string="Exposure Suit">
+                        <field name="scuba_suit_type"/>
+                    </group>
+                    <group string="Notes" groups="adventure_equipment.group_equipment_user">
+                        <field name="scuba_notes" nolabel="1" colspan="2"/>
+                    </group>
+                    <field name="is_scuba_cylinder" invisible="1"/>
+                    <field name="is_scuba_regulator" invisible="1"/>
+                    <field name="is_scuba_bcd" invisible="1"/>
+                    <field name="is_scuba_computer" invisible="1"/>
+                    <field name="is_scuba_exposure_suit" invisible="1"/>
+                    <field name="show_scuba_panel" invisible="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_asset_search_scuba" model="ir.ui.view">
+        <field name="name">adventure.equipment.asset.search.scuba</field>
+        <field name="model">adventure.equipment.asset</field>
+        <field name="inherit_id" ref="adventure_equipment.view_adventure_equipment_asset_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="scuba_gas_compatibility"/>
+                <field name="scuba_oxygen_clean"/>
+                <filter name="filter_scuba_cylinder" string="Cylinders"
+                        domain="[('is_scuba_cylinder', '=', True)]"/>
+                <filter name="filter_scuba_o2_clean" string="Oxygen Clean"
+                        domain="[('scuba_oxygen_clean', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
