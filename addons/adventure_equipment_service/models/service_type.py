@@ -78,7 +78,7 @@ class AdventureEquipmentServiceType(models.Model):
     policy_count = fields.Integer(compute="_compute_policy_count")
 
     _code_company_uniq = models.Constraint(
-        "unique(code, company_id)",
+        "UNIQUE(code, company_id)",
         "Service type code must be unique per company.",
     )
 
