@@ -25,7 +25,7 @@ Before starting a **work stream**—meaning a coherent chunk of work such as a f
 
 1. Re-read **this page** (`docs/agent-rules.md`) for module scope, POS/inventory constraints, Git rules, and documentation obligations.
 2. Skim the sections of **[Architecture](architecture/)** and **[Data model](data-model/)** that relate to the task; open **[Integrations](integrations/)** or **[Migrations](migrations/)** pages when the work touches those areas.
-3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
+3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Client web portal (draft)](architecture/client-web-portal.md)** and **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
 4. For **new modules or user-visible functionality**, plan **Tidewater Dive Shop** seed / demo coverage via the **module-owned contributor** pattern in the same work stream (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features) and [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md)).
 
 **Humans** should follow the same habit; [Developer onboarding](developer-onboarding.md) points here.

@@ -42,6 +42,7 @@ flowchart TD
 | Company, slug, place, logo, shared XML-id conventions | Central Tidewater identity (`tidewater_identity` and related). Seed **rebrands `base.main_company`** — do not create a second `res.company` for Tidewater. Company logo comes from `dive_shop_pos/static/img/tidewater_logo.png` (main login + POS login via `/web/binary/company_logo`). |
 | Shared story anchors (named customers, POS config ids others link to) | Central / platform contributor |
 | Domain records (rentals, waivers, future training, etc.) | The module that owns those models |
+| Customer portal users, website chrome, and portal demo gear (when those modules exist) | Portal/website shell and domain portal contributors — see [Client web portal (draft)](client-web-portal.md) |
 | Optional integration fixtures (e.g. Smartwaiver) | That integration module — only when installed |
 
 ## Ongoing development checklist (agents and humans)
