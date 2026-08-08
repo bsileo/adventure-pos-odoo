@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <!-- Open self-signup (confirmed architecture decision). -->
-    <record id="auth_signup_invitation_scope_b2c" model="ir.config_parameter">
-        <field name="key">auth_signup.invitation_scope</field>
-        <field name="value">b2c</field>
-    </record>
-    <record id="auth_signup_reset_password" model="ir.config_parameter">
-        <field name="key">auth_signup.reset_password</field>
-        <field name="value">True</field>
-    </record>
+    <!-- Open self-signup (confirmed architecture decision).
+         Use set_param so we do not clash with auth_signup's existing row. -->
+    <function model="ir.config_parameter" name="set_param" eval="('auth_signup.invitation_scope', 'b2c')"/>
+    <function model="ir.config_parameter" name="set_param" eval="('auth_signup.reset_password', 'True')"/>
 </odoo>
