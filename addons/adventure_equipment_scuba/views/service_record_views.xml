@@ -5,8 +5,8 @@
         <field name="model">adventure.equipment.service.record</field>
         <field name="inherit_id" ref="adventure_equipment_service.view_adventure_equipment_service_record_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='Certification']" position="after">
-                <group string="Scuba Details">
+            <xpath expr="//group[@name='certification']" position="after">
+                <group string="Scuba Details" name="scuba_details">
                     <field name="scuba_vip_sticker_number"/>
                     <field name="scuba_hydro_stamp"/>
                     <field name="scuba_visual_findings_code"/>

@@ -72,7 +72,7 @@
                         <field name="customer_visible_report"/>
                         <field name="internal_notes"/>
                     </group>
-                    <group string="Certification">
+                    <group string="Certification" name="certification">
                         <field name="certificate_number"/>
                         <field name="certificate_issuer"/>
                         <field name="certificate_issue_date"/>
