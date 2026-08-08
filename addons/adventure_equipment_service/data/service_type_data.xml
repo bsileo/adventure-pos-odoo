@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="service_type_annual_inspection" model="adventure.equipment.service.type">
+        <field name="name">Annual Inspection</field>
+        <field name="code">ANNUAL_INSPECTION</field>
+        <field name="classification">inspection</field>
+        <field name="sequence">10</field>
+        <field name="default_warning_lead_days">30</field>
+        <field name="default_grace_days">14</field>
+        <field name="customer_name">Annual Inspection</field>
+    </record>
+    <record id="service_type_manufacturer_service" model="adventure.equipment.service.type">
+        <field name="name">Manufacturer Service</field>
+        <field name="code">MANUFACTURER_SERVICE</field>
+        <field name="classification">service</field>
+        <field name="sequence">20</field>
+        <field name="default_warning_lead_days">45</field>
+    </record>
+    <record id="service_type_safety_certification" model="adventure.equipment.service.type">
+        <field name="name">Safety Certification</field>
+        <field name="code">SAFETY_CERT</field>
+        <field name="classification">certification</field>
+        <field name="sequence">30</field>
+        <field name="requires_certificate" eval="True"/>
+        <field name="default_warning_lead_days">60</field>
+    </record>
+    <record id="service_type_functional_test" model="adventure.equipment.service.type">
+        <field name="name">Functional Test</field>
+        <field name="code">FUNCTIONAL_TEST</field>
+        <field name="classification">test</field>
+        <field name="sequence">40</field>
+        <field name="default_warning_lead_days">14</field>
+        <field name="default_grace_days">0</field>
+    </record>
+    <record id="service_type_preventive_maintenance" model="adventure.equipment.service.type">
+        <field name="name">Preventive Maintenance</field>
+        <field name="code">PREVENTIVE</field>
+        <field name="classification">preventive</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="service_type_battery_replacement" model="adventure.equipment.service.type">
+        <field name="name">Battery Replacement</field>
+        <field name="code">BATTERY</field>
+        <field name="classification">service</field>
+        <field name="sequence">60</field>
+        <field name="default_warning_lead_days">21</field>
+    </record>
+    <record id="service_type_post_impact_inspection" model="adventure.equipment.service.type">
+        <field name="name">Post-Impact Inspection</field>
+        <field name="code">POST_IMPACT</field>
+        <field name="classification">inspection</field>
+        <field name="sequence">70</field>
+        <field name="supports_recurring" eval="False"/>
+        <field name="default_warning_lead_days">0</field>
+        <field name="default_grace_days">0</field>
+    </record>
+</odoo>

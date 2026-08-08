@@ -136,6 +136,7 @@ Non-responsibilities:
 - BCD, wetsuit, fin, tank, regulator, certification, waiver, or fill station fields.
 - Boot size, skier profile, DIN, binding, helmet, tune, wax, or ski-length logic.
 - Vertical-specific validation rules.
+- **Customer-owned equipment lifecycle** (ownership history, portal registry, customer service policies). That is a separate platform pillar—see **[Equipment management (future)](equipment-management.md)**. Shop rental fleet assets (`adventure.rental.asset`) must not be overloaded as customer-owned gear records.
 
 ### Backend Model Boundary
 

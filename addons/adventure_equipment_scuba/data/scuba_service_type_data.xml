@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="service_type_cylinder_vip" model="adventure.equipment.service.type">
+        <field name="name">Cylinder VIP Inspection</field>
+        <field name="code">SCUBA_VIP</field>
+        <field name="classification">inspection</field>
+        <field name="sequence">10</field>
+        <field name="customer_name">Visual Plus Inspection (VIP)</field>
+        <field name="customer_description">Annual visual inspection of the scuba cylinder.</field>
+        <field name="requires_result" eval="True"/>
+        <field name="supports_recurring" eval="True"/>
+        <field name="default_warning_lead_days">30</field>
+        <field name="default_grace_days">14</field>
+        <field name="internal_instructions"><![CDATA[
+<p>Perform Visual Plus (VIP) inspection per shop procedure. Record sticker number on the service record.</p>
+]]></field>
+    </record>
+
+    <record id="service_type_hydrostatic_test" model="adventure.equipment.service.type">
+        <field name="name">Hydrostatic Test</field>
+        <field name="code">SCUBA_HYDRO</field>
+        <field name="classification">certification</field>
+        <field name="sequence">20</field>
+        <field name="customer_name">Hydrostatic Test</field>
+        <field name="requires_result" eval="True"/>
+        <field name="requires_certificate" eval="True"/>
+        <field name="supports_recurring" eval="True"/>
+        <field name="default_warning_lead_days">90</field>
+        <field name="default_grace_days">0</field>
+        <field name="internal_instructions"><![CDATA[
+<p>Hydrostatic requalification. Capture hydro stamp/mark and certificate/reference.</p>
+]]></field>
+    </record>
+
+    <record id="service_type_regulator_service" model="adventure.equipment.service.type">
+        <field name="name">Regulator Service</field>
+        <field name="code">SCUBA_REG_SERVICE</field>
+        <field name="classification">service</field>
+        <field name="sequence">30</field>
+        <field name="customer_name">Regulator Annual Service</field>
+        <field name="requires_result" eval="True"/>
+        <field name="supports_recurring" eval="True"/>
+        <field name="default_warning_lead_days">45</field>
+        <field name="default_grace_days">14</field>
+    </record>
+
+    <record id="service_type_bcd_service" model="adventure.equipment.service.type">
+        <field name="name">BCD Service</field>
+        <field name="code">SCUBA_BCD_SERVICE</field>
+        <field name="classification">service</field>
+        <field name="sequence">40</field>
+        <field name="customer_name">BCD Service</field>
+        <field name="requires_result" eval="True"/>
+        <field name="supports_recurring" eval="True"/>
+        <field name="default_warning_lead_days">45</field>
+        <field name="default_grace_days">14</field>
+    </record>
+
+    <record id="service_type_oxygen_clean" model="adventure.equipment.service.type">
+        <field name="name">Oxygen Clean Inspection</field>
+        <field name="code">SCUBA_O2_CLEAN</field>
+        <field name="classification">inspection</field>
+        <field name="sequence">50</field>
+        <field name="customer_name">Oxygen Clean / O₂ Service</field>
+        <field name="requires_result" eval="True"/>
+        <field name="supports_recurring" eval="True"/>
+        <field name="default_warning_lead_days">30</field>
+        <field name="default_grace_days">0</field>
+    </record>
+
+    <record id="service_type_drysuit_leak_test" model="adventure.equipment.service.type">
+        <field name="name">Drysuit Leak Test</field>
+        <field name="code">SCUBA_DRYSUIT_LEAK</field>
+        <field name="classification">test</field>
+        <field name="sequence">60</field>
+        <field name="customer_name">Drysuit Leak Test</field>
+        <field name="requires_result" eval="True"/>
+        <field name="supports_recurring" eval="True"/>
+        <field name="default_warning_lead_days">30</field>
+        <field name="default_grace_days">0</field>
+    </record>
+
+    <record id="service_type_dive_computer_service" model="adventure.equipment.service.type">
+        <field name="name">Dive Computer Service</field>
+        <field name="code">SCUBA_DC_SERVICE</field>
+        <field name="classification">service</field>
+        <field name="sequence">70</field>
+        <field name="customer_name">Dive Computer Service / Battery</field>
+        <field name="requires_result" eval="True"/>
+        <field name="supports_recurring" eval="True"/>
+        <field name="default_warning_lead_days">45</field>
+        <field name="default_grace_days">0</field>
+    </record>
+</odoo>

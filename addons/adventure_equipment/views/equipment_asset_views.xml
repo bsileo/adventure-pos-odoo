@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_asset_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.asset.list</field>
+        <field name="model">adventure.equipment.asset</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active"
+                  decoration-danger="lifecycle_state in ('lost', 'stolen')"
+                  decoration-warning="lifecycle_state == 'out_for_service' or warranty_status == 'expiring_soon'"
+                  decoration-info="lifecycle_state == 'draft'"
+                  decoration-success="lifecycle_state == 'active'">
+                <field name="name"/>
+                <field name="display_name"/>
+                <field name="partner_id"/>
+                <field name="category_id"/>
+                <field name="brand_name"/>
+                <field name="model_name"/>
+                <field name="serial_number"/>
+                <field name="lifecycle_state" widget="badge"
+                       decoration-info="lifecycle_state == 'draft'"
+                       decoration-success="lifecycle_state == 'active'"
+                       decoration-warning="lifecycle_state in ('out_for_service', 'in_service', 'loaned')"
+                       decoration-danger="lifecycle_state in ('lost', 'stolen', 'disposed')"/>
+                <field name="condition_state"/>
+                <field name="warranty_status" optional="hide"/>
+                <field name="ownership_verification_state" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_asset_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.asset.form</field>
+        <field name="model">adventure.equipment.asset</field>
+        <field name="arch" type="xml">
+            <form string="Equipment">
+                <header>
+                    <button name="action_activate"
+                            type="object"
+                            string="Activate"
+                            class="btn-primary"
+                            invisible="lifecycle_state not in ('draft', 'retired', 'lost')"/>
+                    <button name="action_mark_out_for_service"
+                            type="object"
+                            string="Out for Service"
+                            invisible="lifecycle_state not in ('active', 'in_service')"/>
+                    <button name="action_mark_returned_from_service"
+                            type="object"
+                            string="Return from Service"
+                            invisible="lifecycle_state != 'out_for_service'"/>
+                    <button name="action_retire"
+                            type="object"
+                            string="Retire"
+                            invisible="lifecycle_state in ('retired', 'disposed', 'transferred')"/>
+                    <button name="action_mark_lost"
+                            type="object"
+                            string="Mark Lost"
+                            invisible="lifecycle_state not in ('active', 'in_service', 'loaned')"/>
+                    <button name="action_reactivate"
+                            type="object"
+                            string="Reactivate"
+                            invisible="lifecycle_state not in ('lost', 'retired')"/>
+                    <button name="action_open_transfer_wizard"
+                            type="object"
+                            string="Transfer Ownership"
+                            invisible="lifecycle_state in ('transferred', 'disposed')"/>
+                    <button name="action_refresh_product_defaults"
+                            type="object"
+                            string="Refresh Product Defaults"
+                            invisible="not product_id"/>
+                    <field name="lifecycle_state" widget="statusbar"
+                           statusbar_visible="draft,active,out_for_service,retired"/>
+                </header>
+                <sheet>
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <h2>
+                            <field name="nickname" placeholder="Nickname"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="category_id"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="display_name" invisible="1"/>
+                            <field name="ownership_type"/>
+                            <field name="ownership_verification_state"/>
+                            <field name="condition_state"/>
+                            <field name="warranty_status"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="General" name="general">
+                            <group>
+                                <group string="Catalog Link">
+                                    <field name="product_id"/>
+                                    <field name="product_tmpl_id"/>
+                                    <field name="brand_name"/>
+                                    <field name="manufacturer_name"/>
+                                    <field name="model_name"/>
+                                    <field name="manufacturer_sku"/>
+                                    <field name="barcode"/>
+                                </group>
+                                <group string="Snapshots">
+                                    <field name="snapshot_product_name" readonly="1"/>
+                                    <field name="snapshot_brand" readonly="1"/>
+                                    <field name="snapshot_manufacturer" readonly="1"/>
+                                    <field name="snapshot_model" readonly="1"/>
+                                    <field name="snapshot_sku" readonly="1"/>
+                                    <field name="snapshot_category" readonly="1"/>
+                                </group>
+                            </group>
+                            <group string="Condition">
+                                <group>
+                                    <field name="condition_notes"/>
+                                    <field name="condition_assessed_on"/>
+                                    <field name="condition_assessed_by"/>
+                                    <field name="condition_customer_reported"/>
+                                    <field name="last_verified_on"/>
+                                </group>
+                                <group string="Lifecycle">
+                                    <field name="in_service_date"/>
+                                    <field name="retired_on"/>
+                                    <field name="retirement_reason"/>
+                                    <field name="lost_on"/>
+                                    <field name="disposition_on"/>
+                                    <field name="lifecycle_notes"/>
+                                </group>
+                            </group>
+                            <group string="Description">
+                                <field name="description" nolabel="1" colspan="2"/>
+                            </group>
+                        </page>
+                        <page string="Ownership &amp; Purchase" name="ownership">
+                            <group>
+                                <group string="Ownership">
+                                    <field name="ownership_start_date"/>
+                                    <field name="acquired_on"/>
+                                </group>
+                                <group string="Acquisition">
+                                    <field name="acquisition_source"/>
+                                    <field name="sold_by_this_shop"/>
+                                    <field name="original_seller"/>
+                                    <field name="purchase_date"/>
+                                    <field name="purchase_price" groups="adventure_equipment.group_equipment_manager"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="origin_sale_ref"/>
+                                    <field name="source_record_ref"/>
+                                    <field name="data_provenance"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Warranty" name="warranty">
+                            <group>
+                                <group>
+                                    <field name="warranty_registered"/>
+                                    <field name="warranty_lifetime"/>
+                                    <field name="warranty_not_applicable"/>
+                                    <field name="warranty_start_date"/>
+                                    <field name="warranty_end_date"/>
+                                </group>
+                                <group>
+                                    <field name="warranty_registration_number"/>
+                                    <field name="warranty_provider"/>
+                                    <field name="warranty_notes"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Identifiers" name="identifiers">
+                            <group>
+                                <group>
+                                    <field name="serial_number"/>
+                                    <field name="asset_tag"/>
+                                    <field name="manufacturer_registration"/>
+                                </group>
+                            </group>
+                            <field name="identifier_ids">
+                                <list editable="bottom">
+                                    <field name="id_type"/>
+                                    <field name="name"/>
+                                    <field name="issuer"/>
+                                    <field name="primary"/>
+                                    <field name="date_recorded"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Documents" name="documents">
+                            <field name="document_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="document_type"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiration_date"/>
+                                    <field name="issuer"/>
+                                    <field name="customer_visible"/>
+                                    <field name="verified"/>
+                                    <field name="attachment_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="History" name="history">
+                            <separator string="Ownership History"/>
+                            <field name="ownership_ids" readonly="1">
+                                <list>
+                                    <field name="partner_id"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="change_type"/>
+                                    <field name="is_current"/>
+                                    <field name="verification_state"/>
+                                    <field name="source_transaction_ref"/>
+                                </list>
+                            </field>
+                            <separator string="Event Timeline"/>
+                            <field name="event_ids" readonly="1">
+                                <list create="false" edit="false" delete="false">
+                                    <field name="event_date"/>
+                                    <field name="event_type"/>
+                                    <field name="summary"/>
+                                    <field name="user_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <group string="Customer Note">
+                                <field name="customer_note" nolabel="1" colspan="2"/>
+                            </group>
+                            <group string="Internal Note" groups="adventure_equipment.group_equipment_user">
+                                <field name="internal_note" nolabel="1" colspan="2"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_asset_search" model="ir.ui.view">
+        <field name="name">adventure.equipment.asset.search</field>
+        <field name="model">adventure.equipment.asset</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="display_name"/>
+                <field name="partner_id"/>
+                <field name="serial_number"/>
+                <field name="asset_tag"/>
+                <field name="brand_name"/>
+                <field name="model_name"/>
+                <field name="category_id"/>
+                <field name="tag_ids"/>
+                <field name="product_id"/>
+                <separator/>
+                <filter name="filter_active_lifecycle" string="Active" domain="[('lifecycle_state', '=', 'active')]"/>
+                <filter name="filter_draft" string="Draft" domain="[('lifecycle_state', '=', 'draft')]"/>
+                <filter name="filter_out_for_service" string="Out for Service" domain="[('lifecycle_state', '=', 'out_for_service')]"/>
+                <filter name="filter_in_service" string="In Service" domain="[('lifecycle_state', '=', 'in_service')]"/>
+                <filter name="filter_loaned" string="Loaned" domain="[('lifecycle_state', '=', 'loaned')]"/>
+                <filter name="filter_lost_stolen" string="Lost / Stolen" domain="[('lifecycle_state', 'in', ('lost', 'stolen'))]"/>
+                <filter name="filter_retired" string="Retired" domain="[('lifecycle_state', '=', 'retired')]"/>
+                <filter name="filter_disposed" string="Disposed" domain="[('lifecycle_state', '=', 'disposed')]"/>
+                <separator/>
+                <filter name="filter_warranty_expiring" string="Warranty Expiring Soon" domain="[('warranty_status', '=', 'expiring_soon')]"/>
+                <filter name="filter_warranty_expired" string="Warranty Expired" domain="[('warranty_status', '=', 'expired')]"/>
+                <filter name="filter_warranty_active" string="Warranty Active" domain="[('warranty_status', '=', 'active')]"/>
+                <separator/>
+                <filter name="filter_unverified" string="Ownership Unverified" domain="[('ownership_verification_state', '=', 'unverified')]"/>
+                <filter name="filter_verified" string="Ownership Verified" domain="[('ownership_verification_state', '=', 'verified')]"/>
+                <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="group_partner" string="Owner" context="{'group_by': 'partner_id'}"/>
+                <filter name="group_category" string="Category" context="{'group_by': 'category_id'}"/>
+                <filter name="group_lifecycle" string="Lifecycle State" context="{'group_by': 'lifecycle_state'}"/>
+                <filter name="group_condition" string="Condition" context="{'group_by': 'condition_state'}"/>
+                <filter name="group_warranty" string="Warranty Status" context="{'group_by': 'warranty_status'}"/>
+                <filter name="group_ownership_type" string="Ownership Type" context="{'group_by': 'ownership_type'}"/>
+                <filter name="group_company" string="Company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_asset" model="ir.actions.act_window">
+        <field name="name">Equipment</field>
+        <field name="res_model">adventure.equipment.asset</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_adventure_equipment_asset_search"/>
+        <field name="context">{'search_default_filter_active_lifecycle': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register customer-owned equipment
+            </p>
+            <p>
+                Track ownership, identifiers, warranty, and lifecycle for physical equipment
+                that customers own after the sale.
+            </p>
+        </field>
+    </record>
+</odoo>

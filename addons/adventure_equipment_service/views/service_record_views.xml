@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_service_record_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.record.list</field>
+        <field name="model">adventure.equipment.service.record</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="service_date"/>
+                <field name="name"/>
+                <field name="asset_id"/>
+                <field name="partner_id"/>
+                <field name="service_type_id"/>
+                <field name="performed_by_this_shop"/>
+                <field name="provider_partner_id"/>
+                <field name="technician_user_id"/>
+                <field name="result"/>
+                <field name="verification_state"/>
+                <field name="certificate_number"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_service_record_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.record.form</field>
+        <field name="model">adventure.equipment.service.record</field>
+        <field name="arch" type="xml">
+            <form string="Service Record">
+                <header>
+                    <button name="action_complete" type="object" string="Complete" class="btn-primary"
+                            invisible="state != 'draft'"
+                            groups="adventure_equipment.group_equipment_user"/>
+                    <button name="action_verify" type="object" string="Verify"
+                            invisible="state != 'completed'"
+                            groups="adventure_equipment.group_equipment_manager"/>
+                    <button name="action_void" type="object" string="Void"
+                            invisible="state in ('draft', 'voided')"
+                            groups="adventure_equipment.group_equipment_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,completed,verified"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="asset_id"/>
+                            <field name="partner_id"/>
+                            <field name="service_type_id"/>
+                            <field name="requirement_id"/>
+                            <field name="service_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="performed_by_this_shop"/>
+                            <field name="provider_partner_id"/>
+                            <field name="external_provider_name"/>
+                            <field name="technician_user_id"/>
+                            <field name="external_technician_name"/>
+                            <field name="result"/>
+                            <field name="verification_state"/>
+                            <field name="next_recommended_date"/>
+                            <field name="data_provenance"/>
+                        </group>
+                    </group>
+                    <group string="Work">
+                        <field name="summary"/>
+                        <field name="findings"/>
+                        <field name="work_performed"/>
+                        <field name="recommendations"/>
+                        <field name="condition_before_manual"/>
+                        <field name="condition_after"/>
+                        <field name="usage_meter_value"/>
+                        <field name="customer_visible_report"/>
+                        <field name="internal_notes"/>
+                    </group>
+                    <group string="Certification" name="certification">
+                        <field name="certificate_number"/>
+                        <field name="certificate_issuer"/>
+                        <field name="certificate_issue_date"/>
+                        <field name="certificate_expiration_date"/>
+                    </group>
+                    <group string="Void" invisible="state != 'voided'">
+                        <field name="void_reason"/>
+                        <field name="void_user_id"/>
+                        <field name="void_date"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_service_record_search" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.record.search</field>
+        <field name="model">adventure.equipment.service.record</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="asset_id"/>
+                <field name="partner_id"/>
+                <field name="service_type_id"/>
+                <field name="provider_partner_id"/>
+                <field name="technician_user_id"/>
+                <field name="certificate_number"/>
+                <filter name="filter_completed" string="Completed" domain="[('state', 'in', ('completed', 'verified'))]"/>
+                <filter name="filter_external" string="External" domain="[('performed_by_this_shop', '=', False)]"/>
+                <group>
+                    <filter name="group_type" string="Service Type" context="{'group_by': 'service_type_id'}"/>
+                    <filter name="group_provider" string="Provider" context="{'group_by': 'provider_partner_id'}"/>
+                    <filter name="group_tech" string="Technician" context="{'group_by': 'technician_user_id'}"/>
+                    <filter name="group_month" string="Month" context="{'group_by': 'service_date:month'}"/>
+                    <filter name="group_verification" string="Verification" context="{'group_by': 'verification_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_service_record" model="ir.actions.act_window">
+        <field name="name">Service History</field>
+        <field name="res_model">adventure.equipment.service.record</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '!=', 'voided')]</field>
+    </record>
+</odoo>

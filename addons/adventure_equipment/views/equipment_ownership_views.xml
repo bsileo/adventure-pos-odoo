@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_ownership_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.ownership.list</field>
+        <field name="model">adventure.equipment.ownership</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="asset_id"/>
+                <field name="partner_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="change_type"/>
+                <field name="is_current"/>
+                <field name="verification_state"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_ownership_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.ownership.form</field>
+        <field name="model">adventure.equipment.ownership</field>
+        <field name="arch" type="xml">
+            <form string="Ownership History">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="asset_id"/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="change_type"/>
+                            <field name="is_current"/>
+                            <field name="verification_state"/>
+                            <field name="source_transaction_ref"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_ownership_search" model="ir.ui.view">
+        <field name="name">adventure.equipment.ownership.search</field>
+        <field name="model">adventure.equipment.ownership</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="asset_id"/>
+                <field name="partner_id"/>
+                <filter name="filter_current" string="Current" domain="[('is_current', '=', True)]"/>
+                <filter name="filter_past" string="Past" domain="[('is_current', '=', False)]"/>
+                <separator/>
+                <filter name="group_asset" string="Equipment" context="{'group_by': 'asset_id'}"/>
+                <filter name="group_partner" string="Owner" context="{'group_by': 'partner_id'}"/>
+                <filter name="group_change_type" string="Change Type" context="{'group_by': 'change_type'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_ownership" model="ir.actions.act_window">
+        <field name="name">Ownership History</field>
+        <field name="res_model">adventure.equipment.ownership</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_adventure_equipment_ownership_search"/>
+    </record>
+</odoo>

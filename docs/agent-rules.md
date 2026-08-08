@@ -25,7 +25,7 @@ Before starting a **work stream**—meaning a coherent chunk of work such as a f
 
 1. Re-read **this page** (`docs/agent-rules.md`) for module scope, POS/inventory constraints, Git rules, and documentation obligations.
 2. Skim the sections of **[Architecture](architecture/)** and **[Data model](data-model/)** that relate to the task; open **[Integrations](integrations/)** or **[Migrations](migrations/)** pages when the work touches those areas.
-3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Client web portal](architecture/client-web-portal.md)** and **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement those designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
+3. Check for **design-only** or **future** documents (they are labeled in the nav or with warning admonitions on the page—for example **[Equipment management](architecture/equipment-management.md)** — core `adventure_equipment` is shipped; portal is in progress per [Client web portal](architecture/client-web-portal.md) — and **[Scuba training and scheduling (future)](architecture/scuba-training-scheduling.md)**). Do not implement future-phase designs unless explicitly instructed; do avoid shipping changes that would block or contradict them without discussion.
 4. For **new modules or user-visible functionality**, plan **Tidewater Dive Shop** seed / demo coverage via the **module-owned contributor** pattern in the same work stream (see [Tidewater demo seed](#tidewater-demo-seed-mandatory-for-features) and [architecture/tidewater-demo-seed.md](architecture/tidewater-demo-seed.md)).
 
 **Humans** should follow the same habit; [Developer onboarding](developer-onboarding.md) points here.
@@ -81,8 +81,12 @@ Optional integration modules (install per tenant when needed):
 
 Future modules (do not implement unless instructed):
 
-* adventure_rental
-* adventure_service
+* adventure_rental — **note:** scaffolding already exists under `addons/adventure_rental`; treat further work as extending that module, not inventing a parallel rental stack
+* adventure_service — **placeholder only** (no design). Do not use for customer-equipment maintenance; that belongs under `adventure_equipment_service` per [equipment management architecture](architecture/equipment-management.md). Revisit only if a general shop work-order / bench product is prioritized.
+* adventure_equipment — **core registry implemented** under `addons/adventure_equipment` (Phase 1); see module README and [equipment management architecture](architecture/equipment-management.md)
+* adventure_equipment_service — **generic service engine implemented** under `addons/adventure_equipment_service` (Phase 3A); sport-neutral policies/requirements/records only
+* adventure_equipment_scuba — **scuba vertical pack implemented** under `addons/adventure_equipment_scuba` (Phase 3B); VIP/hydro/regulator defaults + scuba asset fields
+* adventure_equipment_portal / adventure_equipment_configuration / adventure_equipment_notifications / adventure_equipment_pos — further customer-owned **Equipment Lifecycle Management** extensions (design: [equipment management architecture](architecture/equipment-management.md)); do **not** conflate with shop rental fleet assets
 * adventure_loyalty
 * adventure_training
 * adventure_trips

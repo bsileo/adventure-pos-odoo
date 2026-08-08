@@ -1,0 +1,36 @@
+name: adventurepos-smoke
+
+services:
+  db:
+    image: postgres:16
+    network_mode: host
+    environment:
+      POSTGRES_DB: odoo
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: change_me_local_dev
+    # With host network, Postgres listens on 5432 on the host.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d odoo -h 127.0.0.1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  odoo:
+    image: odoo:19.0
+    network_mode: host
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: 127.0.0.1
+      USER: odoo
+      PASSWORD: change_me_local_dev
+    volumes:
+      - ./addons:/mnt/extra-addons
+    command:
+      - odoo
+      - --db_host=127.0.0.1
+      - --db_user=odoo
+      - --db_password=change_me_local_dev
+      - --http-interface=0.0.0.0
+      - --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons

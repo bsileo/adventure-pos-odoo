@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_service_complete_wizard_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.complete.wizard.form</field>
+        <field name="model">adventure.equipment.service.complete.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Record Service">
+                <group>
+                    <field name="requirement_id"/>
+                    <field name="asset_id"/>
+                    <field name="service_type_id"/>
+                    <field name="service_date"/>
+                    <field name="performed_by_this_shop"/>
+                    <field name="provider_partner_id"/>
+                    <field name="external_provider_name"/>
+                    <field name="technician_user_id"/>
+                    <field name="result"/>
+                    <field name="certificate_number"/>
+                    <field name="next_recommended_date"/>
+                    <field name="verification_state"/>
+                    <field name="summary"/>
+                    <field name="findings"/>
+                    <field name="work_performed"/>
+                    <field name="complete_immediately"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Save" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

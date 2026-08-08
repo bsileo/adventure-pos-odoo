@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_service_policy_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.policy.list</field>
+        <field name="model">adventure.equipment.service.policy</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="service_type_id"/>
+                <field name="policy_source"/>
+                <field name="category_id"/>
+                <field name="is_recurring"/>
+                <field name="interval_quantity"/>
+                <field name="interval_unit"/>
+                <field name="priority"/>
+                <field name="active"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_service_policy_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.policy.form</field>
+        <field name="model">adventure.equipment.service.policy</field>
+        <field name="arch" type="xml">
+            <form string="Service Policy">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="service_type_id"/>
+                            <field name="policy_source"/>
+                            <field name="priority"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="date_effective"/>
+                            <field name="date_expiration"/>
+                            <field name="is_recurring"/>
+                            <field name="interval_quantity" invisible="not is_recurring"/>
+                            <field name="interval_unit" invisible="not is_recurring"/>
+                            <field name="warning_lead_days"/>
+                            <field name="grace_days"/>
+                            <field name="first_due_basis"/>
+                            <field name="auto_generate_requirements"/>
+                        </group>
+                    </group>
+                    <group string="Applicability">
+                        <group>
+                            <field name="is_default"/>
+                            <field name="category_id"/>
+                            <field name="tag_id"/>
+                            <field name="product_tmpl_id"/>
+                            <field name="product_id"/>
+                        </group>
+                        <group>
+                            <field name="brand_name"/>
+                            <field name="manufacturer_name"/>
+                            <field name="model_name"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_service_policy" model="ir.actions.act_window">
+        <field name="name">Service Policies</field>
+        <field name="res_model">adventure.equipment.service.policy</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

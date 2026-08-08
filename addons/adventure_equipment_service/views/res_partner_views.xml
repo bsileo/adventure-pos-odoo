@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_equipment_service" model="ir.ui.view">
+        <field name="name">res.partner.form.equipment.service</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="adventure_equipment.view_partner_form_inherit_adventure_equipment"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_equipment_service_requirements"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-calendar-check-o"
+                        groups="adventure_equipment.group_equipment_viewer"
+                        invisible="equipment_service_overdue_count == 0 and equipment_service_due_count == 0 and equipment_service_due_soon_count == 0">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="equipment_service_overdue_count"/>
+                        </span>
+                        <span class="o_stat_text">Eq. Overdue</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

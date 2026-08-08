@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_asset_form_service" model="ir.ui.view">
+        <field name="name">adventure.equipment.asset.form.service</field>
+        <field name="model">adventure.equipment.asset</field>
+        <field name="inherit_id" ref="adventure_equipment.view_adventure_equipment_asset_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_recalculate_service_requirements"
+                        type="object"
+                        string="Recalculate Service"
+                        groups="adventure_equipment.group_equipment_user"/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_service_requirements"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-wrench"
+                            groups="adventure_equipment.group_equipment_viewer">
+                        <field name="service_requirement_count" widget="statinfo" string="Requirements"/>
+                    </button>
+                    <button name="action_view_service_records"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-history"
+                            groups="adventure_equipment.group_equipment_viewer">
+                        <field name="service_record_count" widget="statinfo" string="Service History"/>
+                    </button>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='warranty_status']" position="after">
+                <field name="service_status" widget="badge"
+                       decoration-success="service_status == 'current'"
+                       decoration-warning="service_status in ('due', 'due_soon')"
+                       decoration-danger="service_status == 'overdue'"/>
+                <field name="next_service_due_date"/>
+                <field name="service_due_soon_count"/>
+                <field name="service_due_count"/>
+                <field name="service_overdue_count"/>
+            </xpath>
+            <xpath expr="//page[@name='warranty']" position="after">
+                <page string="Service Requirements" name="service_requirements">
+                    <field name="service_requirement_ids">
+                        <list>
+                            <field name="service_type_id"/>
+                            <field name="status"/>
+                            <field name="last_completed_date"/>
+                            <field name="next_due_date"/>
+                            <field name="warning_date"/>
+                            <field name="source_policy_id"/>
+                            <field name="source_classification"/>
+                            <field name="forecast_confidence"/>
+                            <field name="override_active"/>
+                            <field name="waived"/>
+                        </list>
+                    </field>
+                </page>
+                <page string="Service History" name="service_history">
+                    <field name="service_record_ids">
+                        <list>
+                            <field name="service_date"/>
+                            <field name="service_type_id"/>
+                            <field name="performed_by_this_shop"/>
+                            <field name="provider_partner_id"/>
+                            <field name="technician_user_id"/>
+                            <field name="result"/>
+                            <field name="verification_state"/>
+                            <field name="certificate_number"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_asset_list_service" model="ir.ui.view">
+        <field name="name">adventure.equipment.asset.list.service</field>
+        <field name="model">adventure.equipment.asset</field>
+        <field name="inherit_id" ref="adventure_equipment.view_adventure_equipment_asset_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='warranty_status']" position="after">
+                <field name="service_status" optional="show"/>
+                <field name="next_service_due_date" optional="show"/>
+                <field name="service_overdue_count" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

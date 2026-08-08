@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_service_type_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.type.list</field>
+        <field name="model">adventure.equipment.service.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="classification"/>
+                <field name="supports_recurring"/>
+                <field name="default_warning_lead_days"/>
+                <field name="default_grace_days"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_service_type_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.type.form</field>
+        <field name="model">adventure.equipment.service.type</field>
+        <field name="arch" type="xml">
+            <form string="Service Type">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="classification"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="requires_result"/>
+                            <field name="requires_certificate"/>
+                            <field name="supports_expiration"/>
+                            <field name="supports_recurring"/>
+                            <field name="default_warning_lead_days"/>
+                            <field name="default_grace_days"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="customer_name"/>
+                        <field name="customer_description"/>
+                        <field name="tag_ids" widget="many2many_tags"/>
+                        <field name="description"/>
+                        <field name="internal_instructions"/>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_service_type" model="ir.actions.act_window">
+        <field name="name">Service Types</field>
+        <field name="res_model">adventure.equipment.service.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_document_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.document.list</field>
+        <field name="model">adventure.equipment.document</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="document_type"/>
+                <field name="issue_date"/>
+                <field name="expiration_date"/>
+                <field name="issuer"/>
+                <field name="customer_visible"/>
+                <field name="verified"/>
+                <field name="attachment_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_document_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.document.form</field>
+        <field name="model">adventure.equipment.document</field>
+        <field name="arch" type="xml">
+            <form string="Equipment Document">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="asset_id"/>
+                            <field name="name"/>
+                            <field name="document_type"/>
+                            <field name="attachment_id"/>
+                        </group>
+                        <group>
+                            <field name="issue_date"/>
+                            <field name="expiration_date"/>
+                            <field name="issuer"/>
+                            <field name="customer_visible"/>
+                            <field name="verified"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_document_search" model="ir.ui.view">
+        <field name="name">adventure.equipment.document.search</field>
+        <field name="model">adventure.equipment.document</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="asset_id"/>
+                <field name="document_type"/>
+                <field name="issuer"/>
+                <filter name="filter_customer_visible" string="Customer Visible" domain="[('customer_visible', '=', True)]"/>
+                <filter name="filter_verified" string="Verified" domain="[('verified', '=', True)]"/>
+                <separator/>
+                <filter name="group_type" string="Document Type" context="{'group_by': 'document_type'}"/>
+                <filter name="group_asset" string="Equipment" context="{'group_by': 'asset_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_document" model="ir.actions.act_window">
+        <field name="name">Documents</field>
+        <field name="res_model">adventure.equipment.document</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_adventure_equipment_document_search"/>
+    </record>
+</odoo>

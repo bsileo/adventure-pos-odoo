@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="equipment_asset_company_rule" model="ir.rule">
+        <field name="name">Equipment Asset: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_asset"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_ownership_company_rule" model="ir.rule">
+        <field name="name">Equipment Ownership: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_ownership"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_document_company_rule" model="ir.rule">
+        <field name="name">Equipment Document: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_document"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_event_company_rule" model="ir.rule">
+        <field name="name">Equipment Event: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_event"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_identifier_company_rule" model="ir.rule">
+        <field name="name">Equipment Identifier: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_identifier"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_category_company_rule" model="ir.rule">
+        <field name="name">Equipment Category: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_category"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_tag_company_rule" model="ir.rule">
+        <field name="name">Equipment Tag: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_tag"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

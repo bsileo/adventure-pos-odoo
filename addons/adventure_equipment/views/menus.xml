@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_adventure_equipment_root"
+              name="Equipment"
+              groups="adventure_equipment.group_equipment_viewer"
+              sequence="46"
+              web_icon="adventure_equipment,static/description/icon.png"/>
+
+    <menuitem id="menu_adventure_equipment_assets"
+              name="All Equipment"
+              parent="menu_adventure_equipment_root"
+              action="action_adventure_equipment_asset"
+              sequence="10"/>
+
+    <menuitem id="menu_adventure_equipment_categories"
+              name="Categories"
+              parent="menu_adventure_equipment_root"
+              action="action_adventure_equipment_category"
+              sequence="20"/>
+
+    <menuitem id="menu_adventure_equipment_configuration"
+              name="Configuration"
+              parent="menu_adventure_equipment_root"
+              groups="adventure_equipment.group_equipment_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_adventure_equipment_tags"
+              name="Tags"
+              parent="menu_adventure_equipment_configuration"
+              action="action_adventure_equipment_tag"
+              sequence="10"/>
+</odoo>

@@ -1,0 +1,60 @@
+# Install Tidewater standard package modules (if needed) and upsert Tidewater
+# seed data on the shared GCP sandbox.
+#
+# Required secrets (same as Deploy GCP sandbox):
+#   GCP_SANDBOX_SSH_PRIVATE_KEY, GCP_SANDBOX_SSH_HOST,
+#   GCP_SANDBOX_KNOWN_HOSTS, GCP_SANDBOX_DEPLOY_PATH
+#
+# Does NOT wipe Postgres. Normal develop deploys still do not reseed —
+# use workflow_dispatch for day-to-day refresh, or push a change to this file
+# when bootstrapping new package modules after a merge.
+
+name: Seed GCP sandbox Tidewater
+
+on:
+  workflow_dispatch:
+    inputs:
+      reset_seed:
+        description: "Pass --reset-seed (recreate scenario/runtime records)"
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: [develop]
+    paths:
+      - ".github/workflows/sandbox-seed-tidewater.yml"
+
+concurrency:
+  group: sandbox-seed-tidewater
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Load SSH private key
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.GCP_SANDBOX_SSH_PRIVATE_KEY }}
+
+      - name: Trust host key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.GCP_SANDBOX_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Install package modules and seed Tidewater
+        env:
+          SANDBOX_SSH_HOST: ${{ secrets.GCP_SANDBOX_SSH_HOST }}
+          SANDBOX_DEPLOY_PATH: ${{ secrets.GCP_SANDBOX_DEPLOY_PATH }}
+          RESET_SEED: ${{ github.event_name == 'workflow_dispatch' && inputs.reset_seed || false }}
+        run: |
+          set -euo pipefail
+          seed_args=()
+          if [[ "${RESET_SEED}" == "true" ]]; then
+            seed_args+=(--reset-seed)
+          fi
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "deploy@${SANDBOX_SSH_HOST}" \
+            "set -euo pipefail; cd \"${SANDBOX_DEPLOY_PATH}\"; git fetch --force origin develop:refs/remotes/origin/develop; git checkout develop; git reset --hard origin/develop; bash ./scripts/gcp-sandbox-seed-tidewater.sh ${seed_args[*]+"${seed_args[*]}"}"

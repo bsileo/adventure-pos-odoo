@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_service_record_form_scuba" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.record.form.scuba</field>
+        <field name="model">adventure.equipment.service.record</field>
+        <field name="inherit_id" ref="adventure_equipment_service.view_adventure_equipment_service_record_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='certification']" position="after">
+                <group string="Scuba Details" name="scuba_details">
+                    <field name="scuba_vip_sticker_number"/>
+                    <field name="scuba_hydro_stamp"/>
+                    <field name="scuba_visual_findings_code"/>
+                    <field name="scuba_oxygen_clean_performed"/>
+                    <field name="scuba_max_oxygen_percent"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

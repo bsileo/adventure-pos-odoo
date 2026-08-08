@@ -1,0 +1,7 @@
+partner_id/name,category_id/id,product_id/name,brand_name,model_name,manufacturer_sku,serial_number,acquisition_source,lifecycle_state,condition_state,warranty_registered,warranty_lifetime,warranty_not_applicable,warranty_start_date,warranty_end_date,origin_sale_ref,original_seller,purchase_date,nickname,ownership_verification_state
+Demo Diver Alice,adventure_equipment.equipment_category_regulator,Scubapro MK25 Regulator,,,,MK25-IMP-0001,shop_sale,active,excellent,True,False,False,2026-01-15,2028-01-15,POS/2026/0100,,,Shop reg import,verified
+Demo Diver Bob,adventure_equipment.equipment_category_dive_computer,,Garmin,Descent G1,G1-BLK,DESC-G1-55221,other_shop,active,good,False,False,False,,,,West Coast Dive,,2024-09-12,Travel computer,unverified
+Demo Diver Carol,adventure_equipment.equipment_category_bcd,,,,,AL-PRO-7788,used,active,fair,False,False,True,,,,Facebook Marketplace,2023-05-20,Backup BCD,unverified
+Demo Diver Alice,adventure_equipment.equipment_category_mask_fins_snorkel,,Cressi,F1 Frameless,,,other_shop,active,excellent,False,False,True,,,,,,Mask only,unverified
+Demo Diver Bob,adventure_equipment.equipment_category_cylinder,,Luxfer,S080,S080-11,LX-IMP-44001,shop_sale,active,good,True,True,False,2022-01-01,,S00045,,,Primary tank,verified
+Demo Diver Carol,adventure_equipment.equipment_category_regulator,,Apeks,XTX50,XTX50-DSN,APX-EXP-9001,other_shop,active,good,True,False,False,2025-01-01,2025-12-31,,Online retailer,2025-01-05,Expired warranty demo,pending
