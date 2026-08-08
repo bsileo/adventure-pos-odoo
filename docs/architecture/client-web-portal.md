@@ -2,7 +2,7 @@
 
 !!! warning "Draft / planning — not implemented"
 
-    This page is a **planning and architecture review** for the AdventurePOS **client web portal** (customer-facing Odoo Website + Portal). It is **not** shipped behavior. Do **not** implement controllers, themes, portal ACL, or Tidewater portal seed until the team answers the **remaining** open questions below and explicitly kicks off a build phase. Already confirmed: hosting pattern **A** (minimal homepage MVP) and the Tidewater demo journey (homepage → login → list → detail → register external → staff verify).
+    This page is a **planning and architecture review** for the AdventurePOS **client web portal** (customer-facing Odoo Website + Portal). It is **not** shipped behavior. Do **not** implement controllers, themes, portal ACL, or Tidewater portal seed until the team answers the **remaining** open questions below and explicitly kicks off a build phase. Already confirmed: hosting pattern **A** (minimal homepage MVP), Tidewater demo journey (homepage → login → list → detail → register external → staff verify), and **open self-signup**.
 
 **Audience:** Product, operations, and developers planning customer self-service for adventure shops (dive, ski, etc.) on the Adventure POS Odoo stack.
 
@@ -30,8 +30,9 @@
 | 1 | **Hosting pattern = A (Odoo-hosted full site).** AdventurePOS will provide full client websites on Odoo Website; the customer portal is part of that site, not a separate hybrid/portal-only product. Tidewater demos use the same pattern. | **Confirmed** |
 | 2 | **This workstream keeps the public website minimal.** A simple Tidewater homepage with **Sign in / login** and a link into the **equipment portal** is enough for MVP. Rich marketing pages, multi-page IA, and content migration remain out of scope here. | **Confirmed** |
 | 3 | **Tidewater demo customer journey (MVP).** Homepage → login → list gear → asset detail → register external item → staff verify. **Not** mandatory for this demo: orders history, profile edit, or a documents-only flow. | **Confirmed** |
+| 4 | **Portal signup = open self-registration.** Any email may create a portal user via standard Odoo `auth_signup` (not invite-only). Pair with normal portal ↔ partner linking / matching so equipment ownership still attaches to the right contact. | **Confirmed** |
 
-Remaining open questions (theme choice, auth, equipment field editability, etc.) are listed below and do not reopen these decisions.
+Remaining open questions (theme choice, equipment field editability, etc.) are listed below and do not reopen these decisions.
 
 ---
 
@@ -70,7 +71,7 @@ For each tenant shop:
 | Layer | Role | Odoo building blocks (preferred) |
 |-------|------|----------------------------------|
 | **Public website shell** | Brand, navigation, marketing pages the shop chooses to host in Odoo | `website`, theme module(s), Website Builder / pages, company logo & colors |
-| **Authenticated portal** | Logged-in customer self-service | `portal`, `auth_signup` (or invite-only), `portal` home + custom portal menus |
+| **Authenticated portal** | Logged-in customer self-service | `portal`, `auth_signup` (open self-registration), `portal` home + custom portal menus |
 | **Domain features** | Equipment (first), later orders, documents, training, service booking, etc. | Thin `adventure_*_portal` modules: Controllers + QWeb + record rules |
 | **Staff backend** | Authoritative ops (verify gear, complete service, manage customers) | Existing backend apps (`adventure_equipment`, etc.) — unchanged source of truth |
 
@@ -224,14 +225,15 @@ Customer registers or edits → asset appears as **unverified / customer-claimed
 
 ## Auth and identity
 
-| Topic | Proposed default for review |
-|-------|-----------------------------|
-| **User model** | Standard `res.users` portal users linked 1:1 to customer `res.partner` |
-| **Provisioning** | Staff invite from contact form and/or `auth_signup` self-registration with email validation |
+| Topic | Decision / notes |
+|-------|------------------|
+| **User model** | Standard `res.users` portal users linked to customer `res.partner` |
+| **Provisioning** | **Open self-signup** via `auth_signup` — any email may register (confirmed). Staff may still create/invite users from the backend as a convenience, but invite-only is **not** required. |
 | **Password reset** | Standard Odoo mail templates; sandbox needs outbound mail or documented test bypass |
 | **Multi-contact households** | Open question — see below |
 | **B2B / dive clubs** | Portal user on commercial partner vs individual — open question |
 | **Staff impersonation** | Prefer “View as portal” only if Odoo provides a safe pattern; otherwise demo with real portal logins in Tidewater |
+| **Partner matching** | Self-signup must still resolve or create a partner cleanly so equipment `partner_id` ownership works; exact match rules (email-only vs staff merge) can be refined in build |
 
 ---
 
@@ -309,13 +311,13 @@ If equipment Phase 1–3B PRs are still merging, portal implementation should ta
 
 Please decide or explicitly defer each item. Blockers for build are marked **[block]**; others can defer with a written default.
 
-**Resolved above:** hosting pattern **A** (minimal homepage MVP); Tidewater demo journey **homepage → login → list → detail → register external → staff verify** (no orders/profile/documents-only requirement). See [Decisions confirmed](#decisions-confirmed-review).
+**Resolved above:** hosting pattern **A** (minimal homepage MVP); Tidewater demo journey **homepage → login → list → detail → register external → staff verify**; **open self-signup** (any email). See [Decisions confirmed](#decisions-confirmed-review).
 
 ### Portal product & UX
 
 1. ~~Primary hosting pattern~~ — **Resolved: A**, with minimal homepage MVP.
 2. ~~First customer journeys~~ — **Resolved:** homepage → login → list gear → detail → register external item → (staff) verify. Orders history, profile edit, and documents-only are **not** mandatory for the Tidewater MVP demo.
-3. **Self-signup vs invite-only?** Can any email create a portal user, or only staff-invited contacts?
+3. ~~Self-signup vs invite-only~~ — **Resolved: open self-signup**; any email may create a portal user (`auth_signup`).
 4. **Profile editing:** Deferred for MVP demo (not in confirmed journey). Revisit later if product wants address/phone self-service outside equipment flows.
 
 ### Branding & website shell
@@ -355,8 +357,8 @@ Use these **only** where a topic is still open; hosting pattern is already decid
 | Hosting / Tidewater pattern | **A — Odoo-hosted site**, **minimal homepage** (login + equipment portal entry) this workstream |
 | Theme | Default Odoo Website + Tidewater logo/colors; App Store theme later if needed |
 | Shell module | Thin **`adventure_website`** for homepage + config-as-code + seed hooks |
-| Auth | Staff invite + optional signup for contacts that already exist |
-| Equipment MVP | List / detail / register / limited edit; **no** service booking |
+| Auth | **Open self-signup** (`auth_signup`); staff invite optional, not required |
+| Equipment MVP | List / detail / register / limited edit; **no** service booking, orders history, or profile edit |
 | Purchases in demo | Staff-seeded verified assets on Tidewater customers; POS auto-create follows later |
 | Household | Single `partner_id` owner (match equipment Phase 1) |
 | Migration | No dependency |
@@ -367,6 +369,7 @@ Use these **only** where a topic is still open; hosting pattern is already decid
 
 - [x] Hosting pattern decided (**A**, minimal homepage MVP)
 - [x] Tidewater demo customer journey decided (homepage → login → list → detail → register → staff verify; no orders/profile/documents-only)
+- [x] Portal signup decided (**open self-registration**, any email)
 - [ ] Remaining open questions answered or deferred with written defaults
 - [ ] Module list agreed (`adventure_website` in P1 recommended; `adventure_equipment_portal` confirmed)
 - [ ] Tidewater credentials approach and gear seed scenarios agreed
