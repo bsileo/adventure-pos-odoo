@@ -13,10 +13,12 @@ This module does **not** include service scheduling, customer portal, POS auto-r
 ## Install
 
 1. Ensure dependencies are available: `adventure_base`, `contacts`, `product`, `mail`.
-2. Install **Adventure Equipment** from Apps (or `-i adventure_equipment`).
+2. Install **Adventure Equipment** from Apps (or `-i adventure_equipment`). This module is an Odoo **application** (`application=True`), so it appears when filtering **Apps**. Supporting modules such as `adventure_equipment_service` use `application=False` and show under **Modules** / by category only.
 3. Optional: load demo data when installing with demo enabled (`demo/demo_equipment.xml`).
 
 After model or data changes, upgrade the module (`-u adventure_equipment`).
+
+For the Tidewater Dive Shop demo, prefer installing **Adventure Equipment Scuba** (standard package via `seed-tidewater`), which pulls this registry in as a dependency.
 
 ## Ownership scope
 

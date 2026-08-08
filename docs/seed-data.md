@@ -45,6 +45,18 @@ It creates / updates:
 - Customers with certification and waiver scenarios.
 - Reservations for pickup, return, overdue, and damaged-return workflows.
 - Condition logs and maintenance events.
+- **Customer-owned equipment** (when `adventure_equipment_scuba` is installed): kit and service history for Tidewater story customers (Maya Carter, Jon Ellis, Luis Romero, Nora Singh, Carter Family), via the module-owned contributor under `adventure_equipment_scuba/seeds/`.
+
+### Tidewater standard package modules
+
+`seed-tidewater` / sandbox bootstrap installs (when missing):
+
+| Module | Role |
+|--------|------|
+| `dive_shop_pos` | Scuba POS / rental vertical + central seed orchestrator |
+| `adventure_equipment_scuba` | Customer equipment scuba app (pulls `adventure_equipment` + `adventure_equipment_service`) |
+
+`adventure_equipment` is an Odoo **App** (`application=True`). `adventure_equipment_scuba` is also an **App**. `adventure_equipment_service` remains a supporting module (`application=False`) so it does not appear when filtering Apps alone—install it via the scuba app or Apps → Modules.
 
 ## Usage (local)
 
@@ -64,7 +76,7 @@ make seed-tidewater
 make seed-tidewater RESET_SEED=1
 ```
 
-The runner installs or updates `dive_shop_pos` before loading the seed profile.
+The runner installs or updates the Tidewater standard package (`dive_shop_pos`, `adventure_equipment_scuba`) before loading the seed profile.
 
 ## Sandbox
 

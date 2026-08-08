@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Install dive_shop_pos (if needed) and load the Tidewater seed profile.
-# Safe to re-run; use --reset-seed to recreate scenario/runtime seed records.
+# Install the Tidewater Dive Shop standard package (if needed) and load the
+# Tidewater seed profile. Safe to re-run; use --reset-seed to recreate
+# scenario/runtime seed records.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,6 +9,10 @@ cd "$ROOT_DIR"
 
 profile="tidewater"
 reset_seed=0
+
+# Standard Tidewater package: dive vertical + customer equipment scuba stack.
+# adventure_equipment_scuba pulls adventure_equipment_service + adventure_equipment.
+TIDEWATER_MODULES="dive_shop_pos,adventure_equipment_scuba"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -25,6 +30,10 @@ Usage: seed-dev-db.sh [--profile tidewater|tideledger|dive_shop] [--reset-seed]
 
 Canonical profile is tidewater (Tidewater Dive Shop, Pittsburgh).
 tideledger and dive_shop remain as legacy aliases for the same seed pack.
+
+Installs the Tidewater standard package modules when missing:
+  dive_shop_pos, adventure_equipment_scuba
+(and their dependencies, including adventure_equipment / adventure_equipment_service).
 EOF
       exit 0
       ;;
@@ -40,8 +49,8 @@ if [[ "$profile" != "tidewater" && "$profile" != "tideledger" && "$profile" != "
   exit 2
 fi
 
-echo "Ensuring dive_shop_pos is installed..."
-docker compose exec -T odoo sh -lc 'odoo --db_host=db --db_port=5432 --db_user="${POSTGRES_USER}" --db_password="${POSTGRES_PASSWORD}" -d "${POSTGRES_DB:-odoo}" -i dive_shop_pos --stop-after-init >/tmp/dive_shop_pos_install.log'
+echo "Ensuring Tidewater standard package is installed (${TIDEWATER_MODULES})..."
+docker compose exec -T odoo sh -lc "odoo --db_host=db --db_port=5432 --db_user=\"\${POSTGRES_USER}\" --db_password=\"\${POSTGRES_PASSWORD}\" -d \"\${POSTGRES_DB:-odoo}\" -i ${TIDEWATER_MODULES} --stop-after-init >/tmp/tidewater_package_install.log"
 
 echo "Loading Tidewater seed profile (${profile})..."
 docker compose exec -T odoo sh -lc 'odoo shell --db_host=db --db_port=5432 --db_user="${POSTGRES_USER}" --db_password="${POSTGRES_PASSWORD}" -d "${POSTGRES_DB:-odoo}"' <<PY

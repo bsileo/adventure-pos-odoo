@@ -39,6 +39,14 @@ Visible on the **Scuba** notebook page when the category is scuba-relevant.
 
 Cylinder denormalized dates (`scuba_last_vip_date`, `scuba_last_hydro_date`) update when matching service records are completed, or via **Sync VIP/Hydro Dates**.
 
+## Tidewater demo seed
+
+This pack ships a module-owned Tidewater contributor (`seeds/tidewater_seed.py`)
+and is part of the Tidewater standard package installed by `seed-tidewater`.
+It attaches customer-owned cylinders/regs/BCDs (plus service history) to the
+shared Tidewater customers (`dive_shop_pos_seed.customer_*`) without a hard
+manifest dependency on `dive_shop_pos`.
+
 ## Explicit non-goals
 
 - Changing equipment lifecycle automatically when VIP/hydro is overdue
