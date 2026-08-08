@@ -302,6 +302,8 @@ bash ./scripts/gcp-sandbox-seed-tidewater.sh --reset-seed
 
 Normal **`develop` deploys do not reseed**. See [seed-data.md](seed-data.md) for profile details.
 
+**GitHub Actions:** [Seed GCP sandbox Tidewater](../.github/workflows/sandbox-seed-tidewater.yml) can install the Tidewater standard package (including `adventure_equipment_scuba`) and upsert seed data via **Actions → Seed GCP sandbox Tidewater → Run workflow** (optional `--reset-seed`). It uses the same SSH secrets as Deploy GCP sandbox.
+
 ---
 
 ## Stop / start the sandbox VM (save GCP compute cost)
