@@ -23,6 +23,18 @@
                                         <a href="/my/equipment" class="btn btn-outline-primary btn-lg">My Equipment</a>
                                     </t>
                                 </div>
+                                <!-- Demo-only hint: Tidewater sandbox portal passwords (see docs/seed-data.md). -->
+                                <t t-if="not request.session.uid or request.env.user._is_public()">
+                                    <div class="mt-5 text-start mx-auto" style="max-width: 36rem;">
+                                        <p class="text-muted small mb-2">Demo portal logins (password for all: <code>tidewater</code>)</p>
+                                        <ul class="list-unstyled small mb-0">
+                                            <li><code>certified_current@example.test</code> — has sample equipment</li>
+                                            <li><code>nitrox@example.test</code></li>
+                                            <li><code>uncertified@example.test</code></li>
+                                        </ul>
+                                        <p class="text-muted small mt-2 mb-0">Staff backend: <code>admin</code> / <code>admin</code></p>
+                                    </div>
+                                </t>
                             </div>
                         </div>
                     </div>
