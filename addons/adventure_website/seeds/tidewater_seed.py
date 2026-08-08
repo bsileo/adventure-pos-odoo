@@ -26,7 +26,9 @@ def seed_tidewater(env, reset=False):
     ICP = env["ir.config_parameter"].sudo()
     ICP.set_param("auth_signup.invitation_scope", "b2c")
     ICP.set_param("auth_signup.reset_password", "True")
-    stats["updated"] += 2
+    # Avoid broken reCAPTCHA (enabled by default when google_recaptcha is installed).
+    ICP.set_param("enable_recaptcha", "False")
+    stats["updated"] += 3
 
     company = env.company.sudo()
     Website = env["website"].sudo()

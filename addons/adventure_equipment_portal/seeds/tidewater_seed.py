@@ -18,19 +18,19 @@ PORTAL_USERS = (
         "xml_name": "portal_user_certified_current",
         "partner_xml": "customer_certified_current",
         "login": "certified_current@example.test",
-        "password": "TidewaterDemo1!",
+        "password": "tidewater",
     },
     {
         "xml_name": "portal_user_nitrox",
         "partner_xml": "customer_nitrox",
         "login": "nitrox@example.test",
-        "password": "TidewaterDemo1!",
+        "password": "tidewater",
     },
     {
         "xml_name": "portal_user_uncertified",
         "partner_xml": "customer_uncertified",
         "login": "uncertified@example.test",
-        "password": "TidewaterDemo1!",
+        "password": "tidewater",
     },
 )
 

@@ -50,7 +50,7 @@ It creates / updates:
 
 ### Portal demo logins (fictional)
 
-Password for all of the following: `TidewaterDemo1!`
+Password for all of the following: `tidewater`
 
 | Login | Story customer |
 |-------|----------------|

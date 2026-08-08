@@ -2,7 +2,7 @@
 {
     "name": "Adventure Website",
     "summary": "Minimal Odoo Website shell for AdventurePOS customer portals.",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",

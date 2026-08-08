@@ -4,4 +4,7 @@
          Use set_param so we do not clash with auth_signup's existing row. -->
     <function model="ir.config_parameter" name="set_param" eval="('auth_signup.invitation_scope', 'b2c')"/>
     <function model="ir.config_parameter" name="set_param" eval="('auth_signup.reset_password', 'True')"/>
+    <!-- Website installs google_recaptcha with enable_recaptcha defaulting True.
+         Without site/secret keys that blocks browser login for portal users. -->
+    <function model="ir.config_parameter" name="set_param" eval="('enable_recaptcha', 'False')"/>
 </odoo>

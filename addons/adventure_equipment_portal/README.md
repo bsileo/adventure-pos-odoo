@@ -16,7 +16,7 @@ Depends on `adventure_equipment` and `adventure_website`.
 
 ## Tidewater demo
 
-Seed creates portal users (password `TidewaterDemo1!`):
+Seed creates portal users (password `tidewater`):
 
 | Login | Partner |
 |-------|---------|
