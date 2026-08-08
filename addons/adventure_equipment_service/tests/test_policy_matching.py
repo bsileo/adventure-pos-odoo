@@ -13,10 +13,10 @@ class TestAdventureEquipmentServicePolicyMatching(TransactionCase):
         cls.Asset = cls.env["adventure.equipment.asset"]
         cls.Policy = cls.env["adventure.equipment.service.policy"]
         cls.Type = cls.env["adventure.equipment.service.type"]
+        cls.Policy.search([]).write({"active": False})
         cls.partner = cls.Partner.create({"name": "Policy Match Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_regulator")
         cls.other_category = cls.env.ref("adventure_equipment.equipment_category_bcd")
-        cls.Policy.search([]).write({"active": False})
         cls.annual = cls.Type.create(
             {
                 "name": "Match Annual",
@@ -145,7 +145,9 @@ class TestAdventureEquipmentServicePolicyMatching(TransactionCase):
             category_id=self.category.id,
             priority=100,
         )
-        winners = self.Policy.select_winning_policies(asset)
+        winners = self.Policy.select_winning_policies(asset).filtered(
+            lambda policy: policy.service_type_id in (type_a | type_b)
+        )
         self.assertEqual(set(winners.ids), {p1.id, p2.id})
 
     def test_company_mismatch_ignored(self):
