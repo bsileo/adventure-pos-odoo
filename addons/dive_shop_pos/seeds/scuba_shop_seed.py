@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import base64
 from datetime import datetime, timedelta
 
+from odoo.tools import file_open
+
+from . import tidewater_identity as identity
 from .registry import SeedRegistry
 
 
@@ -9,6 +13,8 @@ SEED_MODULE = "dive_shop_pos_seed"
 
 
 class ScubaShopSeed:
+    """Tidewater Dive Shop seed pack (sandbox-diveshop / tidewater profile)."""
+
     def __init__(self, env, reset=False):
         self.env = env
         self.registry = SeedRegistry(env, SEED_MODULE)
@@ -30,22 +36,97 @@ class ScubaShopSeed:
         self._seed_condition_and_maintenance()
         self.stats.update(self.registry.summary())
         self.stats.update(self._counts())
+        self.stats["tenant_slug"] = identity.TENANT_SLUG
+        self.stats["company"] = identity.COMPANY_NAME
         return self.stats
 
     def _seed_company(self):
-        company = self.registry.upsert(
-            "res.company",
-            "company_adventure_dive_center_dev",
-            {
-                "name": "Adventure Dive Center - Dev",
-                "email": "ops@adventuredive.example",
-                "phone": "+1 555-0100",
-                "street": "100 Marina Way",
-                "city": "Key Largo",
-                "zip": "33037",
-            },
+        """Rebrand the DB main company as Tidewater — never create a second company."""
+        values = {
+            "name": identity.COMPANY_NAME,
+            "email": identity.COMPANY_EMAIL,
+            "phone": identity.COMPANY_PHONE,
+            "street": identity.COMPANY_STREET,
+            "city": identity.COMPANY_CITY,
+            "zip": identity.COMPANY_ZIP,
+        }
+        country = self.env["res.country"].sudo().search(
+            [("code", "=", identity.COMPANY_COUNTRY_CODE)],
+            limit=1,
         )
-        self.records["company"] = company
+        if country:
+            values["country_id"] = country.id
+            state = self.env["res.country.state"].sudo().search(
+                [
+                    ("code", "=", identity.COMPANY_STATE_CODE),
+                    ("country_id", "=", country.id),
+                ],
+                limit=1,
+            )
+            if state:
+                values["state_id"] = state.id
+
+        main = self.env.ref("base.main_company").sudo()
+        self._bind_tidewater_company_xml_ids(main)
+        self._retire_orphan_tidewater_companies(main)
+
+        logo = self._tidewater_logo_b64()
+        if logo:
+            values["logo"] = logo
+
+        write_vals = {key: value for key, value in values.items() if key in main._fields}
+        main.write(write_vals)
+        self.registry.updated.append(("res.company", identity.COMPANY_XML_ID))
+        self.records["company"] = main
+
+    def _tidewater_logo_b64(self):
+        """Load Tidewater logo from module static assets for company branding."""
+        try:
+            with file_open(identity.COMPANY_LOGO_MODULE_PATH, "rb") as handle:
+                return base64.b64encode(handle.read())
+        except (FileNotFoundError, OSError, ValueError):
+            return False
+
+    def _bind_tidewater_company_xml_ids(self, company):
+        """Point Tidewater / legacy seed XML ids at the main company only."""
+        names = (identity.COMPANY_XML_ID,) + tuple(identity.LEGACY_COMPANY_XML_IDS)
+        for name in names:
+            xml = self.registry.imd.search(
+                [("module", "=", SEED_MODULE), ("name", "=", name)],
+                limit=1,
+            )
+            if xml:
+                if xml.res_id != company.id:
+                    xml.write({"res_id": company.id})
+                continue
+            # Only create the canonical Tidewater id (and any legacy id that
+            # already existed elsewhere is ignored — we do not invent legacy ids).
+            if name == identity.COMPANY_XML_ID:
+                self.registry.imd.create(
+                    {
+                        "module": SEED_MODULE,
+                        "name": name,
+                        "model": "res.company",
+                        "res_id": company.id,
+                        "noupdate": True,
+                    }
+                )
+
+    def _retire_orphan_tidewater_companies(self, main):
+        """Rename extra Tidewater companies left from older seed runs."""
+        orphans = self.env["res.company"].sudo().search(
+            [
+                ("id", "!=", main.id),
+                ("name", "=", identity.COMPANY_NAME),
+            ]
+        )
+        for orphan in orphans:
+            orphan.write(
+                {
+                    "name": "%s (unused seed company — safe to delete)"
+                    % identity.COMPANY_NAME,
+                }
+            )
 
     def _seed_categories(self):
         categories = {
@@ -173,7 +254,7 @@ class ScubaShopSeed:
                     "customer_rank": 1,
                     "email": "%s@example.test" % key.replace("customer_", ""),
                     "phone": "+1 555-%04d" % (1000 + len(self.records)),
-                    "comment": "Dive shop seed customer. Requirements: %s" % payload,
+                    "comment": "Tidewater seed customer. Requirements: %s" % payload,
                 },
             )
 

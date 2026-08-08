@@ -2,7 +2,7 @@
 {
     "name": "Dive Shop POS",
     "summary": "Scuba vertical pack for AdventurePOS.",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.4",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
