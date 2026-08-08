@@ -12,8 +12,12 @@ class TestAdventureEquipmentServiceSecurityCompany(TransactionCase):
         super().setUpClass()
         cls.partner = cls.env["res.partner"].create({"name": "Sec Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_regulator")
-        cls.annual = cls.env.ref(
-            "adventure_equipment_service.service_type_annual_inspection"
+        cls.annual = cls.env["adventure.equipment.service.type"].create(
+            {
+                "name": "Security Test Annual",
+                "code": "SEC_ANNUAL",
+                "classification": "inspection",
+            }
         )
         cls.asset = cls.env["adventure.equipment.asset"].create(
             {
@@ -30,6 +34,7 @@ class TestAdventureEquipmentServiceSecurityCompany(TransactionCase):
                 "category_id": cls.category.id,
                 "interval_quantity": 12,
                 "interval_unit": "months",
+                "priority": 100,
             }
         )
         cls.env["adventure.equipment.service.requirement"].sync_asset_requirements(

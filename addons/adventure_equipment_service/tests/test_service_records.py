@@ -14,9 +14,6 @@ class TestAdventureEquipmentServiceRecords(TransactionCase):
         super().setUpClass()
         cls.partner = cls.env["res.partner"].create({"name": "Service Rec Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_regulator")
-        cls.annual = cls.env.ref(
-            "adventure_equipment_service.service_type_annual_inspection"
-        )
         cls.post_impact = cls.env.ref(
             "adventure_equipment_service.service_type_post_impact_inspection"
         )
@@ -24,6 +21,14 @@ class TestAdventureEquipmentServiceRecords(TransactionCase):
         cls.Policy = cls.env["adventure.equipment.service.policy"]
         cls.Requirement = cls.env["adventure.equipment.service.requirement"]
         cls.Record = cls.env["adventure.equipment.service.record"]
+        cls.annual = cls.env["adventure.equipment.service.type"].create(
+            {
+                "name": "Record Test Annual",
+                "code": "REC_ANNUAL",
+                "classification": "inspection",
+                "requires_result": True,
+            }
+        )
         cls.policy = cls.Policy.create(
             {
                 "name": "Annual",
@@ -33,6 +38,7 @@ class TestAdventureEquipmentServiceRecords(TransactionCase):
                 "interval_unit": "months",
                 "warning_lead_days": 30,
                 "grace_days": 14,
+                "priority": 100,
             }
         )
 

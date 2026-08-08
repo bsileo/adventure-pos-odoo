@@ -89,20 +89,53 @@ class TestAdventureEquipmentServicePolicyMatching(TransactionCase):
         self.assertEqual(winners, prod)
 
     def test_product_beats_category_and_default_fallback(self):
+        stype = self.Type.create(
+            {"name": "Precedence Type", "code": "PREC_TYPE", "classification": "service"}
+        )
         asset = self._asset()
-        self._policy(name="Cat", category_id=self.category.id, priority=50)
-        self._policy(name="Default", is_default=True, priority=99)
-        winners = self.Policy.select_winning_policies(asset)
+        self._policy(
+            name="Cat",
+            service_type_id=stype.id,
+            category_id=self.category.id,
+            priority=50,
+        )
+        self._policy(
+            name="Default",
+            service_type_id=stype.id,
+            is_default=True,
+            priority=99,
+        )
+        winners = self.Policy.select_winning_policies(asset).filtered(
+            lambda policy: policy.service_type_id == stype
+        )
         self.assertEqual(winners.name, "Cat")
 
         bare = self._asset(category_id=self.other_category.id)
-        winners = self.Policy.select_winning_policies(bare)
+        winners = self.Policy.select_winning_policies(bare).filtered(
+            lambda policy: policy.service_type_id == stype
+        )
         self.assertEqual(winners.name, "Default")
 
     def test_multiple_independent_service_types(self):
         asset = self._asset()
-        p1 = self._policy(name="Annual", service_type_id=self.annual.id)
-        p2 = self._policy(name="Cert", service_type_id=self.cert.id, is_default=True)
+        type_a = self.Type.create(
+            {"name": "Independent A", "code": "IND_A", "classification": "inspection"}
+        )
+        type_b = self.Type.create(
+            {"name": "Independent B", "code": "IND_B", "classification": "certification"}
+        )
+        p1 = self._policy(
+            name="Independent A Policy",
+            service_type_id=type_a.id,
+            category_id=self.category.id,
+            priority=100,
+        )
+        p2 = self._policy(
+            name="Independent B Policy",
+            service_type_id=type_b.id,
+            category_id=self.category.id,
+            priority=100,
+        )
         winners = self.Policy.select_winning_policies(asset)
         self.assertEqual(set(winners.ids), {p1.id, p2.id})
 

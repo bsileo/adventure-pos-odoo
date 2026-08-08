@@ -17,12 +17,16 @@ class TestAdventureEquipmentServiceCronRollup(TransactionCase):
         super().setUpClass()
         cls.partner = cls.env["res.partner"].create({"name": "Cron Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_regulator")
-        cls.annual = cls.env.ref(
-            "adventure_equipment_service.service_type_annual_inspection"
-        )
         cls.Requirement = cls.env["adventure.equipment.service.requirement"]
         cls.Policy = cls.env["adventure.equipment.service.policy"]
         cls.Asset = cls.env["adventure.equipment.asset"]
+        cls.annual = cls.env["adventure.equipment.service.type"].create(
+            {
+                "name": "Cron Test Annual",
+                "code": "CRON_ANNUAL",
+                "classification": "inspection",
+            }
+        )
         cls.policy = cls.Policy.create(
             {
                 "name": "Cron Annual",
@@ -32,6 +36,7 @@ class TestAdventureEquipmentServiceCronRollup(TransactionCase):
                 "interval_unit": "months",
                 "warning_lead_days": 30,
                 "grace_days": 14,
+                "priority": 100,
             }
         )
 
@@ -83,15 +88,20 @@ class TestAdventureEquipmentServiceCronRollup(TransactionCase):
         assets = self.Asset
         for idx in range(3):
             assets |= self._asset(in_service_date="2025-01-0%s" % (idx + 1))
+        # Exercise cron continuation, then sync the fixture assets twice to
+        # prove idempotency even when other demo assets exist in the DB.
         self.env["ir.config_parameter"].sudo().set_param(
             "adventure_equipment_service.cron_last_asset_id", "0"
         )
         self.Requirement.cron_process_equipment_service(batch_size=2)
         self.Requirement.cron_process_equipment_service(batch_size=2)
-        self.Requirement.cron_process_equipment_service(batch_size=2)
+        self.Requirement.sync_asset_requirements(assets)
+        self.Requirement.sync_asset_requirements(assets)
         for asset in assets:
             managed = asset.service_requirement_ids.filtered(
-                lambda row: row.is_policy_managed and row.active
+                lambda row: row.is_policy_managed
+                and row.active
+                and row.service_type_id == self.annual
             )
             self.assertEqual(len(managed), 1)
 

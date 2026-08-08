@@ -13,18 +13,30 @@ class TestAdventureEquipmentServiceRequirements(TransactionCase):
         super().setUpClass()
         cls.partner = cls.env["res.partner"].create({"name": "Req Customer"})
         cls.category = cls.env.ref("adventure_equipment.equipment_category_regulator")
-        cls.annual = cls.env.ref(
-            "adventure_equipment_service.service_type_annual_inspection"
-        )
         cls.post_impact = cls.env.ref(
             "adventure_equipment_service.service_type_post_impact_inspection"
-        )
-        cls.cert = cls.env.ref(
-            "adventure_equipment_service.service_type_safety_certification"
         )
         cls.Asset = cls.env["adventure.equipment.asset"]
         cls.Policy = cls.env["adventure.equipment.service.policy"]
         cls.Requirement = cls.env["adventure.equipment.service.requirement"]
+        cls.Type = cls.env["adventure.equipment.service.type"]
+        # Dedicated type avoids collisions with demo Annual Inspection policies.
+        cls.annual = cls.Type.create(
+            {
+                "name": "Test Annual Inspection",
+                "code": "TEST_ANNUAL",
+                "classification": "inspection",
+                "default_warning_lead_days": 30,
+                "default_grace_days": 14,
+            }
+        )
+        cls.cert = cls.Type.create(
+            {
+                "name": "Test Safety Certification",
+                "code": "TEST_CERT",
+                "classification": "certification",
+            }
+        )
         cls.policy = cls.Policy.create(
             {
                 "name": "Annual Regulators",
@@ -35,6 +47,7 @@ class TestAdventureEquipmentServiceRequirements(TransactionCase):
                 "warning_lead_days": 30,
                 "grace_days": 14,
                 "first_due_basis": "in_service_date",
+                "priority": 100,
             }
         )
 
@@ -151,7 +164,10 @@ class TestAdventureEquipmentServiceRequirements(TransactionCase):
     def test_policy_deactivation_suspends_policy_requirement(self):
         asset = self._asset()
         self.Requirement.sync_asset_requirements(asset)
-        req = asset.service_requirement_ids.filtered("is_policy_managed")
+        req = asset.service_requirement_ids.filtered(
+            lambda row: row.is_policy_managed and row.service_type_id == self.annual
+        )
+        self.assertTrue(req)
         self.policy.active = False
         self.Requirement.sync_asset_requirements(asset)
         self.assertFalse(req.active)
