@@ -287,7 +287,7 @@ Complexity is relative (S/M/L), not calendar time. Ordering can adjust once open
 
 | Slice | Purpose | Complexity | Depends on |
 |-------|---------|------------|------------|
-| **P0 — Architecture approval** | This document + answers to remaining open questions | S | — |
+| **P0 — Architecture approval** | This document — **complete** (decisions closed) | S | — |
 | **P1 — Website shell baseline (pattern A, minimal)** | `website`/`portal`; **`adventure_website`**; Tidewater **homepage** with login + equipment portal entry; default theme + logo/colors | S/M | Tenant can install Website; **may start before** `adventure_equipment` merge |
 | **P2 — Equipment portal MVP** | `adventure_equipment_portal`: list/detail/register/limited edit + company-aware ACL + tests | L | **`adventure_equipment` on `develop`** |
 | **P3 — Tidewater portal demo seed** | Portal users + fixed passwords + staff-seeded gear + demo runbook (homepage → login → gear) | M | P1 + P2 |
