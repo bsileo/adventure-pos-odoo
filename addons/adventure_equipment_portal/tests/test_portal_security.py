@@ -85,6 +85,7 @@ class TestEquipmentPortalSecurity(TransactionCase):
                 "category_id": self.category.id,
                 "nickname": "New Tank",
                 "brand_name": "Catalina",
+                "serial_number": "PORTAL-NEW-001",
                 "acquisition_source": "customer_reported",
                 "ownership_verification_state": "pending",
                 "lifecycle_state": "draft",
@@ -92,3 +93,8 @@ class TestEquipmentPortalSecurity(TransactionCase):
         )
         self.assertEqual(asset.partner_id, self.partner_a)
         self.assertEqual(asset.acquisition_source, "customer_reported")
+        # Sequence numbering must work for portal (ir.sequence is staff-ACL'd).
+        self.assertTrue(asset.name)
+        self.assertNotEqual(asset.name, "New")
+        self.assertTrue(asset.ownership_ids)
+        self.assertTrue(asset.event_ids)
