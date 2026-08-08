@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_adventure_ai_session_user,adventure.ai.session user,model_adventure_ai_session,adventure_ai.group_user,1,0,0,0
+access_adventure_ai_session_manager,adventure.ai.session manager,model_adventure_ai_session,adventure_ai.group_manager,1,1,1,1
+access_adventure_ai_turn_user,adventure.ai.turn user,model_adventure_ai_turn,adventure_ai.group_user,1,0,0,0
+access_adventure_ai_turn_manager,adventure.ai.turn manager,model_adventure_ai_turn,adventure_ai.group_manager,1,1,1,1
+access_adventure_ai_usage_user,adventure.ai.usage user,model_adventure_ai_usage,adventure_ai.group_user,1,0,0,0
+access_adventure_ai_usage_manager,adventure.ai.usage manager,model_adventure_ai_usage,adventure_ai.group_manager,1,1,1,1
+access_adventure_ai_orchestrator_user,adventure.ai.orchestrator user,model_adventure_ai_orchestrator,adventure_ai.group_user,1,0,0,0
+access_adventure_ai_orchestrator_manager,adventure.ai.orchestrator manager,model_adventure_ai_orchestrator,adventure_ai.group_manager,1,0,0,0
+access_adventure_ai_session_system,adventure.ai.session system,model_adventure_ai_session,base.group_system,1,1,1,1
+access_adventure_ai_turn_system,adventure.ai.turn system,model_adventure_ai_turn,base.group_system,1,1,1,1
+access_adventure_ai_usage_system,adventure.ai.usage system,model_adventure_ai_usage,base.group_system,1,1,1,1

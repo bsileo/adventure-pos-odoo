@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_adventure_ai" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.adventure.ai</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Adventure AI" name="adventure_ai" groups="adventure_ai.group_manager">
+                    <block title="Provider">
+                        <setting string="AI Provider" help="Mock needs no key. OpenAI uses chat completions with tool calling.">
+                            <field name="adventure_ai_provider"/>
+                        </setting>
+                        <setting string="OpenAI API Key" invisible="adventure_ai_provider != 'openai'">
+                            <field name="adventure_ai_openai_api_key" password="True"/>
+                        </setting>
+                        <setting string="OpenAI Model" invisible="adventure_ai_provider != 'openai'">
+                            <field name="adventure_ai_openai_model"/>
+                        </setting>
+                        <setting string="OpenAI Base URL" invisible="adventure_ai_provider != 'openai'">
+                            <field name="adventure_ai_openai_base_url"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

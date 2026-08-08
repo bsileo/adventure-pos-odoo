@@ -10,6 +10,7 @@ It creates:
 
 - A stable dive shop company.
 - Rental and fee products.
+- Retail apparel/BCD products suitable for Adventure AI POS natural-language search demos (e.g. men's 7mm semi-dry).
 - Scuba rental package templates.
 - Physical rental assets with representative states.
 - Customers with certification and waiver scenarios.

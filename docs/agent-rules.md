@@ -71,6 +71,8 @@ Initial modules:
 * adventure_customers
 * adventure_purchase
 * adventure_reports
+* adventure_ai — AI runtime (providers, capability registry, sessions, metering); see [AdventurePOS AI](architecture/adventure-ai.md)
+* adventure_ai_retail — retail AI capabilities and POS NL product search (depends on `adventure_ai`)
 
 Future modules (do not implement unless instructed):
 
@@ -80,6 +82,7 @@ Future modules (do not implement unless instructed):
 * adventure_training
 * adventure_trips
 * adventure_multi_store
+* adventure_ai_* domain packs beyond retail (unless implementing an approved AI phase)
 
 ---
 
@@ -245,7 +248,8 @@ Agents must update:
 ## OpenAI / OpenClaw Usage
 
 * never store API keys in code
-* use environment variables only
+* use environment variables for **developer** tools (Cursor / OpenClaw)
+* for **in-app** AdventurePOS AI, use Odoo Settings / `ir.config_parameter` (see [AdventurePOS AI](architecture/adventure-ai.md)); do not commit secrets
 * assume local-only execution unless specified
 
 ---

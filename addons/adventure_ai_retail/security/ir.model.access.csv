@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_adventure_product_search_user,adventure.product_search user,model_adventure_product_search,adventure_ai.group_user,1,0,0,0
+access_adventure_product_search_manager,adventure.product_search manager,model_adventure_product_search,adventure_ai.group_manager,1,0,0,0

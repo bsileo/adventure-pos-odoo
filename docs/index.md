@@ -9,7 +9,7 @@ This site collects **evolving** product specs, technical specs, workflows, archi
 - [Developer onboarding](developer-onboarding.md) — environment, first steps, and **documentation-first workflow** before coding  
 - [Agent rules](agent-rules.md) — mandatory habits, including **reviewing architecture and design docs** when starting a work stream  
 - [Setup](setup.md) — full local and tooling setup  
-- [Architecture](architecture/) — system direction (includes **future** design notes such as [Scuba training and scheduling](architecture/scuba-training-scheduling.md))  
+- [Architecture](architecture/) — system direction (includes [AdventurePOS AI](architecture/adventure-ai.md) and **future** notes such as [Scuba training and scheduling](architecture/scuba-training-scheduling.md))  
 - [Migrations overview](migrations/README.md) — data migration program and runbooks  
 - [Core data model](data-model/core-model.md) — domain concepts  
 

@@ -160,13 +160,27 @@ docs/agent-rules.md
 
 ## Step 9 — Setup OpenAI Key
 
-Set environment variable:
+### Developer tooling (Cursor / OpenClaw)
+
+Set environment variable (local machine / `.env` for OpenClaw—not committed):
 
 Mac/Linux:
 export OPENAI_API_KEY="your_key"
 
 Windows:
 setx OPENAI_API_KEY "your_key"
+
+### In-app AdventurePOS AI (Odoo)
+
+Product AI uses tenant Settings, not the OpenClaw env var:
+
+1. Install modules `adventure_ai` and `adventure_ai_retail`.
+2. Open **Settings → Adventure AI**.
+3. Choose provider `mock` (no key; tool-routing simulation) or `openai`.
+4. For OpenAI, set API key and model (default `gpt-4o-mini` for routing).
+5. Grant group **Adventure AI / User** to cashiers who may use the POS AI panel.
+
+Architecture: [AdventurePOS AI](architecture/adventure-ai.md).
 
 ---
 

@@ -22,6 +22,7 @@ class ScubaShopSeed:
         self._seed_company()
         self._seed_categories()
         self._seed_products()
+        self._seed_retail_products()
         self._seed_customers()
         self._seed_packages()
         self._seed_assets()
@@ -52,6 +53,8 @@ class ScubaShopSeed:
             "rental_gear": "Dive Rental Gear",
             "rental_fees": "Dive Rental Fees",
             "fills_service": "Dive Fills & Service",
+            "retail_apparel": "Retail Apparel",
+            "retail_bcd": "Retail BCDs",
         }
         for key, name in categories.items():
             self.records["product_category_%s" % key] = self.registry.upsert(
@@ -102,7 +105,50 @@ class ScubaShopSeed:
                 tracked=False,
             )
 
-    def _product(self, key, name, price, category_key, is_rental, tracked):
+    def _seed_retail_products(self):
+        """Sellable retail SKUs for Adventure AI POS natural-language search demos."""
+        retail_specs = [
+            (
+                "mens_7mm_semidry_l",
+                "Men's 7mm Semi-Dry Wetsuit L",
+                "WS-7MM-SDL",
+                349.0,
+                "retail_apparel",
+            ),
+            (
+                "womens_5mm_full_m",
+                "Women's 5mm Full Wetsuit M",
+                "WS-5MM-W-M",
+                289.0,
+                "retail_apparel",
+            ),
+            (
+                "travel_bcd_compact",
+                "Travel BCD Compact",
+                "BCD-TRAVEL",
+                429.0,
+                "retail_bcd",
+            ),
+            (
+                "regulator_primary_yoke",
+                "Primary Regulator Yoke",
+                "REG-PRIM-Y",
+                519.0,
+                "retail_bcd",
+            ),
+        ]
+        for key, name, default_code, price, category_key in retail_specs:
+            self.records["product_%s" % key] = self._product(
+                key,
+                name,
+                price,
+                category_key,
+                is_rental=False,
+                tracked=False,
+                default_code=default_code,
+            )
+
+    def _product(self, key, name, price, category_key, is_rental, tracked, default_code=None):
         category = self.records["product_category_%s" % category_key]
         pos_category = self.records["pos_category_%s" % category_key]
         values = {
@@ -119,6 +165,8 @@ class ScubaShopSeed:
             "type": "consu",
             "detailed_type": "consu",
         }
+        if default_code:
+            values["default_code"] = default_code
         return self.registry.upsert("product.template", "product_%s" % key, values)
 
     def _seed_customers(self):

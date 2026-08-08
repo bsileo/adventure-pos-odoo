@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="adventure_ai_retail.NavbarAiButton"
+       t-inherit="point_of_sale.Navbar"
+       t-inherit-mode="extension">
+        <xpath expr="//div[contains(@class, 'navbar-menu')]" position="after">
+            <button class="adventure-ai-nav-button btn btn-lg btn-light lh-lg ms-1 me-2 flex-shrink-0"
+                    t-if="!ui.isSmall"
+                    t-on-click="() => this.onClickAdventureAiSearch()"
+                    title="AI product search"
+                    aria-label="AI product search">
+                <i class="fa fa-magic me-1" role="img"/>
+                <span>AI</span>
+            </button>
+        </xpath>
+        <xpath expr="//div[contains(@class, 'navbar-menu')]" position="inside">
+            <button t-if="ui.isSmall"
+                    class="adventure-ai-nav-button btn btn-lg btn-light lh-lg"
+                    t-on-click="() => this.onClickAdventureAiSearch()"
+                    title="AI product search"
+                    aria-label="AI product search">
+                <i class="fa fa-magic" role="img"/>
+            </button>
+        </xpath>
+    </t>
+</templates>
