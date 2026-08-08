@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_adventure_equipment_service_record" model="ir.sequence">
+        <field name="name">Equipment Service Record</field>
+        <field name="code">adventure.equipment.service.record</field>
+        <field name="prefix">SV/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

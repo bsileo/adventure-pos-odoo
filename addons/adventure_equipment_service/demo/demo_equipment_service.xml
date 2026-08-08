@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="demo_policy_annual_inspection_category" model="adventure.equipment.service.policy">
+        <field name="name">Annual Inspection — Regulators</field>
+        <field name="code">DEMO_ANNUAL_REG</field>
+        <field name="service_type_id" ref="service_type_annual_inspection"/>
+        <field name="policy_source">shop</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_regulator"/>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">12</field>
+        <field name="interval_unit">months</field>
+        <field name="warning_lead_days">30</field>
+        <field name="grace_days">14</field>
+        <field name="first_due_basis">in_service_date</field>
+    </record>
+
+    <record id="demo_policy_manufacturer_computer" model="adventure.equipment.service.policy">
+        <field name="name">Manufacturer Service — Dive Computers</field>
+        <field name="code">DEMO_MFG_COMP</field>
+        <field name="service_type_id" ref="service_type_manufacturer_service"/>
+        <field name="policy_source">manufacturer</field>
+        <field name="category_id" ref="adventure_equipment.equipment_category_dive_computer"/>
+        <field name="is_recurring" eval="True"/>
+        <field name="interval_quantity">24</field>
+        <field name="interval_unit">months</field>
+        <field name="warning_lead_days">45</field>
+        <field name="grace_days">0</field>
+    </record>
+</odoo>

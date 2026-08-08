@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="equipment_service_type_company_rule" model="ir.rule">
+        <field name="name">Equipment Service Type: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_service_type"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_service_policy_company_rule" model="ir.rule">
+        <field name="name">Equipment Service Policy: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_service_policy"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_service_requirement_company_rule" model="ir.rule">
+        <field name="name">Equipment Service Requirement: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_service_requirement"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="equipment_service_record_company_rule" model="ir.rule">
+        <field name="name">Equipment Service Record: multi-company</field>
+        <field name="model_id" ref="model_adventure_equipment_service_record"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

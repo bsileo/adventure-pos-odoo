@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_service_requirement_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.requirement.list</field>
+        <field name="model">adventure.equipment.service.requirement</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="status == 'overdue'"
+                  decoration-warning="status in ('due', 'due_soon')"
+                  decoration-muted="status in ('waived', 'suspended', 'completed', 'not_applicable')">
+                <field name="asset_id"/>
+                <field name="partner_id"/>
+                <field name="service_type_id"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'current'"
+                       decoration-warning="status in ('due', 'due_soon')"
+                       decoration-danger="status == 'overdue'"
+                       decoration-info="status == 'unknown'"/>
+                <field name="last_completed_date"/>
+                <field name="warning_date"/>
+                <field name="next_due_date"/>
+                <field name="days_until_due"/>
+                <field name="source_policy_id"/>
+                <field name="forecast_confidence"/>
+                <field name="schedule_source"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_service_requirement_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.requirement.form</field>
+        <field name="model">adventure.equipment.service.requirement</field>
+        <field name="arch" type="xml">
+            <form string="Service Requirement">
+                <header>
+                    <button name="action_open_complete_wizard" type="object" string="Record Service" class="btn-primary"
+                            groups="adventure_equipment.group_equipment_user"/>
+                    <button name="action_open_override_wizard" type="object" string="Override"
+                            groups="adventure_equipment.group_equipment_manager"/>
+                    <button name="action_open_waiver_wizard" type="object" string="Waive / Suspend"
+                            groups="adventure_equipment.group_equipment_manager"/>
+                    <button name="action_restore_policy_schedule" type="object" string="Restore Policy Schedule"
+                            groups="adventure_equipment.group_equipment_manager"
+                            invisible="not source_policy_id"/>
+                    <button name="action_restore_evaluation" type="object" string="Restore Evaluation"
+                            groups="adventure_equipment.group_equipment_manager"
+                            invisible="not waived and not suspended and not not_applicable"/>
+                    <button name="action_recalculate_status" type="object" string="Recalculate Status"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="unknown,current,due_soon,due,overdue"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="asset_id"/>
+                            <field name="partner_id"/>
+                            <field name="service_type_id"/>
+                            <field name="source_policy_id"/>
+                            <field name="source_classification"/>
+                            <field name="is_policy_managed"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="last_completed_date"/>
+                            <field name="baseline_date"/>
+                            <field name="next_due_date"/>
+                            <field name="warning_date"/>
+                            <field name="grace_date"/>
+                            <field name="is_recurring"/>
+                            <field name="is_one_time"/>
+                            <field name="interval_quantity"/>
+                            <field name="interval_unit"/>
+                            <field name="forecast_confidence"/>
+                            <field name="schedule_source"/>
+                        </group>
+                    </group>
+                    <group string="Override" invisible="not override_active">
+                        <field name="override_active"/>
+                        <field name="override_next_due_date"/>
+                        <field name="override_reason"/>
+                        <field name="override_user_id"/>
+                        <field name="override_date"/>
+                        <field name="override_expiration_date"/>
+                    </group>
+                    <group string="Waiver / Suspension">
+                        <field name="waived"/>
+                        <field name="waiver_reason"/>
+                        <field name="waiver_expiration_date"/>
+                        <field name="suspended"/>
+                        <field name="suspend_reason"/>
+                        <field name="not_applicable"/>
+                    </group>
+                    <group>
+                        <field name="manual_reason"/>
+                        <field name="customer_explanation"/>
+                        <field name="internal_notes"/>
+                        <field name="severity"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_service_requirement_search" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.requirement.search</field>
+        <field name="model">adventure.equipment.service.requirement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="asset_id"/>
+                <field name="partner_id"/>
+                <field name="service_type_id"/>
+                <field name="status"/>
+                <field name="source_policy_id"/>
+                <filter name="filter_current" string="Current" domain="[('status', '=', 'current')]"/>
+                <filter name="filter_due_soon" string="Due Soon" domain="[('status', '=', 'due_soon')]"/>
+                <filter name="filter_due" string="Due" domain="[('status', '=', 'due')]"/>
+                <filter name="filter_overdue" string="Overdue" domain="[('status', '=', 'overdue')]"/>
+                <filter name="filter_unknown" string="Unknown" domain="[('status', '=', 'unknown')]"/>
+                <filter name="filter_waived" string="Waived" domain="[('status', '=', 'waived')]"/>
+                <filter name="filter_suspended" string="Suspended" domain="[('status', '=', 'suspended')]"/>
+                <filter name="filter_one_time" string="One-time" domain="[('is_one_time', '=', True)]"/>
+                <filter name="filter_recurring" string="Recurring" domain="[('is_recurring', '=', True)]"/>
+                <filter name="filter_source_manufacturer" string="Manufacturer-source" domain="[('source_policy_id.policy_source', '=', 'manufacturer')]"/>
+                <filter name="filter_source_regulatory" string="Regulatory-source" domain="[('source_policy_id.policy_source', '=', 'regulatory')]"/>
+                <filter name="filter_source_shop" string="Shop-source" domain="[('source_policy_id.policy_source', '=', 'shop')]"/>
+                <group>
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_service_type" string="Service Type" context="{'group_by': 'service_type_id'}"/>
+                    <filter name="group_partner" string="Owner" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_due_month" string="Due Month" context="{'group_by': 'next_due_date:month'}"/>
+                    <filter name="group_policy_source" string="Policy Source" context="{'group_by': 'source_policy_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_service_requirement" model="ir.actions.act_window">
+        <field name="name">All Requirements</field>
+        <field name="res_model">adventure.equipment.service.requirement</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+    </record>
+    <record id="action_adventure_equipment_service_requirement_due_soon" model="ir.actions.act_window">
+        <field name="name">Due Soon</field>
+        <field name="res_model">adventure.equipment.service.requirement</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('status', '=', 'due_soon')]</field>
+    </record>
+    <record id="action_adventure_equipment_service_requirement_due" model="ir.actions.act_window">
+        <field name="name">Due</field>
+        <field name="res_model">adventure.equipment.service.requirement</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('status', '=', 'due')]</field>
+    </record>
+    <record id="action_adventure_equipment_service_requirement_overdue" model="ir.actions.act_window">
+        <field name="name">Overdue</field>
+        <field name="res_model">adventure.equipment.service.requirement</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('status', '=', 'overdue')]</field>
+    </record>
+</odoo>

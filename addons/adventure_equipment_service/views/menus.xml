@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_adventure_equipment_service_root"
+              name="Service"
+              parent="adventure_equipment.menu_adventure_equipment_root"
+              groups="adventure_equipment.group_equipment_viewer"
+              sequence="30"/>
+
+    <menuitem id="menu_adventure_equipment_service_due_soon"
+              name="Due Soon"
+              parent="menu_adventure_equipment_service_root"
+              action="action_adventure_equipment_service_requirement_due_soon"
+              sequence="10"/>
+    <menuitem id="menu_adventure_equipment_service_due"
+              name="Due"
+              parent="menu_adventure_equipment_service_root"
+              action="action_adventure_equipment_service_requirement_due"
+              sequence="20"/>
+    <menuitem id="menu_adventure_equipment_service_overdue"
+              name="Overdue"
+              parent="menu_adventure_equipment_service_root"
+              action="action_adventure_equipment_service_requirement_overdue"
+              sequence="30"/>
+    <menuitem id="menu_adventure_equipment_service_requirements"
+              name="All Requirements"
+              parent="menu_adventure_equipment_service_root"
+              action="action_adventure_equipment_service_requirement"
+              sequence="40"/>
+    <menuitem id="menu_adventure_equipment_service_history"
+              name="Service History"
+              parent="menu_adventure_equipment_service_root"
+              action="action_adventure_equipment_service_record"
+              sequence="50"/>
+
+    <menuitem id="menu_adventure_equipment_service_types"
+              name="Service Types"
+              parent="adventure_equipment.menu_adventure_equipment_configuration"
+              action="action_adventure_equipment_service_type"
+              groups="adventure_equipment.group_equipment_manager"
+              sequence="20"/>
+    <menuitem id="menu_adventure_equipment_service_policies"
+              name="Service Policies"
+              parent="adventure_equipment.menu_adventure_equipment_configuration"
+              action="action_adventure_equipment_service_policy"
+              groups="adventure_equipment.group_equipment_manager"
+              sequence="30"/>
+</odoo>

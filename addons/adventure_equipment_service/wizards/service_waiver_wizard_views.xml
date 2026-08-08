@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_service_waiver_wizard_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.service.waiver.wizard.form</field>
+        <field name="model">adventure.equipment.service.waiver.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Waive / Suspend">
+                <group>
+                    <field name="requirement_id" readonly="1"/>
+                    <field name="action"/>
+                    <field name="expiration_date" invisible="action != 'waive'"/>
+                    <field name="reason"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

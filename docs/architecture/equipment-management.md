@@ -2,9 +2,9 @@
 
 !!! warning "Partially implemented"
 
-    The **core registry module** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment) is **implemented** (Phase 1: assets, categories, ownership, identifiers, documents/events metadata, staff UI, security groups). **Service lifecycle**, **portal**, **configurations**, **notifications**, **scuba vertical pack**, and **POS/sale bridges** remain **future** work described on this page—do not assume those behaviors exist until their modules ship.
+    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment) and the **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service) are **implemented** (Phases 1–2 / product Phase 3A). **Portal**, **configurations**, **notifications**, **scuba vertical pack**, and **POS/sale bridges** remain **future** work—do not assume those behaviors exist until their modules ship.
 
-    Treat model names and fields on this page as the **platform direction**; compare with the live module and its README when implementing or testing.
+    Treat remaining model names and fields on this page as the **platform direction**; compare with the live modules and their READMEs when implementing or testing.
 
 **Audience:** Product, operations, and developers planning Equipment Lifecycle Management as a platform pillar of Adventure POS.
 
@@ -208,7 +208,7 @@ Equipment should follow **waiver-style privilege groups** plus **portal record r
 | Module | Purpose | Install when |
 |--------|---------|--------------|
 | **`adventure_equipment`** | Core domain: assets, categories, ownership, identifiers, documents/images metadata, events, basic staff UI | Any shop using customer equipment |
-| **`adventure_equipment_service`** | Service policies, requirements, service records, forecasting helpers, staff service UI | Shops doing maintenance / VIP / hydro / regulator service |
+| **`adventure_equipment_service`** | **Implemented (Phase 3A):** generic service types, policies, requirements, records, date aging cron, staff service UI (sport-neutral; no scuba rules) | Shops doing equipment maintenance forecasting |
 | **`adventure_equipment_portal`** | Portal/website controllers, customer UX, portal security | Customer self-service enabled |
 | **`adventure_equipment_configuration`** | Kits/configurations, membership, scenarios, readiness evaluation | Configurations / trip prep |
 | **`adventure_equipment_notifications`** | Mail templates, cron reminders, activity scheduling | Reminders / campaigns |
@@ -578,13 +578,16 @@ Complexity is relative (S/M/L), not calendar time.
 - **Acceptance:** Create/archive assets; product archive does not delete assets; ownership history on create; security groups; demo + tests in module  
 - **Complexity:** M  
 
-### Phase 2 — Service lifecycle
+### Phase 2 — Service lifecycle ✅ **Shipped as Phase 3A**
 
-- **Purpose:** Policies, due dates, service records, forecasting list  
-- **Models:** policy, requirement, service record  
-- **UI:** Service notebooks; “Due service” actions  
-- **Dependencies:** Phase 1  
-- **Acceptance:** Record service updates next due; overdue filter works; optional sale/POS link on service  
+- **Purpose:** Sport-neutral policies, due dates, service records, forecasting  
+- **Module:** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service)  
+- **Models:** `adventure.equipment.service.type`, `.policy`, `.requirement`, `.record`  
+- **UI:** Equipment form service pages; Due Soon / Due / Overdue menus; configuration for types/policies  
+- **Dependencies:** `adventure_equipment`, `mail` (no portal/POS/repair/sale/stock)  
+- **Behaviors:** Deterministic policy matching + precedence; idempotent requirement sync; warning/due/grace aging via cron batches; overrides/waivers; external + shop service records; asset service rollup **does not** auto-change lifecycle  
+- **Docs:** `addons/adventure_equipment_service/doc/SERVICE_ENGINE.md`  
+- **Acceptance:** See Phase 3A criteria in the service module completion report; scuba-specific rules deferred to `adventure_equipment_scuba`  
 - **Complexity:** M/L  
 
 ### Phase 3 — Sale & POS capture

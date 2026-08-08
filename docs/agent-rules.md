@@ -83,7 +83,8 @@ Future modules (do not implement unless instructed):
 * adventure_rental — **note:** scaffolding already exists under `addons/adventure_rental`; treat further work as extending that module, not inventing a parallel rental stack
 * adventure_service — **placeholder only** (no design). Do not use for customer-equipment maintenance; that belongs under `adventure_equipment_service` per [equipment management architecture](architecture/equipment-management.md). Revisit only if a general shop work-order / bench product is prioritized.
 * adventure_equipment — **core registry implemented** under `addons/adventure_equipment` (Phase 1); see module README and [equipment management architecture](architecture/equipment-management.md)
-* adventure_equipment_service / adventure_equipment_portal / adventure_equipment_configuration / adventure_equipment_notifications / adventure_equipment_scuba / adventure_equipment_pos — customer-owned **Equipment Lifecycle Management** extensions (design: [equipment management architecture](architecture/equipment-management.md)); do **not** conflate with shop rental fleet assets
+* adventure_equipment_service — **generic service engine implemented** under `addons/adventure_equipment_service` (Phase 3A); sport-neutral policies/requirements/records only
+* adventure_equipment_portal / adventure_equipment_configuration / adventure_equipment_notifications / adventure_equipment_scuba / adventure_equipment_pos — further customer-owned **Equipment Lifecycle Management** extensions (design: [equipment management architecture](architecture/equipment-management.md)); do **not** conflate with shop rental fleet assets
 * adventure_loyalty
 * adventure_training
 * adventure_trips
