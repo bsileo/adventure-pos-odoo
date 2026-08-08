@@ -118,8 +118,13 @@ class TidewaterEquipmentScubaSeed:
         return record
 
     def _reset(self):
+        """Clear scenario service history; assets are upserted in place.
+
+        Active equipment assets cannot be deleted once they leave draft / accrue
+        history, so ``--reset-seed`` recreates service records and refreshes
+        asset fields via upsert instead of unlinking gear.
+        """
         deleted = 0
-        # Completed service records refuse unlink; force draft then delete.
         record_xmls = self.imd.search(
             [
                 ("module", "=", SEED_MODULE),
@@ -137,19 +142,6 @@ class TidewaterEquipmentScubaSeed:
                     record.with_context(equipment_service_force_write=True).write(
                         {"state": "draft"}
                     )
-                record.unlink()
-                deleted += 1
-            if xml_record.exists():
-                xml_record.unlink()
-
-        asset_xmls = self.imd.search(
-            [("module", "=", SEED_MODULE), ("model", "=", "adventure.equipment.asset")]
-        )
-        for xml_record in asset_xmls:
-            record = (
-                self.env["adventure.equipment.asset"].sudo().browse(xml_record.res_id)
-            )
-            if record.exists():
                 record.unlink()
                 deleted += 1
             if xml_record.exists():
