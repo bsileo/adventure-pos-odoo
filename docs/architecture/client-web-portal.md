@@ -2,7 +2,7 @@
 
 !!! warning "Draft / planning — not implemented"
 
-    This page is a **planning and architecture review** for the AdventurePOS **client web portal** (customer-facing Odoo Website + Portal). It is **not** shipped behavior. Do **not** implement controllers, themes, portal ACL, or Tidewater portal seed until the team answers the open questions below and explicitly kicks off a build phase.
+    This page is a **planning and architecture review** for the AdventurePOS **client web portal** (customer-facing Odoo Website + Portal). It is **not** shipped behavior. Do **not** implement controllers, themes, portal ACL, or Tidewater portal seed until the team answers the **remaining** open questions below and explicitly kicks off a build phase. Already confirmed: hosting pattern **A** (minimal homepage MVP) and the Tidewater demo journey (homepage → login → list → detail → register external → staff verify).
 
 **Audience:** Product, operations, and developers planning customer self-service for adventure shops (dive, ski, etc.) on the Adventure POS Odoo stack.
 
@@ -29,8 +29,9 @@
 |---|----------|--------|
 | 1 | **Hosting pattern = A (Odoo-hosted full site).** AdventurePOS will provide full client websites on Odoo Website; the customer portal is part of that site, not a separate hybrid/portal-only product. Tidewater demos use the same pattern. | **Confirmed** |
 | 2 | **This workstream keeps the public website minimal.** A simple Tidewater homepage with **Sign in / login** and a link into the **equipment portal** is enough for MVP. Rich marketing pages, multi-page IA, and content migration remain out of scope here. | **Confirmed** |
+| 3 | **Tidewater demo customer journey (MVP).** Homepage → login → list gear → asset detail → register external item → staff verify. **Not** mandatory for this demo: orders history, profile edit, or a documents-only flow. | **Confirmed** |
 
-Remaining open questions (theme choice, auth, equipment field editability, etc.) are listed below and do not reopen the hosting-pattern decision.
+Remaining open questions (theme choice, auth, equipment field editability, etc.) are listed below and do not reopen these decisions.
 
 ---
 
@@ -244,7 +245,7 @@ Once architecture is approved and modules exist, the shared **sandbox-diveshop**
    - Shop-registered (staff-verified) gear “purchased at Tidewater”
    - Customer-registered external gear pending verification
    - Optional scuba service due dates if `adventure_equipment_service` + scuba pack are installed
-4. Demo script: open Tidewater homepage → sign in → My Equipment → staff backend verification loop.
+4. **Demo script (confirmed):** homepage → login → list gear → asset detail → register external item → staff verify in backend. Orders history, profile edit, and documents-only are **out of MVP demo scope**.
 
 ### Seed ownership (module-owned contributors)
 
@@ -308,14 +309,14 @@ If equipment Phase 1–3B PRs are still merging, portal implementation should ta
 
 Please decide or explicitly defer each item. Blockers for build are marked **[block]**; others can defer with a written default.
 
-**Resolved above:** hosting pattern **A** (Odoo-hosted full site); this workstream’s public site is a **minimal homepage** (login + equipment portal entry). See [Decisions confirmed](#decisions-confirmed-review).
+**Resolved above:** hosting pattern **A** (minimal homepage MVP); Tidewater demo journey **homepage → login → list → detail → register external → staff verify** (no orders/profile/documents-only requirement). See [Decisions confirmed](#decisions-confirmed-review).
 
 ### Portal product & UX
 
 1. ~~Primary hosting pattern~~ — **Resolved: A**, with minimal homepage MVP.
-2. **[block] First customer journeys in scope for Tidewater demo?** Confirm: homepage → login → list gear → detail → register external item → (staff) verify. Anything else mandatory (orders history, profile edit, documents-only)?
+2. ~~First customer journeys~~ — **Resolved:** homepage → login → list gear → detail → register external item → (staff) verify. Orders history, profile edit, and documents-only are **not** mandatory for the Tidewater MVP demo.
 3. **Self-signup vs invite-only?** Can any email create a portal user, or only staff-invited contacts?
-4. **Profile editing:** May customers edit address/phone in portal in MVP, or equipment-only?
+4. **Profile editing:** Deferred for MVP demo (not in confirmed journey). Revisit later if product wants address/phone self-service outside equipment flows.
 
 ### Branding & website shell
 
@@ -365,9 +366,10 @@ Use these **only** where a topic is still open; hosting pattern is already decid
 ## Acceptance criteria for “architecture finalized”
 
 - [x] Hosting pattern decided (**A**, minimal homepage MVP)
+- [x] Tidewater demo customer journey decided (homepage → login → list → detail → register → staff verify; no orders/profile/documents-only)
 - [ ] Remaining open questions answered or deferred with written defaults
 - [ ] Module list agreed (`adventure_website` in P1 recommended; `adventure_equipment_portal` confirmed)
-- [ ] Tidewater demo script agreed (homepage → login → gear; credentials approach; gear scenarios)
+- [ ] Tidewater credentials approach and gear seed scenarios agreed
 - [ ] Dependency on equipment PR merge sequencing agreed
 - [ ] This page’s warning admonition updated when implementation starts
 - [ ] MkDocs / agent-rules references kept in sync
