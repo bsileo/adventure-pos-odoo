@@ -12,7 +12,8 @@ reset_seed=0
 
 # Standard Tidewater package: dive vertical + customer equipment scuba stack.
 # adventure_equipment_scuba pulls adventure_equipment_service + adventure_equipment.
-TIDEWATER_MODULES="dive_shop_pos,adventure_equipment_scuba"
+# adventure_equipment_portal pulls adventure_website + website/portal/auth_signup.
+TIDEWATER_MODULES="dive_shop_pos,adventure_equipment_scuba,adventure_website,adventure_equipment_portal"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -32,7 +33,7 @@ Canonical profile is tidewater (Tidewater Dive Shop, Pittsburgh).
 tideledger and dive_shop remain as legacy aliases for the same seed pack.
 
 Installs the Tidewater standard package modules when missing:
-  dive_shop_pos, adventure_equipment_scuba
+  dive_shop_pos, adventure_equipment_scuba, adventure_website, adventure_equipment_portal
 (and their dependencies, including adventure_equipment / adventure_equipment_service).
 EOF
       exit 0

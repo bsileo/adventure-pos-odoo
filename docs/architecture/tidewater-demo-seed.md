@@ -54,6 +54,7 @@ Sandbox / `seed-tidewater` bootstrap installs these when missing (soft-coupledâ€
 
 - `dive_shop_pos`
 - `adventure_equipment_scuba` (and thus `adventure_equipment_service`, `adventure_equipment`)
+- `adventure_website` / `adventure_equipment_portal` (customer website + equipment portal)
 
 ## Ongoing development checklist (agents and humans)
 

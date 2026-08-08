@@ -1,8 +1,8 @@
 # Client Web Portal Architecture
 
-!!! warning "Draft / planning — architecture decisions closed; not implemented"
+!!! warning "Architecture agreed — implementation in progress"
 
-    This page records the **agreed architecture** for the AdventurePOS **client web portal** (customer-facing Odoo Website + Portal). It is **not** shipped behavior. Do **not** implement controllers, themes, portal ACL, or Tidewater portal seed until the team **explicitly kicks off** the build phase. Planning questions are resolved in [Decisions confirmed](#decisions-confirmed-review).
+    Planning decisions are closed in [Decisions confirmed](#decisions-confirmed-review). **Build is underway:** `adventure_website` and `adventure_equipment_portal` ship in this workstream. Treat incomplete portal behavior as WIP until modules are installed/upgraded on target databases.
 
 **Audience:** Product, operations, and developers planning customer self-service for adventure shops (dive, ski, etc.) on the Adventure POS Odoo stack.
 
@@ -46,7 +46,7 @@
 | 17 | **Build sequencing:** `adventure_equipment_portal` waits until `adventure_equipment` is on `develop`. **`adventure_website` (minimal homepage) may proceed in parallel** before that merge. | **Confirmed** |
 | 18 | **No dependency on the website content migration project** for portal MVP. | **Confirmed** |
 
-All planning questions for this workstream are closed via explicit product answers or the adopted recommended defaults below. Implementation still requires an explicit build kickoff.
+All planning questions for this workstream are closed via explicit product answers or the adopted recommended defaults below.
 
 ---
 
@@ -382,14 +382,14 @@ These were the recommended defaults; they are now **confirmed** (see decisions t
 - [x] Module list agreed (`adventure_website` in P1; `adventure_equipment_portal` for equipment UX)
 - [x] Tidewater credentials approach and gear seed approach agreed (fixed passwords; staff-seeded gear)
 - [x] Dependency / sequencing agreed (shell parallel; portal after equipment merge)
-- [ ] This page’s warning admonition updated when **implementation** starts
+- [x] Implementation warning updated (build in progress)
 - [x] MkDocs / agent-rules references kept in sync for this planning page
 
 ---
 
 ## Next step after approval
 
-1. **Kick off build** (explicit product/eng go-ahead): P1 `adventure_website` (minimal homepage) can start immediately; P2 `adventure_equipment_portal` starts once `adventure_equipment` is on `develop`.
-2. Open implementation issues/PRs for those slices on separate branches.
-3. Add Tidewater website + portal + equipment seed contributors in the same trains (fixed demo passwords documented in [seed-data.md](../seed-data.md)).
-4. When implementation begins, change this page’s warning from “not implemented” to reflect in-progress / shipped slices.
+1. ~~Kick off build~~ — **started:** `adventure_website` + `adventure_equipment_portal`.
+2. Install/upgrade modules on Tidewater DBs and re-run `seed-tidewater` so portal users and homepage appear.
+3. Smoke the demo path: homepage → login → My Equipment → register → staff verify.
+4. When MVP is stable on sandbox, mark this page’s warning as shipped for P1/P2.

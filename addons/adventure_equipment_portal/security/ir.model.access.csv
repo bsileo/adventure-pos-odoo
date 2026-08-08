@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_equipment_asset_portal,adventure.equipment.asset portal,adventure_equipment.model_adventure_equipment_asset,base.group_portal,1,1,1,0
+access_equipment_category_portal,adventure.equipment.category portal,adventure_equipment.model_adventure_equipment_category,base.group_portal,1,0,0,0
+access_equipment_tag_portal,adventure.equipment.tag portal,adventure_equipment.model_adventure_equipment_tag,base.group_portal,1,0,0,0
+access_equipment_identifier_portal,adventure.equipment.identifier portal,adventure_equipment.model_adventure_equipment_identifier,base.group_portal,1,0,0,0
+access_equipment_ownership_portal,adventure.equipment.ownership portal,adventure_equipment.model_adventure_equipment_ownership,base.group_portal,1,0,0,0
+access_equipment_document_portal,adventure.equipment.document portal,adventure_equipment.model_adventure_equipment_document,base.group_portal,1,1,1,0
+access_equipment_event_portal,adventure.equipment.event portal,adventure_equipment.model_adventure_equipment_event,base.group_portal,1,0,0,0

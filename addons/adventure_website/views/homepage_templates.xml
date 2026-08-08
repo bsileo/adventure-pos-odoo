@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Minimal pattern-A homepage: brand, short blurb, login/signup, portal entry. -->
+    <template id="adventure_homepage" inherit_id="website.homepage" name="Adventure Minimal Homepage">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="oe_structure">
+                <section class="s_banner pt64 pb64 o_cc o_cc2">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-lg-8 mx-auto text-center">
+                                <h1 class="display-4" t-esc="request.env.company.name"/>
+                                <p class="lead mt-3 mb-4">
+                                    Your shop account for equipment and more.
+                                </p>
+                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                    <t t-if="not request.session.uid or request.env.user._is_public()">
+                                        <a href="/web/login" class="btn btn-primary btn-lg">Sign in</a>
+                                        <a href="/web/signup" class="btn btn-outline-primary btn-lg">Sign up</a>
+                                    </t>
+                                    <t t-else="">
+                                        <a href="/my" class="btn btn-primary btn-lg">My Account</a>
+                                        <!-- Equipment portal registers /my/equipment when installed. -->
+                                        <a href="/my/equipment" class="btn btn-outline-primary btn-lg">My Equipment</a>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+</odoo>
