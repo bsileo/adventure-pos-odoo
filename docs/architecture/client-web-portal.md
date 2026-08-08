@@ -1,8 +1,8 @@
 # Client Web Portal Architecture
 
-!!! warning "Draft / planning — not implemented"
+!!! warning "Draft / planning — architecture decisions closed; not implemented"
 
-    This page is a **planning and architecture review** for the AdventurePOS **client web portal** (customer-facing Odoo Website + Portal). It is **not** shipped behavior. Do **not** implement controllers, themes, portal ACL, or Tidewater portal seed until the team answers the **remaining** open questions below and explicitly kicks off a build phase. Already confirmed: hosting pattern **A** (minimal homepage MVP), Tidewater demo journey, **open self-signup**, and **profile editing deferred** to a later workstream.
+    This page records the **agreed architecture** for the AdventurePOS **client web portal** (customer-facing Odoo Website + Portal). It is **not** shipped behavior. Do **not** implement controllers, themes, portal ACL, or Tidewater portal seed until the team **explicitly kicks off** the build phase. Planning questions are resolved in [Decisions confirmed](#decisions-confirmed-review).
 
 **Audience:** Product, operations, and developers planning customer self-service for adventure shops (dive, ski, etc.) on the Adventure POS Odoo stack.
 
@@ -32,8 +32,21 @@
 | 3 | **Tidewater demo customer journey (MVP).** Homepage → login → list gear → asset detail → register external item → staff verify. **Not** mandatory for this demo: orders history, profile edit, or a documents-only flow. | **Confirmed** |
 | 4 | **Portal signup = open self-registration.** Any email may create a portal user via standard Odoo `auth_signup` (not invite-only). Pair with normal portal ↔ partner linking / matching so equipment ownership still attaches to the right contact. | **Confirmed** |
 | 5 | **Customer profile editing (address/phone/etc.) is out of this workstream.** Deferred to a **separate later workstream**; MVP portal does not include profile self-service outside equipment flows. | **Confirmed** |
+| 6 | **Tidewater theme = default Odoo Website + company logo/colors.** No App Store theme or first-party `theme_tidewater` required for MVP; richer theming can follow later. | **Confirmed** |
+| 7 | **Create thin `adventure_website` in P1** for pattern A minimal homepage, config-as-code, and Tidewater seed hooks (do not stuff homepage-only XML into `dive_shop_pos` / equipment portal). | **Confirmed** |
+| 8 | **Sandbox URLs are path-based** on the existing sandbox host (homepage + `/web/login` + `/my/...`). Custom domain / DNS not required for Tidewater MVP demos. | **Confirmed** |
+| 9 | **Household sharing = single `partner_id` owner** for portal MVP (match equipment Phase 1 contact-only ownership). No commercial-child / family share in this release. | **Confirmed** |
+| 10 | **Customer-editable equipment fields:** nickname, notes, customer-visible photos/docs. **Read-only for customers:** serial/identifiers, category, verification state, lifecycle/shop fields. Service completions remain staff-only. | **Confirmed** |
+| 11 | **Portal MVP is registry-only** for service: do **not** require service due/history UI until service modules are stable and explicitly pulled into a later slice. | **Confirmed** |
+| 12 | **Document uploads:** use standard Odoo attachment/filestore behavior for MVP; enforce portal document visibility whitelist. Tighten size/count/type quotas later if needed. | **Confirmed** |
+| 13 | **“Purchased at the shop” in Tidewater demo = staff-seeded / manually linked verified assets.** Sale/POS auto-create (equipment Phase 3) is **not** required to call the portal demo done. | **Confirmed** |
+| 14 | **Sandbox demo credentials:** seed **fixed fictional portal passwords** and document them in [seed-data.md](../seed-data.md) (not invite-token-only). | **Confirmed** |
+| 15 | **Outbound email on sandbox:** bypass acceptable for MVP demos (seeded passwords / documented test path). Production tenants use normal Odoo mail for signup/reset. | **Confirmed** |
+| 16 | **Portal/equipment record rules are company-aware from day one**, even though Tidewater is single-company. | **Confirmed** |
+| 17 | **Build sequencing:** `adventure_equipment_portal` waits until `adventure_equipment` is on `develop`. **`adventure_website` (minimal homepage) may proceed in parallel** before that merge. | **Confirmed** |
+| 18 | **No dependency on the website content migration project** for portal MVP. | **Confirmed** |
 
-Remaining open questions (theme choice, equipment field editability, etc.) are listed below and do not reopen these decisions.
+All planning questions for this workstream are closed via explicit product answers or the adopted recommended defaults below. Implementation still requires an explicit build kickoff.
 
 ---
 
@@ -105,7 +118,7 @@ Keep the Odoo Website **thin** while still being pattern A:
 
 1. **Odoo-native first** — Prefer `website`, `portal`, `auth_signup`, `mail`, `ir.attachment`, Website themes, and Controllers/QWeb over custom SPAs.
 2. **Feature modules, not a mega-portal** — Shell/branding configuration stays thin; each domain ships `adventure_<domain>_portal` (or portal controllers inside an optional portal extra) that can be installed per tenant.
-3. **Same tenant DB** — Portal users are `res.users` with portal group linked to `res.partner`; record rules enforce “own partner only” (plus any agreed household sharing).
+3. **Same tenant DB** — Portal users are `res.users` with portal group linked to `res.partner`; record rules enforce **own partner only** (single `partner_id` owner for MVP; no household share yet).
 4. **Staff remains authoritative** — Customer-created or edited records use verification / limited fields (already sketched for equipment).
 5. **Theme-compatible UI** — Portal templates use Bootstrap / Odoo Website semantic classes and SCSS variables so App Store or custom themes re-skin them without forking controllers.
 6. **Community-first** — No hard dependency on Enterprise eCommerce, Appointment, or proprietary themes for MVP.
@@ -121,7 +134,7 @@ Keep the Odoo Website **thin** while still being pattern A:
 | Module (proposed) | Responsibility | Depends on |
 |-------------------|----------------|------------|
 | **`adventure_website`** (thin shell) | Tenant website baseline for pattern A: enable Website/Portal, company → website defaults, **minimal homepage** (login + equipment portal entry), shared SCSS/portal chrome helpers, documented theme install hooks | `website`, `portal`, `adventure_base` |
-| **Theme choice** | Prefer **Odoo 19 App Store theme** (or a thin `theme_tidewater` only if we need first-party demo branding). Do not invent a full theme engine. Richer theming can follow; MVP may use default Website + Tidewater logo/colors. | `website` |
+| **Theme choice** | **MVP:** default Odoo Website + Tidewater/`res.company` logo and colors. App Store or first-party themes are optional later polish—not required to start. | `website` |
 
 `adventure_website` should stay **domain-agnostic**. It must not own equipment models.
 
@@ -138,7 +151,7 @@ Keep the Odoo Website **thin** while still being pattern A:
 flowchart TD
   website["website + portal"]
   theme["theme_* App Store or thin demo theme"]
-  advweb["adventure_website optional shell"]
+  advweb["adventure_website thin shell"]
   equip["adventure_equipment"]
   eqportal["adventure_equipment_portal"]
   svc["adventure_equipment_service optional"]
@@ -168,19 +181,19 @@ Install sets (examples):
 
 ### Recommended approach
 
-1. **Primary:** Install a version-matched **Odoo 19 Website theme** under `addons/` (see [`addons/README.md`](../../addons/README.md)). Configure colors, logo (`res.company` / website), fonts, and header/footer in Website settings / theme options.
+1. **MVP:** Default Odoo Website theme plus Tidewater / `res.company` **logo and colors** (no App Store theme required to start).
 2. **Adventure portal templates:** Use semantic classes (`o_portal_*`, Bootstrap utilities, theme CSS variables). Avoid hard-coded brand colors in Python/XML for equipment (or other) portal pages.
-3. **Optional thin first-party theme:** Only if App Store themes cannot express Tidewater/demo branding cleanly—e.g. `theme_adventure_tidewater` with logo, palette, and footer for sandbox demos. Keep it demo-oriented; production shops bring their own theme.
+3. **Later optional:** App Store theme or thin first-party demo theme only if default chrome is insufficient for sales demos.
 4. **Do not** build a parallel “Adventure theme system,” React design system, or Tailwind layer for the portal.
 
 ### Merge with wider online presence
 
 | Concern | Approach |
 |---------|----------|
-| **Visual continuity** | Same logo, primary/secondary colors, typography via theme + company branding |
-| **Navigation** | Website menus: public pages + “Sign in” / “My Account”; portal menu items registered by feature modules |
-| **Domains** | Tenant website domain (or subdomain such as `account.shop.example`) configured per Odoo Website; document DNS/SSL in ops runbooks later |
-| **SSO / social login** | Deferred unless product requires; MVP = email/password portal users |
+| **Visual continuity** | Same logo, primary/secondary colors via company branding (+ optional later theme) |
+| **Navigation** | Minimal menus: Home, Sign in / My Account, My Equipment (when authenticated) |
+| **Domains** | Tidewater MVP: path-based on sandbox URL; custom domains documented later for production tenants |
+| **SSO / social login** | Deferred; MVP = email/password portal users |
 | **eCommerce** | Out of MVP; `website_sale` may be added later without redesigning equipment portal modules |
 
 ---
@@ -193,23 +206,25 @@ Align with the equipment lifecycle architecture (draft PR [#73](https://github.c
 
 | Capability | Notes |
 |------------|-------|
-| Sign in / reset password | Standard portal + mail |
-| See “My Equipment” list | Assets where `partner_id` is the portal user’s partner (household TBD) |
+| Sign in / sign up / reset password | Open `auth_signup` + mail (sandbox may bypass mail via seeded passwords) |
+| See “My Equipment” list | Assets where `partner_id` is the portal user’s partner (**single owner**; no household share) |
 | Open asset detail | Nickname, category, serial/identifiers, snapshots, lifecycle state, verification state |
 | Register gear purchased elsewhere | Creates `customer_claimed` / unverified asset; staff verifies in backend |
-| Limited update | Nickname, notes, customer-visible photos/docs — **not** shop service completions |
-| View portal-safe documents | Driven by document visibility / type whitelist |
-| See shop-registered purchases | Assets created by staff (or later POS/sale bridge) appear once owned by the partner |
+| Limited update | **Editable:** nickname, notes, customer-visible photos/docs. **Not** shop-authoritative service completions or serial/category/verification |
+| View portal-safe documents | Document visibility whitelist; Odoo attachment defaults for size/type in MVP |
+| See shop-registered purchases | **Staff-seeded** verified assets on Tidewater demo partners (POS/sale auto-create later) |
 
 ### Explicitly deferred from first portal slice
 
-- Service scheduling / booking UI (needs service module + product decision)
+- Service scheduling / booking UI and **service due/history portal UI** (registry-only MVP)
 - Kit/configuration / trip readiness
-- Auto-create from every POS sale (equipment Phase 3 — can land before or after portal; portal should display either source)
-- Household multi-owner editing (open question)
+- Auto-create from every POS sale (equipment Phase 3 — not required for Tidewater portal demo)
+- Household multi-owner / commercial-child sharing
 - Public catalog / ecommerce purchase of equipment
 - Website migration of marketing content
 - **Customer profile self-service** (address/phone/etc.) — separate later workstream (confirmed)
+- App Store / custom Website themes beyond default + logo/colors
+- Custom domain for sandbox demos
 
 ### Security (must ship with first portal code)
 
@@ -230,12 +245,14 @@ Customer registers or edits → asset appears as **unverified / customer-claimed
 | Topic | Decision / notes |
 |-------|------------------|
 | **User model** | Standard `res.users` portal users linked to customer `res.partner` |
-| **Provisioning** | **Open self-signup** via `auth_signup` — any email may register (confirmed). Staff may still create/invite users from the backend as a convenience, but invite-only is **not** required. |
-| **Password reset** | Standard Odoo mail templates; sandbox needs outbound mail or documented test bypass |
-| **Multi-contact households** | Open question — see below |
-| **B2B / dive clubs** | Portal user on commercial partner vs individual — open question |
-| **Staff impersonation** | Prefer “View as portal” only if Odoo provides a safe pattern; otherwise demo with real portal logins in Tidewater |
-| **Partner matching** | Self-signup must still resolve or create a partner cleanly so equipment `partner_id` ownership works; exact match rules (email-only vs staff merge) can be refined in build |
+| **Provisioning** | **Open self-signup** via `auth_signup` — any email may register. Staff may still create users from the backend as a convenience. |
+| **Password reset** | Standard Odoo mail templates in production; Tidewater sandbox may rely on **seeded demo passwords** without outbound mail |
+| **Multi-contact households** | **Out of MVP** — single `partner_id` owner only |
+| **B2B / dive clubs** | Not required for Tidewater MVP; treat as later product decision if needed |
+| **Staff impersonation** | Prefer real portal logins in Tidewater (seeded users) over impersonation tooling |
+| **Partner matching** | Self-signup must resolve or create a partner cleanly so equipment `partner_id` ownership works; refine match/merge rules during build |
+| **Sandbox credentials** | Fixed fictional passwords documented in [seed-data.md](../seed-data.md) |
+| **Multi-company ACL** | Company-aware portal/equipment record rules from day one |
 
 ---
 
@@ -244,19 +261,19 @@ Customer registers or edits → asset appears as **unverified / customer-claimed
 Once architecture is approved and modules exist, the shared **sandbox-diveshop** / Tidewater story should show:
 
 1. **Pattern A, minimal public site:** Tidewater-branded **homepage** with shop identity, **Sign in**, and a clear path to the **equipment portal** (not a full marketing site yet).
-2. At least **2–3 portal customers** with passwords documented for demos (fictional emails under Tidewater seed conventions).
+2. At least **2–3 portal customers** with **fixed fictional passwords** documented in [seed-data.md](../seed-data.md).
 3. Mix of equipment:
-   - Shop-registered (staff-verified) gear “purchased at Tidewater”
+   - Shop-registered (staff-verified) gear “purchased at Tidewater” (**seeded**, not POS auto-create)
    - Customer-registered external gear pending verification
-   - Optional scuba service due dates if `adventure_equipment_service` + scuba pack are installed
+   - Service due/history **not** required on portal MVP
 4. **Demo script (confirmed):** homepage → login → list gear → asset detail → register external item → staff verify in backend. Orders history, profile edit, and documents-only are **out of MVP demo scope**.
 
 ### Seed ownership (module-owned contributors)
 
 | Data | Owner |
 |------|--------|
-| Website enabled, **minimal homepage**, menus (Home / Sign in / My Equipment), theme XML ids (if any) | `adventure_website` contributor (or documented config data) |
-| Portal users + passwords/reset tokens for story customers | Portal shell or equipment portal contributor (reuse Tidewater partner XML ids) |
+| Website enabled, **minimal homepage**, menus (Home / Sign in / My Equipment), default theme + logo/colors | `adventure_website` contributor |
+| Portal users + **documented fixed demo passwords** for story customers | `adventure_website` and/or `adventure_equipment_portal` contributor (reuse Tidewater partner XML ids) |
 | Equipment assets / ownership / documents | `adventure_equipment` (+ scuba) Tidewater contributor |
 | Orchestration | Existing `seed-tidewater` / sandbox bootstrap discovers contributors |
 
@@ -271,10 +288,10 @@ Complexity is relative (S/M/L), not calendar time. Ordering can adjust once open
 | Slice | Purpose | Complexity | Depends on |
 |-------|---------|------------|------------|
 | **P0 — Architecture approval** | This document + answers to remaining open questions | S | — |
-| **P1 — Website shell baseline (pattern A, minimal)** | `website`/`portal`; thin `adventure_website`; Tidewater **homepage** with login + equipment portal entry; logo/chrome | S/M | Tenant can install Website |
-| **P2 — Equipment portal MVP** | `adventure_equipment_portal`: list/detail/register/limited edit + ACL + tests | L | `adventure_equipment` on target branch |
-| **P3 — Tidewater portal demo seed** | Portal users + sample gear + demo runbook (homepage → login → gear) | M | P1 + P2 |
-| **P4 — Branding / site polish** | Theme options, richer menus/pages, email template branding (still pattern A; expand beyond minimal homepage as needed) | S/M | P1 |
+| **P1 — Website shell baseline (pattern A, minimal)** | `website`/`portal`; **`adventure_website`**; Tidewater **homepage** with login + equipment portal entry; default theme + logo/colors | S/M | Tenant can install Website; **may start before** `adventure_equipment` merge |
+| **P2 — Equipment portal MVP** | `adventure_equipment_portal`: list/detail/register/limited edit + company-aware ACL + tests | L | **`adventure_equipment` on `develop`** |
+| **P3 — Tidewater portal demo seed** | Portal users + fixed passwords + staff-seeded gear + demo runbook (homepage → login → gear) | M | P1 + P2 |
+| **P4 — Branding / site polish** | Optional App Store theme, richer menus/pages, email template branding | S/M | P1 |
 | **P5 — Sale/POS → portal continuity** | Purchased items appear automatically (equipment Phase 3 bridge) | M | Equipment POS/sale bridge |
 | **Later** | Service booking, notifications, training portal, ecommerce, fuller marketing IA | — | Respective domain modules |
 
@@ -309,81 +326,70 @@ If equipment Phase 1–3B PRs are still merging, portal implementation should ta
 
 ---
 
-## Open questions (need answers before finalizing architecture / build)
+## Open questions
 
-Please decide or explicitly defer each item. Blockers for build are marked **[block]**; others can defer with a written default.
+**None remaining for this workstream.** All items below were resolved by explicit product decisions or by adopting the recommended defaults (now recorded in [Decisions confirmed](#decisions-confirmed-review)).
 
-**Resolved above:** hosting pattern **A** (minimal homepage MVP); Tidewater demo journey **homepage → login → list → detail → register external → staff verify**; **open self-signup**; **profile editing deferred** to a later separate workstream. See [Decisions confirmed](#decisions-confirmed-review).
-
-### Portal product & UX
-
-1. ~~Primary hosting pattern~~ — **Resolved: A**, with minimal homepage MVP.
-2. ~~First customer journeys~~ — **Resolved:** homepage → login → list gear → detail → register external item → (staff) verify. Orders history, profile edit, and documents-only are **not** mandatory for the Tidewater MVP demo.
-3. ~~Self-signup vs invite-only~~ — **Resolved: open self-signup**; any email may create a portal user (`auth_signup`).
-4. ~~Profile editing~~ — **Resolved: out of scope for this workstream**; address/phone (and similar) self-service is a **separate later workstream**.
-
-### Branding & website shell
-
-5. **[block] Theme strategy for Tidewater?** App Store theme (which one?), thin first-party `theme_tidewater`, or default Odoo Website theme with logo/colors only?
-6. **`adventure_website`:** Confirmed direction favors a thin shell for pattern A homepage + seed. Confirm we create it in P1 (recommended) vs stuffing homepage XML only into `dive_shop_pos` / equipment portal.
-7. **Custom domain expectations for sandbox?** Path-based (homepage + `/my/...` on sandbox URL) enough for demos?
-
-### Equipment portal specifics
-
-8. **Household sharing for portal:** One owner only, or commercial-child / family share from first portal release? (Also open on equipment architecture.)
-9. **Which fields are customer-editable** vs read-only vs staff-only? (Propose: nickname, notes, photos; read: serial, category, verification, service history summary if service installed.)
-10. **Must portal MVP show service due / history**, or registry-only until service modules are stable?
-11. **Document upload limits** (size, count, types) for portal photos/receipts?
-12. **Purchase linkage:** Is “items I bought at the shop” MVP via **staff-seeded / manually linked** assets only, or do we **require** sale/POS auto-create (equipment Phase 3) before calling the portal demo done?
-
-### Auth, security, ops
-
-13. **Sandbox credentials:** Seed fixed demo passwords (documented in seed-data), or one-time invite tokens only?
-14. **Outbound email** on sandbox for reset/verify — required for demo, or bypass acceptable?
-15. **Multi-company:** Portal rules company-aware from day one even though Tidewater is single-company?
-
-### Sequencing & dependencies
-
-16. **[block] Build gate:** Portal implementation waits until `adventure_equipment` is merged to `develop` (recommended). Confirm.
-17. **Parallelism:** May `adventure_website` (minimal homepage) proceed before equipment merge? (Recommended **yes**—homepage + login chrome does not need equipment models.)
-18. **Migration project boundary:** Confirm zero dependency on website content migration for portal MVP (assumed **yes**; consistent with minimal homepage).
+| # | Former question | Resolution |
+|---|-----------------|------------|
+| 1 | Hosting pattern A/B/C | **A**, minimal homepage |
+| 2 | Tidewater demo journeys | Homepage → login → list → detail → register external → staff verify |
+| 3 | Self-signup vs invite-only | Open self-signup |
+| 4 | Profile editing | Separate later workstream |
+| 5 | Theme strategy | Default Website + logo/colors |
+| 6 | Create `adventure_website`? | **Yes**, in P1 |
+| 7 | Sandbox custom domain? | Path-based only for MVP |
+| 8 | Household sharing | Single `partner_id` owner |
+| 9 | Editable fields | Nickname, notes, photos; serial/category/verification read-only |
+| 10 | Service due/history in portal MVP? | **No** — registry-only |
+| 11 | Document upload limits | Odoo defaults + visibility whitelist; tighten later if needed |
+| 12 | Purchase linkage for demo | Staff-seeded verified assets |
+| 13 | Sandbox credentials | Fixed fictional passwords in seed-data |
+| 14 | Sandbox outbound email | Bypass acceptable for MVP demos |
+| 15 | Multi-company rules | Company-aware from day one |
+| 16 | Wait for `adventure_equipment`? | **Yes** for equipment portal |
+| 17 | `adventure_website` before equipment merge? | **Yes** |
+| 18 | Website migration dependency? | **None** |
 
 ---
 
-## Recommended defaults (if the team wants a fast path)
+## Adopted defaults (reference)
 
-Use these **only** where a topic is still open; hosting pattern is already decided.
+These were the recommended defaults; they are now **confirmed** (see decisions table). Kept here as a quick cheat sheet for implementers:
 
-| Topic | Suggested default |
-|-------|-------------------|
-| Hosting / Tidewater pattern | **A — Odoo-hosted site**, **minimal homepage** (login + equipment portal entry) this workstream |
-| Theme | Default Odoo Website + Tidewater logo/colors; App Store theme later if needed |
-| Shell module | Thin **`adventure_website`** for homepage + config-as-code + seed hooks |
-| Auth | **Open self-signup** (`auth_signup`); staff invite optional, not required |
-| Equipment MVP | List / detail / register / limited edit; **no** service booking, orders history, or profile edit |
-| Purchases in demo | Staff-seeded verified assets on Tidewater customers; POS auto-create follows later |
-| Household | Single `partner_id` owner (match equipment Phase 1) |
+| Topic | Adopted default |
+|-------|-----------------|
+| Hosting / Tidewater pattern | **A — Odoo-hosted site**, **minimal homepage** |
+| Theme | Default Odoo Website + Tidewater logo/colors |
+| Shell module | Thin **`adventure_website`** |
+| Auth | **Open self-signup** (`auth_signup`) |
+| Equipment MVP | List / detail / register / limited edit; **no** service booking/history, orders, or profile edit |
+| Purchases in demo | Staff-seeded verified assets |
+| Household | Single `partner_id` owner |
+| Sandbox access | Path-based URL; fixed demo passwords; mail bypass OK |
 | Migration | No dependency |
+| Sequencing | Website shell parallel; equipment portal after `adventure_equipment` on `develop` |
 
 ---
 
 ## Acceptance criteria for “architecture finalized”
 
 - [x] Hosting pattern decided (**A**, minimal homepage MVP)
-- [x] Tidewater demo customer journey decided (homepage → login → list → detail → register → staff verify; no orders/profile/documents-only)
-- [x] Portal signup decided (**open self-registration**, any email)
+- [x] Tidewater demo customer journey decided
+- [x] Portal signup decided (**open self-registration**)
 - [x] Profile editing deferred to a **separate later workstream**
-- [ ] Remaining open questions answered or deferred with written defaults
-- [ ] Module list agreed (`adventure_website` in P1 recommended; `adventure_equipment_portal` confirmed)
-- [ ] Tidewater credentials approach and gear seed scenarios agreed
-- [ ] Dependency on equipment PR merge sequencing agreed
-- [ ] This page’s warning admonition updated when implementation starts
-- [ ] MkDocs / agent-rules references kept in sync
+- [x] Remaining questions closed via recommended defaults
+- [x] Module list agreed (`adventure_website` in P1; `adventure_equipment_portal` for equipment UX)
+- [x] Tidewater credentials approach and gear seed approach agreed (fixed passwords; staff-seeded gear)
+- [x] Dependency / sequencing agreed (shell parallel; portal after equipment merge)
+- [ ] This page’s warning admonition updated when **implementation** starts
+- [x] MkDocs / agent-rules references kept in sync for this planning page
 
 ---
 
 ## Next step after approval
 
-1. Continue recording decisions in [Decisions confirmed](#decisions-confirmed-review) as remaining questions close.
-2. Open implementation issues/PRs for **P1 shell** (minimal homepage) and **P2 equipment portal** (separate branches; P1 may start before equipment merge).
-3. Add Tidewater website + portal seed contributors in the same trains as those UX slices (mandatory for user-visible portal behavior).
+1. **Kick off build** (explicit product/eng go-ahead): P1 `adventure_website` (minimal homepage) can start immediately; P2 `adventure_equipment_portal` starts once `adventure_equipment` is on `develop`.
+2. Open implementation issues/PRs for those slices on separate branches.
+3. Add Tidewater website + portal + equipment seed contributors in the same trains (fixed demo passwords documented in [seed-data.md](../seed-data.md)).
+4. When implementation begins, change this page’s warning from “not implemented” to reflect in-progress / shipped slices.
