@@ -106,6 +106,43 @@ Packing lists are **not** the same as scenarios: a scenario is a reusable *requi
 | 9 | **No** household sharing; same single-owner rule as equipment portal | Consistency with portal decisions |
 | 10 | Tidewater seed: sample packing + kit lists on story portal customers | Demo after `seed-tidewater` |
 | 11 | Scuba-specific starter templates (optional data) live in **`adventure_equipment_scuba`** or a small scuba data file depending on configuration—not hard-coded only in portal QWeb | Sport-agnostic core |
+| 12 | **Never auto-remove list lines** when referenced equipment is archived, retired, or deleted. Keep the line and show a **broken / unavailable reference** indicator so the list stays visibly incomplete until the customer fixes it | Silent removal would hide that the packing list or kit is no longer valid |
+
+---
+
+## Broken references (confirmed)
+
+Losing a piece of gear must **not** quietly rewrite the customer’s lists. Automatic line deletion is incorrect: the list may now be invalid for its intended trip or setup, and the customer needs to see that.
+
+### Rules
+
+| Event on referenced asset | List line behavior | Portal indicator |
+|---------------------------|--------------------|------------------|
+| **Archived** (`active=False`) | Keep line; `asset_id` still set when readable with `active_test=False` | “Archived” / unavailable badge |
+| **Retired / lost / disposed / transferred** (lifecycle) | Keep line; asset still exists | Lifecycle badge (e.g. “Retired”) — treat as **broken for use** on kits/packing |
+| **Hard unlink** (rare; prefer archive) | Keep line; `asset_id` cleared via `ondelete='set null'` | **Broken reference** using denormalized snapshots on the line |
+| Customer **manually** removes a line | Allowed — explicit edit, not a side effect of asset deletion | — |
+
+**Never:** cascade-delete configuration lines from asset `unlink`/`write`, retirement wizards, or archive hooks.
+
+### Why snapshots on lines
+
+If an asset is hard-deleted, a bare `Many2one` becomes empty and the UI would only show a blank row. Each asset-linked line therefore stores **denormalized identity at link time** (and refreshed on intentional re-link), for example:
+
+- `asset_snapshot_name` / display label
+- Optional: category name, nickname, serial snippet
+
+Portal/staff UI always has something to render: “~~Primary AL80~~ — equipment removed” rather than an empty slot.
+
+### List-level health
+
+- Compute (or maintain) list flags such as `has_broken_references` / `is_incomplete` when any asset line is missing, archived, or in a non-usable lifecycle state.
+- Surface on **list index** (warning icon / “Needs attention”) and **list detail** (banner: “One or more items are no longer available — this list may be invalid until you update it.”).
+- Customer actions: replace asset on the line, convert to a free-text reminder, or remove the line deliberately.
+
+### Staff / merge
+
+Duplicate-asset merge should **repoint** lines to the surviving asset and refresh snapshots—not drop lines. Document in the merge wizard when configurations land.
 
 ---
 
@@ -137,7 +174,8 @@ Prefer technical names already sketched in equipment architecture; product label
 | `configuration_id` | Parent list |
 | `sequence` | Packing order / kit display order |
 | `line_type` | `asset` / `text` / `quantity` (MVP triad; extensible) |
-| `asset_id` | Nullable; must belong to same `partner_id` when set |
+| `asset_id` | Nullable; `ondelete='set null'`; must belong to same `partner_id` when set |
+| `asset_snapshot_name` | Denormalized label captured when linking (survives asset unlink) |
 | `name` | Display label; required when no asset (or always editable override) |
 | `category_id` | Optional hint (“Cylinder”) for packing slots without a chosen asset yet |
 | `role_code` | Sport-agnostic string (`primary_reg`, `backup_light`, …); scuba may suggest defaults later |
@@ -145,12 +183,13 @@ Prefer technical names already sketched in equipment architecture; product label
 | `quantity_uom_label` | Char optional (`lb`, `kg`, `cu ft`) — avoid stock UoM dependency in MVP |
 | `notes` | Per-line notes |
 | `is_checked` | For packing (and optionally kit pre-dive); portal toggle |
+| `reference_state` | Computed (or lightly stored): `ok` / `archived` / `unavailable` / `missing` — drives broken-reference UI |
 | `company_id` | Related/stored for rules |
 
 **Constraints (MVP):**
 
-- `asset_id.partner_id` must equal list `partner_id` (server-side)
-- Retired / inactive assets: still show on historical kits with a portal badge; optionally warn; do not auto-purge lines on asset archive (align with “history permanence”); product may later add “remove from active kits” on retirement wizard
+- `asset_id.partner_id` must equal list `partner_id` (server-side) when `asset_id` is set
+- **Broken-reference policy (confirmed):** do **not** auto-purge lines when an asset is archived, retired, or unlinked; keep the row, preserve snapshots, and mark `reference_state` / list health so the customer sees the list may be invalid ([Broken references](#broken-references-confirmed))
 - Kit with zero lines allowed (draft); packing same
 
 ### Explicitly out of MVP models
@@ -348,10 +387,10 @@ Complexity is relative (S/M/L), not calendar time.
 
 | Layer | Focus |
 |-------|-------|
-| ORM | Partner integrity on lines; archive behavior; kind validation; quantity-only lines |
+| ORM | Partner integrity on lines; archive/retire/unlink leave lines + snapshots; kind validation; quantity-only lines |
 | Security | Portal record rules; staff ACL; HttpCase isolation + asset attachment tampering |
-| Portal UX | Create packing + kit; check reset; reorder; empty states |
-| Seed | Idempotent Tidewater contributor |
+| Portal UX | Create packing + kit; check reset; reorder; empty states; broken-reference badges and list “needs attention” |
+| Seed | Idempotent Tidewater contributor; optional sample with an archived asset line for demo |
 
 ---
 
@@ -362,7 +401,7 @@ Complexity is relative (S/M/L), not calendar time.
 | Scope creep into readiness/AI/trip itineraries | Hard MVP boundary: lists + notes + checks only |
 | Fake “weight” assets cluttering registry | Quantity/text lines without `asset_id` |
 | Portal module coupling | Option A thin portal bridge |
-| Orphan lines when assets retire | Keep lines; badge retired; optional cleanup later |
+| Broken / orphan lines when assets retire or delete | **Confirmed:** keep lines; snapshots + `reference_state`; list-level “needs attention”; never auto-remove |
 | Duplicate concepts (tags vs lists) | Tags remain labels on assets; lists are ordered compositions |
 | Customers expecting shop-managed templates first | MVP is personal lists; shop templates are 6B/L4 |
 
@@ -385,6 +424,7 @@ Resolve before or during L1:
 ## Acceptance criteria for “design finalized”
 
 - [ ] Product agrees packing + kit share one list model with `list_kind`
+- [x] Broken references: keep lines + indicator; never auto-remove on equipment delete/archive/retire
 - [ ] Module packaging option chosen (A/B/C)
 - [ ] MVP explicitly excludes scenarios/readiness
 - [ ] Portal IA / routes agreed at a conceptual level

@@ -360,7 +360,7 @@ See [Equipment lists & configurations (portal)](equipment-lists-portal.md) for p
 
 #### Configuration Membership — `adventure.equipment.configuration.line`
 
-List lines: optional asset link, label, role (`primary_reg`, …), quantity/uom label, notes, packing check state.
+List lines: optional asset link, denormalized asset snapshots, label, role (`primary_reg`, …), quantity/uom label, notes, packing check state, broken-reference state when the asset is archived/retired/missing (never auto-purge lines).
 
 #### Scenario — `adventure.equipment.scenario`
 
@@ -470,7 +470,7 @@ Follow Odoo 19 `res.groups.privilege` pattern from waivers.
 | **Customer registration** | Portal creates `customer_claimed` asset; staff verifies serial/photos |
 | **External purchases** | Same as customer registration; optional receipt attachment |
 | **Transfers** | Wizard: old owner history close + new owner open; keep same asset id |
-| **Retirement** | State `retired`; keep history; remove from active configurations |
+| **Retirement** | State `retired`; keep history; **do not** auto-remove configuration/packing list lines — leave broken/unavailable indicators ([lists design](equipment-lists-portal.md#broken-references-confirmed)) |
 | **Duplicates** | Manager merge wizard: surviving asset keeps history; identifiers moved; loser archived with pointer |
 | **Serial numbers** | Soft uniqueness by category/type; allow duplicates only with manager override + event (real-world collisions / unknown serials) |
 | **Shared ownership** | Phase 1: single `partner_id` (**contact-only**; no commercial-partner rollup on smart-button counts). Later: household sharing via partner child or explicit share table—do not invent multi-owner without product decision |
