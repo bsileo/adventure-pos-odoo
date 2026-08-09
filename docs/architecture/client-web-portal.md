@@ -218,7 +218,7 @@ Align with the equipment lifecycle architecture (draft PR [#73](https://github.c
 ### Explicitly deferred from first portal slice
 
 - Service scheduling / booking UI and **service due/history portal UI** (registry-only MVP)
-- Kit/configuration / trip packing — **design:** [Equipment lists & configurations (portal)](equipment-lists-portal.md) (Phase 6A); readiness/scenarios remain later (6B)
+- Kit/configuration / trip packing — **design agreed:** [Equipment lists & configurations (portal)](equipment-lists-portal.md) (Phase 6A; Option A portal module); readiness/scenarios remain later (6B)
 - Auto-create from every POS sale (equipment Phase 3 — not required for Tidewater portal demo)
 - Household multi-owner / commercial-child sharing
 - Public catalog / ecommerce purchase of equipment

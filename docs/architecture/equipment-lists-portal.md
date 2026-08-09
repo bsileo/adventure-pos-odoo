@@ -27,7 +27,7 @@ Two primary use cases drive the design (scuba-first, sport-agnostic core):
 | Use case | Customer intent | Example |
 |----------|-----------------|---------|
 | **Packing list** | “What do I bring for this kind of trip?” | Cold-water trip, quarry day, warm-water travel |
-| **Configuration (kit)** | “What gear do I actually run together as one setup?” | Cold-water config: dry suit + AL80 + 12 lb + primary reg; notes evolve over time |
+| **Configuration** | “What gear do I actually run together as one setup?” | Cold-water configuration: dry suit + AL80 + 12 lb + primary reg; notes evolve over time |
 
 Both are **customer-owned**, partner-scoped lists. Staff may view/help in the backend later; the first valuable surface is the **portal**.
 

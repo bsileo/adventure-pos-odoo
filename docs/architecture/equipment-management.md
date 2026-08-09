@@ -353,10 +353,10 @@ Completed (or in-progress) work:
 
 Named **equipment list** owned by a partner. Discriminated by `list_kind`:
 
-- **`kit`** — configuration / setup (“Travel set”, “Cold water”) of owned assets (+ quantity lines such as weight)
+- **`configuration`** — named setup (UI: “Configuration”) of owned assets (+ quantity lines such as weight)
 - **`packing`** — trip packing checklist (assets and/or free-text reminders)
 
-See [Equipment lists & configurations (portal)](equipment-lists-portal.md) for portal UX, MVP boundaries, and Phase 6A vs 6B split.
+See [Equipment lists & configurations (portal)](equipment-lists-portal.md) for portal UX, confirmed packaging (Option A), and Phase 6A vs 6B split.
 
 #### Configuration Membership — `adventure.equipment.configuration.line`
 
@@ -621,17 +621,17 @@ Complexity is relative (S/M/L), not calendar time.
 
 Split for delivery clarity ([portal design](equipment-lists-portal.md)):
 
-#### Phase 6A — Packing lists & kits (portal-first)
+#### Phase 6A — Packing lists & configurations (portal-first)
 
-- **Purpose:** Customer packing checklists and named equipment configurations (setups)  
-- **Modules:** `adventure_equipment_configuration` (+ thin `adventure_equipment_configuration_portal` recommended)  
-- **Acceptance:** Create packing + kit lists; line notes; packing check-off; portal ACL isolation; Tidewater sample lists; **broken-reference indicators** when member equipment is archived/retired/deleted (lines retained)  
+- **Purpose:** Customer packing checklists and named equipment configurations  
+- **Modules:** `adventure_equipment_configuration` + `adventure_equipment_configuration_portal` (Option A)  
+- **Acceptance:** Create packing + configuration lists; line notes; packing check-off; up/down reorder; portal hard-delete; portal ACL isolation; Tidewater seed-only samples; **broken-reference indicators** when member equipment is archived/retired/deleted (lines retained)  
 - **Complexity:** L  
-- **Deferred in 6A:** scenario templates, readiness pass/fail engine  
+- **Deferred in 6A:** scenario templates, readiness pass/fail engine, drag-and-drop reorder, manager-authored templates  
 
 #### Phase 6B — Scenarios & readiness
 
-- **Purpose:** Evaluate kits (or selected assets) against reusable scenarios; surface overdue members  
+- **Purpose:** Evaluate configurations (or selected assets) against reusable scenarios; surface overdue members  
 - **Module:** extends `adventure_equipment_configuration` (and optionally service/scuba rules)  
 - **Acceptance:** Build/evaluate scenario; surface overdue / missing component lines  
 - **Complexity:** L  
