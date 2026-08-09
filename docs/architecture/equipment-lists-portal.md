@@ -111,10 +111,8 @@ Packing lists are **not** the same as scenarios: a scenario is a reusable *requi
 | 13 | Customer-facing label for `list_kind=configuration` is **“Configuration”** (not “Kit” / “Setup”). Packing remains **“Packing list”** | **Confirmed** |
 | 14 | Portal may **hard-delete** own lists and lines (not soft-archive-only). Prefer confirm dialog; equipment assets themselves still follow registry archive-first norms | **Confirmed** |
 | 15 | Line **reorder in L2 = up/down** POST actions; drag-and-drop deferred to later polish | **Confirmed** |
-| 16 | After the first line exists, **`list_kind` is immutable**. Empty lists may still change kind. Avoids packing↔configuration hybrids; duplicate-as-other-kind can come later if needed | **Confirmed** (adopted default) |
-| 17 | Weight/quantity MVP = **`quantity` + Char `quantity_uom_label`** only. No structured mass fields in scuba pack for this phase | **Confirmed** (adopted default) |
-
-Former open questions 6–7 had no explicit product reply in the clarification thread; **#16** and **#17** record the adopted defaults above so L1 is unblocked. Revisit only if product overrides.
+| 16 | After the first line exists, **`list_kind` is immutable**. Empty lists may still change kind. Avoids packing↔configuration hybrids; duplicate-as-other-kind can come later if needed | **Confirmed** |
+| 17 | Weight/quantity MVP = **`quantity` + Char `quantity_uom_label`** only. No structured mass fields in scuba pack for this phase | **Confirmed** |
 
 ---
 
@@ -427,8 +425,8 @@ Complexity is relative (S/M/L), not calendar time.
 | 3 | Soft-archive vs delete for portal lists | **Allow hard delete** (with confirm) |
 | 4 | Reorder UX | **Up/down in L2**; drag-and-drop later |
 | 5 | Shop starter templates | **Seed-only Tidewater** for now |
-| 6 | Immutable `list_kind` after first line? | **Yes** (adopted default) |
-| 7 | Structured mass vs Char uom label? | **Char `quantity_uom_label` enough** for MVP (adopted default) |
+| 6 | Immutable `list_kind` after first line? | **Yes** |
+| 7 | Structured mass vs Char uom label? | **Char `quantity_uom_label` enough** for MVP |
 
 ---
 
