@@ -2,7 +2,7 @@
 
 !!! warning "Partially implemented"
 
-    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment), **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service), and **scuba vertical pack** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba) are **implemented**. **Portal** (`adventure_equipment_portal` + `adventure_website`) is **in progress** on the client web portal workstream. **Configurations / packing lists** ([portal design](equipment-lists-portal.md)), **notifications**, and **POS/sale bridges** remain future work.
+    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment), **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service), and **scuba vertical pack** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba) are **implemented**. **Portal** (`adventure_equipment_portal` + `adventure_website`) is **in progress** on the client web portal workstream. **Configurations / packing lists** ([Phase 6A](equipment-lists-portal.md)) are **implemented** (`adventure_equipment_configuration` + portal). **Notifications** and **POS/sale bridges** remain future work.
 
     Treat remaining model names and fields on this page as the **platform direction**; compare with the live modules and their READMEs when implementing or testing.
 
@@ -621,10 +621,10 @@ Complexity is relative (S/M/L), not calendar time.
 
 Split for delivery clarity ([portal design](equipment-lists-portal.md)):
 
-#### Phase 6A — Packing lists & configurations (portal-first)
+#### Phase 6A — Packing lists & configurations (portal-first) ✅ **Implemented**
 
 - **Purpose:** Customer packing checklists and named equipment configurations  
-- **Modules:** `adventure_equipment_configuration` + `adventure_equipment_configuration_portal` (Option A)  
+- **Modules:** [`adventure_equipment_configuration`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_configuration) + [`adventure_equipment_configuration_portal`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_configuration_portal) (Option A)  
 - **Acceptance:** Create packing + configuration lists; line notes; packing check-off; up/down reorder; portal hard-delete; portal ACL isolation; Tidewater seed-only samples; **broken-reference indicators** when member equipment is archived/retired/deleted (lines retained)  
 - **Complexity:** L  
 - **Deferred in 6A:** scenario templates, readiness pass/fail engine, drag-and-drop reorder, manager-authored templates  

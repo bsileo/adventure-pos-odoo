@@ -47,6 +47,7 @@ It creates / updates:
 - Condition logs and maintenance events.
 - **Customer-owned equipment** (when `adventure_equipment_scuba` is installed): kit and service history for Tidewater story customers, via the module-owned contributor under `adventure_equipment_scuba/seeds/`.
 - **Website + equipment portal** (when `adventure_website` / `adventure_equipment_portal` are installed): minimal homepage, open signup, and portal users for demo logins.
+- **Packing lists & configurations** (when `adventure_equipment_configuration` is installed): sample packing lists and configurations for demo portal customers.
 
 ### Portal demo logins (fictional)
 
@@ -58,7 +59,7 @@ Password for all of the following: `tidewater`
 | `nitrox@example.test` | Nitrox diver |
 | `uncertified@example.test` | Uncertified customer |
 
-Demo path: public homepage → Sign in → My Equipment → detail / register external item → staff verify in backend Equipment app.
+Demo path: public homepage → Sign in → My Equipment → Packing & configurations → detail / register external item → staff verify in backend Equipment app.
 
 ### Standard package modules
 
@@ -68,6 +69,8 @@ Demo path: public homepage → Sign in → My Equipment → detail / register ex
 | `adventure_equipment_scuba` | Customer equipment scuba app (pulls `adventure_equipment` + `adventure_equipment_service`) |
 | `adventure_website` | Minimal Website shell + open self-signup |
 | `adventure_equipment_portal` | Customer equipment portal (`/my/equipment`) |
+| `adventure_equipment_configuration` | Packing lists & configurations (domain) |
+| `adventure_equipment_configuration_portal` | Portal UX for packing/configurations (`/my/equipment/lists`) |
 
 `adventure_equipment` is an Odoo **App** (`application=True`). `adventure_equipment_scuba` is also an **App**. `adventure_equipment_service` remains a supporting module (`application=False`) so it does not appear when filtering Apps alone—install it via the scuba app, website/portal stack, or Apps → Modules.
 

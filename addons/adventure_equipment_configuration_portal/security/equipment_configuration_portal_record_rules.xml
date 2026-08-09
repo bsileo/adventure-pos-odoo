@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="equipment_configuration_portal_rule" model="ir.rule">
+        <field name="name">Equipment configuration: portal own partner</field>
+        <field name="model_id" ref="adventure_equipment_configuration.model_adventure_equipment_configuration"/>
+        <field name="domain_force">['&amp;', ('partner_id', '=', user.partner_id.id), '|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="equipment_configuration_line_portal_rule" model="ir.rule">
+        <field name="name">Equipment configuration line: portal own partner</field>
+        <field name="model_id" ref="adventure_equipment_configuration.model_adventure_equipment_configuration_line"/>
+        <field name="domain_force">['&amp;', ('partner_id', '=', user.partner_id.id), '|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

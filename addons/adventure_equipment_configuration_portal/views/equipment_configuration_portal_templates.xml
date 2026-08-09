@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_equipment_lists_link" name="Equipment list: link to packing &amp; configurations" inherit_id="adventure_equipment_portal.portal_my_equipment">
+        <xpath expr="//a[@href='/my/equipment/register']" position="before">
+            <a href="/my/equipment/lists" class="btn btn-outline-secondary me-2">Packing &amp; configurations</a>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_equipment_lists" name="Portal My Home: packing &amp; configurations" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_client_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/adventure_equipment_configuration_portal/static/src/img/lists.svg'"/>
+                <t t-set="title">Packing &amp; configurations</t>
+                <t t-set="url" t-value="'/my/equipment/lists'"/>
+                <t t-set="text">Trip packing lists and equipment configurations</t>
+                <t t-set="placeholder_count" t-value="'equipment_list_count'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_my_equipment_lists" name="My Packing &amp; Configurations">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Packing &amp; configurations</t>
+            </t>
+            <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-2">
+                    <a t-att-href="'/my/equipment/lists'"
+                       t-attf-class="btn btn-sm #{'btn-primary' if not list_kind_filter else 'btn-outline-secondary'}">All</a>
+                    <a t-att-href="'/my/equipment/lists?list_kind=packing'"
+                       t-attf-class="btn btn-sm #{'btn-primary' if list_kind_filter == 'packing' else 'btn-outline-secondary'}">Packing lists</a>
+                    <a t-att-href="'/my/equipment/lists?list_kind=configuration'"
+                       t-attf-class="btn btn-sm #{'btn-primary' if list_kind_filter == 'configuration' else 'btn-outline-secondary'}">Configurations</a>
+                </div>
+                <a href="/my/equipment/lists/new" class="btn btn-primary">Create list</a>
+            </div>
+            <t t-if="not equipment_lists">
+                <div class="alert alert-info" role="status">
+                    No lists yet. Create a packing list for a trip type, or a configuration for a consistent gear setup.
+                </div>
+            </t>
+            <t t-else="">
+                <div class="table-responsive">
+                    <table class="table o_portal_my_doc_table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Kind</th>
+                                <th>Items</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="equipment_lists" t-as="lst">
+                                <td>
+                                    <a t-att-href="'/my/equipment/lists/%s' % lst.id">
+                                        <t t-esc="lst.name"/>
+                                    </a>
+                                </td>
+                                <td>
+                                    <t t-esc="dict(lst._fields['list_kind'].selection).get(lst.list_kind)"/>
+                                </td>
+                                <td><t t-esc="lst.line_count"/></td>
+                                <td>
+                                    <span t-if="lst.has_broken_references" class="badge text-bg-warning">Needs attention</span>
+                                    <span t-else="" class="text-muted">OK</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-if="pager" class="o_portal_pager text-center">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+            <p class="mt-3">
+                <a href="/my/equipment" class="btn btn-link">Back to equipment</a>
+            </p>
+        </t>
+    </template>
+
+    <template id="portal_my_equipment_list_new" name="Create equipment list">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3" style="max-width: 40rem;">
+                <h3>Create list</h3>
+                <p class="text-muted">Choose a packing list for trip checklists, or a configuration for a named gear setup.</p>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <form action="/my/equipment/lists/new" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-3">
+                        <label class="form-label" for="list_kind">Kind</label>
+                        <select class="form-select" name="list_kind" id="list_kind" required="required">
+                            <option value="packing" t-att-selected="(post.get('list_kind') or 'packing') == 'packing'">Packing list</option>
+                            <option value="configuration" t-att-selected="post.get('list_kind') == 'configuration'">Configuration</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Name</label>
+                        <input type="text" class="form-control" name="name" id="name" required="required"
+                               t-att-value="post.get('name') or ''"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="customer_note">Notes</label>
+                        <textarea class="form-control" name="customer_note" id="customer_note" rows="3"><t t-esc="post.get('customer_note') or ''"/></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a href="/my/equipment/lists" class="btn btn-link">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_my_equipment_list_edit" name="Edit equipment list">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3" style="max-width: 40rem;">
+                <h3>Edit <t t-esc="equipment_list.name"/></h3>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <form t-att-action="'/my/equipment/lists/%s/edit' % equipment_list.id" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-3" t-if="not equipment_list.line_ids">
+                        <label class="form-label" for="list_kind">Kind</label>
+                        <select class="form-select" name="list_kind" id="list_kind">
+                            <option value="packing" t-att-selected="equipment_list.list_kind == 'packing'">Packing list</option>
+                            <option value="configuration" t-att-selected="equipment_list.list_kind == 'configuration'">Configuration</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" t-else="">
+                        <p class="text-muted mb-0">
+                            Kind:
+                            <t t-esc="dict(equipment_list._fields['list_kind'].selection).get(equipment_list.list_kind)"/>
+                            (locked after items are added)
+                        </p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Name</label>
+                        <input type="text" class="form-control" name="name" id="name"
+                               t-att-value="equipment_list.name"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="description">Description</label>
+                        <textarea class="form-control" name="description" id="description" rows="2"><t t-esc="equipment_list.description or ''"/></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="customer_note">Notes</label>
+                        <textarea class="form-control" name="customer_note" id="customer_note" rows="4"><t t-esc="equipment_list.customer_note or ''"/></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a t-att-href="'/my/equipment/lists/%s' % equipment_list.id" class="btn btn-link">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_my_equipment_list_detail" name="Equipment list detail">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                        <h3 t-esc="equipment_list.name"/>
+                        <p class="text-muted mb-0">
+                            <t t-esc="dict(equipment_list._fields['list_kind'].selection).get(equipment_list.list_kind)"/>
+                        </p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a t-att-href="'/my/equipment/lists/%s/edit' % equipment_list.id" class="btn btn-secondary">Edit</a>
+                        <a href="/my/equipment/lists" class="btn btn-link">Back to lists</a>
+                    </div>
+                </div>
+
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <div t-if="equipment_list.has_broken_references" class="alert alert-warning" role="status">
+                    One or more items are no longer available — this list may be invalid until you update it.
+                </div>
+
+                <p t-if="equipment_list.customer_note" class="mb-3">
+                    <strong>Notes:</strong>
+                    <t t-esc="equipment_list.customer_note"/>
+                </p>
+
+                <div class="mb-3 d-flex flex-wrap gap-2" t-if="equipment_list.list_kind == 'packing'">
+                    <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="action" value="reset_checks"/>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Reset checks</button>
+                    </form>
+                </div>
+
+                <t t-if="not equipment_list.line_ids">
+                    <div class="alert alert-info">No items yet. Add equipment or custom lines below.</div>
+                </t>
+                <t t-else="">
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th t-if="equipment_list.list_kind == 'packing'" style="width: 3rem;"></th>
+                                    <th>Item</th>
+                                    <th>Status</th>
+                                    <th style="width: 12rem;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="equipment_list.line_ids" t-as="line"
+                                    t-attf-class="#{'table-warning' if line.reference_state != 'ok' else ''}">
+                                    <td t-if="equipment_list.list_kind == 'packing'">
+                                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="action" value="toggle_check"/>
+                                            <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                            <button type="submit" class="btn btn-sm btn-link p-0" t-att-title="line.is_checked and 'Uncheck' or 'Check'">
+                                                <t t-if="line.is_checked">☑</t>
+                                                <t t-else="">☐</t>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <t t-if="line.asset_id">
+                                                <a t-att-href="'/my/equipment/%s' % line.asset_id.id">
+                                                    <t t-esc="line.display_label"/>
+                                                </a>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="line.display_label"/>
+                                            </t>
+                                            <span t-if="line.role_code" class="text-muted small"> · <t t-esc="line.role_code"/></span>
+                                            <span t-if="line.line_type == 'quantity'" class="text-muted small">
+                                                · <t t-esc="line.quantity"/> <t t-esc="line.quantity_uom_label or ''"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="line.notes" class="small text-muted" t-esc="line.notes"/>
+                                    </td>
+                                    <td>
+                                        <t t-if="line.reference_state == 'ok'">
+                                            <span class="badge text-bg-success">OK</span>
+                                        </t>
+                                        <t t-elif="line.reference_state == 'archived'">
+                                            <span class="badge text-bg-warning">Archived</span>
+                                        </t>
+                                        <t t-elif="line.reference_state == 'unavailable'">
+                                            <span class="badge text-bg-danger">Unavailable</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge text-bg-danger">Missing</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="action" value="move_up"/>
+                                                <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">Up</button>
+                                            </form>
+                                            <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="action" value="move_down"/>
+                                                <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">Down</button>
+                                            </form>
+                                            <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Remove this item?');">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="action" value="delete_line"/>
+                                                <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <h5>Add from my equipment</h5>
+                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="action" value="add_asset"/>
+                            <div class="input-group">
+                                <select class="form-select" name="asset_id" required="required">
+                                    <option value="">Select…</option>
+                                    <t t-foreach="owned_assets" t-as="asset">
+                                        <option t-att-value="asset.id" t-esc="asset.display_name"/>
+                                    </t>
+                                </select>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Add custom item</h5>
+                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="action" value="add_text"/>
+                            <div class="mb-2">
+                                <input type="text" class="form-control" name="label" placeholder="Label" required="required"/>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" class="form-control" name="notes" placeholder="Notes (optional)"/>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">Add item</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6" t-if="equipment_list.list_kind == 'configuration'">
+                        <h5>Add quantity (e.g. weight)</h5>
+                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="action" value="add_quantity"/>
+                            <div class="row g-2 mb-2">
+                                <div class="col-5">
+                                    <input type="text" class="form-control" name="label" placeholder="Label"/>
+                                </div>
+                                <div class="col-3">
+                                    <input type="number" step="any" class="form-control" name="quantity" placeholder="Qty"/>
+                                </div>
+                                <div class="col-4">
+                                    <input type="text" class="form-control" name="quantity_uom_label" placeholder="lb"/>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">Add quantity</button>
+                        </form>
+                    </div>
+                </div>
+
+                <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post"
+                      onsubmit="return confirm('Delete this list permanently?');">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="action" value="delete_list"/>
+                    <button type="submit" class="btn btn-outline-danger">Delete list</button>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>

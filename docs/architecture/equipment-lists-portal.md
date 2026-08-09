@@ -1,8 +1,8 @@
 # Equipment lists & configurations (portal)
 
-!!! warning "Design agreed — not implemented"
+!!! warning "Design agreed — Phase 6A implementation shipping"
 
-    Planning decisions below are **closed**. Do **not** implement until a build workstream is kicked off. Core registry, service/scuba packs, and equipment portal MVP remain the live baseline.
+    Planning decisions are **closed**. Domain + portal modules live under `addons/adventure_equipment_configuration` and `addons/adventure_equipment_configuration_portal`. Treat incomplete install/upgrade on a given database as WIP until those modules are installed and Tidewater seed has been re-run.
 
 **Audience:** Product, operations, and developers planning customer-facing equipment lists on the Adventure POS portal.
 

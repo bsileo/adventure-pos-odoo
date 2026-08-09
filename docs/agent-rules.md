@@ -88,7 +88,8 @@ Future modules (do not implement unless instructed):
 * adventure_equipment_scuba — **scuba vertical pack implemented** under `addons/adventure_equipment_scuba` (Phase 3B); VIP/hydro/regulator defaults + scuba asset fields
 * adventure_equipment_portal — **customer portal implemented** under `addons/adventure_equipment_portal` (MVP list/detail/register/edit + Tidewater portal users); see [client web portal](architecture/client-web-portal.md)
 * adventure_website — **minimal Website shell implemented** under `addons/adventure_website` (homepage + open signup)
-* adventure_equipment_configuration / adventure_equipment_notifications / adventure_equipment_pos — further customer-owned **Equipment Lifecycle Management** extensions (design: [equipment management architecture](architecture/equipment-management.md); packing lists + kits portal design: [equipment lists portal](architecture/equipment-lists-portal.md)); do **not** conflate with shop rental fleet assets
+* adventure_equipment_configuration / adventure_equipment_configuration_portal — **packing lists & configurations implemented** (Phase 6A); see [equipment lists portal](architecture/equipment-lists-portal.md); do **not** conflate with shop rental fleet assets
+* adventure_equipment_notifications / adventure_equipment_pos — further customer-owned **Equipment Lifecycle Management** extensions (design: [equipment management architecture](architecture/equipment-management.md)); do **not** conflate with shop rental fleet assets
 * adventure_loyalty
 * adventure_training
 * adventure_trips

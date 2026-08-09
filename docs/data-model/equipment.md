@@ -18,7 +18,7 @@ Sport-neutral maintenance forecasting and history.
 
 VIP, hydrostatic, regulator/BCD/computer/drysuit service types and default category policies; cylinder gas/pressure/oxygen-clean fields; VIP/hydro denormalized dates. See `addons/adventure_equipment_scuba/doc/SCUBA_PACK.md`.
 
-**Still deferred:** notifications, work orders, `stock.lot`, typed sale/POS auto-registration, kit/packing lists (portal design: [Equipment lists & configurations](../architecture/equipment-lists-portal.md)). Portal registry MVP is in progress — see [Client web portal](../architecture/client-web-portal.md). Core reference: [Equipment management](../architecture/equipment-management.md).
+**Still deferred:** notifications, work orders, `stock.lot`, typed sale/POS auto-registration, scenarios/readiness (Phase 6B). Packing lists & configurations (Phase 6A) ship in `adventure_equipment_configuration` (+ portal). See [Equipment lists portal](../architecture/equipment-lists-portal.md) and [Equipment management](../architecture/equipment-management.md).
 
 ## Core models
 
@@ -35,6 +35,8 @@ VIP, hydrostatic, regulator/BCD/computer/drysuit service types and default categ
 | `adventure.equipment.service.policy` | Targeting + schedule rules |
 | `adventure.equipment.service.requirement` | Per-asset maintenance obligations |
 | `adventure.equipment.service.record` | Completed / verified / voided history |
+| `adventure.equipment.configuration` | Packing list or configuration header (`list_kind`) |
+| `adventure.equipment.configuration.line` | List lines (asset / text / quantity) with broken-reference state |
 
 Partner extensions:
 

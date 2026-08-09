@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_equipment_configuration_portal,adventure.equipment.configuration portal,adventure_equipment_configuration.model_adventure_equipment_configuration,base.group_portal,1,1,1,1
+access_equipment_configuration_line_portal,adventure.equipment.configuration.line portal,adventure_equipment_configuration.model_adventure_equipment_configuration_line,base.group_portal,1,1,1,1

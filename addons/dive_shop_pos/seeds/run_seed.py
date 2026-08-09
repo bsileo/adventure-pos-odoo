@@ -18,6 +18,8 @@ TIDEWATER_STANDARD_MODULES = (
     "adventure_equipment_scuba",
     "adventure_website",
     "adventure_equipment_portal",
+    "adventure_equipment_configuration",
+    "adventure_equipment_configuration_portal",
 )
 
 
@@ -61,6 +63,12 @@ def _run_optional_contributors(env, reset=False):
         env,
         module_name="adventure_equipment_portal",
         import_path="odoo.addons.adventure_equipment_portal.seeds.tidewater_seed",
+        reset=reset,
+    )
+    out["adventure_equipment_configuration"] = _run_contributor(
+        env,
+        module_name="adventure_equipment_configuration",
+        import_path="odoo.addons.adventure_equipment_configuration.seeds.tidewater_seed",
         reset=reset,
     )
     return out
