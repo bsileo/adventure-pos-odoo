@@ -288,17 +288,18 @@ Keep URLs under `/my/equipment/...` so the equipment portal mental model stays o
 
 ### Detail — packing
 
-- Header: name, notes, **Reset checks**
-- Ordered checklist: checkbox, label (asset link or text), notes snippet
+- Header: name, notes, **Reset checks**; banner when `has_broken_references`
+- Ordered checklist: checkbox, label (asset link or text), notes snippet; **broken/unavailable badge** on bad asset lines (still shown, not removed)
 - Add: “From my equipment” (multi-select or picker) · “Custom item” · optional category
-- Asset rows link through to `/my/equipment/<asset_id>`
+- Asset rows link through to `/my/equipment/<asset_id>` when the asset is still readable; otherwise show snapshot label only
 
 ### Detail — kit / configuration
 
-- Header: name, customer notes (emphasized—setup journal)
-- Ordered members: asset display name, role, quantity label, line notes
+- Header: name, customer notes (emphasized—setup journal); banner when the setup has broken members
+- Ordered members: asset display name (or snapshot), role, quantity label, line notes, reference-state badge
 - Add from owned equipment; add quantity-only row (weights)
 - No requirement to check off items in MVP (optional later “pre-dive check” mode)
+- Customer may replace or remove a broken line explicitly — never as a side effect of deleting the asset elsewhere
 
 ### Create flow (keep short)
 

@@ -625,7 +625,7 @@ Split for delivery clarity ([portal design](equipment-lists-portal.md)):
 
 - **Purpose:** Customer packing checklists and named equipment configurations (setups)  
 - **Modules:** `adventure_equipment_configuration` (+ thin `adventure_equipment_configuration_portal` recommended)  
-- **Acceptance:** Create packing + kit lists; line notes; packing check-off; portal ACL isolation; Tidewater sample lists  
+- **Acceptance:** Create packing + kit lists; line notes; packing check-off; portal ACL isolation; Tidewater sample lists; **broken-reference indicators** when member equipment is archived/retired/deleted (lines retained)  
 - **Complexity:** L  
 - **Deferred in 6A:** scenario templates, readiness pass/fail engine  
 
