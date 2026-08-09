@@ -18,7 +18,7 @@ Sport-neutral maintenance forecasting and history.
 
 VIP, hydrostatic, regulator/BCD/computer/drysuit service types and default category policies; cylinder gas/pressure/oxygen-clean fields; VIP/hydro denormalized dates. See `addons/adventure_equipment_scuba/doc/SCUBA_PACK.md`.
 
-**Still deferred:** portal, notifications, work orders, `stock.lot`, typed sale/POS auto-registration, kit configurations. See [Equipment management](../architecture/equipment-management.md).
+**Still deferred:** notifications, work orders, `stock.lot`, typed sale/POS auto-registration, kit/packing lists (portal design: [Equipment lists & configurations](../architecture/equipment-lists-portal.md)). Portal registry MVP is in progress — see [Client web portal](../architecture/client-web-portal.md). Core reference: [Equipment management](../architecture/equipment-management.md).
 
 ## Core models
 

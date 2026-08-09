@@ -9,6 +9,7 @@
 **Related today:**
 
 - Equipment lifecycle design — draft PR [#73](https://github.com/bsileo/adventure-pos-odoo/pull/73) (canonical doc path once merged: `docs/architecture/equipment-management.md`); proposes `adventure_equipment_portal` as Phase 4
+- [Equipment lists & configurations (portal)](equipment-lists-portal.md) — packing lists + kits (Phase 6A design; not in portal MVP)
 - Equipment registry implementation — draft PR [#74](https://github.com/bsileo/adventure-pos-odoo/pull/74) (`adventure_equipment`); service/scuba packs [#79](https://github.com/bsileo/adventure-pos-odoo/pull/79) / [#80](https://github.com/bsileo/adventure-pos-odoo/pull/80)
 - [AdventurePOS vertical module architecture](adventurepos-vertical-module-architecture.md) — platform vs vertical packs; Community / Odoo-native UI bias
 - [Tidewater demo seed](tidewater-demo-seed.md) — module-owned demo contributors for sandbox demos
@@ -217,7 +218,7 @@ Align with the equipment lifecycle architecture (draft PR [#73](https://github.c
 ### Explicitly deferred from first portal slice
 
 - Service scheduling / booking UI and **service due/history portal UI** (registry-only MVP)
-- Kit/configuration / trip readiness
+- Kit/configuration / trip packing — **design:** [Equipment lists & configurations (portal)](equipment-lists-portal.md) (Phase 6A); readiness/scenarios remain later (6B)
 - Auto-create from every POS sale (equipment Phase 3 — not required for Tidewater portal demo)
 - Household multi-owner / commercial-child sharing
 - Public catalog / ecommerce purchase of equipment
@@ -293,7 +294,7 @@ Complexity is relative (S/M/L), not calendar time. Ordering can adjust once open
 | **P3 — Tidewater portal demo seed** | Portal users + fixed passwords + staff-seeded gear + demo runbook (homepage → login → gear) | M | P1 + P2 |
 | **P4 — Branding / site polish** | Optional App Store theme, richer menus/pages, email template branding | S/M | P1 |
 | **P5 — Sale/POS → portal continuity** | Purchased items appear automatically (equipment Phase 3 bridge) | M | Equipment POS/sale bridge |
-| **Later** | Service booking, notifications, training portal, ecommerce, fuller marketing IA | — | Respective domain modules |
+| **Later** | Service booking, notifications, packing/kits ([equipment lists design](equipment-lists-portal.md)), training portal, ecommerce, fuller marketing IA | — | Respective domain modules |
 
 **Note:** Equipment staff registry / service / scuba may land from parallel PRs before P2; portal should not re-implement those models.
 
