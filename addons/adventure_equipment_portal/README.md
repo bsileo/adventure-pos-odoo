@@ -5,6 +5,7 @@ Customer self-service for `adventure.equipment.asset` on Odoo Website / Portal.
 ## Features (MVP)
 
 - `/my/equipment` — list owned gear
+- Portal home card (**Your Equipment**) via standard `portal.portal_docs_entry`
 - `/my/equipment/<id>` — detail (read-only serial/category/verification)
 - `/my/equipment/<id>/edit` — nickname + customer notes
 - `/my/equipment/register` — customer-reported registration (pending verification)
