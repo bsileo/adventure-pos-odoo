@@ -38,6 +38,7 @@ nav:
   - Home: index.md
   - Guides:
       - Developer onboarding: developer-onboarding.md
+      - Cursor cloud development: cursor-cloud-development.md
       - Setup: setup.md
       - Remote development: remote-development.md
       - Shared environment: shared-environment.md

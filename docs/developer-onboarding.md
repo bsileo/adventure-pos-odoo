@@ -2,6 +2,8 @@
 
 Step-by-step setup for a new developer using **[Cursor](https://cursor.com)** as the IDE. You will run **Odoo 19** and **PostgreSQL** with Docker, work from a local clone in Cursor, and keep secrets (especially **`.env`**) off git and out of shared AI transcripts where possible.
 
+**Preferred for agents and many humans:** [Cursor cloud development](cursor-cloud-development.md) — isolated VM Docker + Tidewater seed via `make setup` / `make start` / `make validate` / `make test`. Agent instructions: [AGENTS.md](../AGENTS.md).
+
 If your laptop is resource-constrained and you want Docker, Odoo, and Postgres to run on a **developer-owned GCP VM** instead, use [remote-development.md](remote-development.md). That path is designed for **Cursor Remote SSH** and keeps the shared sandbox separate.
 
 ### Before you write or change code

@@ -1,0 +1,17 @@
+---
+description: Cursor cloud agent environment — Docker isolation, Tidewater seed, shared commands
+alwaysApply: true
+---
+
+# Cursor cloud development
+
+- Prefer **Cursor cloud agents** with an **isolated** Compose stack on the VM. Do not use production DBs or the shared GCP sandbox unless a human explicitly requests sandbox work.
+- Cloud VMs use **host networking** (`docker-compose.cloud.yml`, auto-selected) because Docker bridge networking often fails on nested overlay filesystems. Local laptops keep bridge `docker-compose.yml`.
+- Use the same commands locally and in cloud: `make setup`, `make start`, `make reset`, `make test TEST_TAGS=/module`, `make validate`.
+- Canonical dataset: **Tidewater Dive Shop** (`make seed-tidewater`). Do not restore `backup.sql`.
+- Disposable login after setup: `admin` / `admin` at http://127.0.0.1:8069 (database `odoo`).
+- Browser smoke: (A) Tidewater login/company, then (C) Point of Sale config/session. Leave the stack running for human review when useful.
+- Tests are **per-module only** (`TEST_TAGS` / `TEST_MODULES` required).
+- Do **not** reproduce live **payment processing** or live **Smartwaiver** sync in cloud/dev; use demo/local payment methods and mocks only.
+- Optional secrets (`OPENAI_API_KEY`, `SMARTWAIVER_API_KEY`) are merged by `scripts/ensure-dotenv.sh` when present; not required for Tidewater bootstrap; never use production API keys.
+- Details: `AGENTS.md`, `docs/cursor-cloud-development.md`.
