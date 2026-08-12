@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 # Run Odoo module tests inside the Compose odoo service.
 #
-# Usage:
-#   bash ./scripts/dev-test.sh
-#   bash ./scripts/dev-test.sh --tags /adventure_equipment,/adventure_waiver
-#   bash ./scripts/dev-test.sh --modules adventure_equipment,adventure_equipment_service
+# Per-module only (no default "run everything" tag set):
+#   make test TEST_TAGS=/adventure_equipment
+#   bash ./scripts/dev-test.sh --tags /adventure_equipment
+#   bash ./scripts/dev-test.sh --modules adventure_equipment
+#       (installs the module if needed and sets --test-tags=/adventure_equipment)
 #
-# Default tags cover Adventure modules that currently ship tests.
+# Multiple modules when intentionally testing a small set:
+#   bash ./scripts/dev-test.sh --tags /adventure_waiver,/adventure_smartwaiver
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
-DEFAULT_TAGS="/adventure_equipment,/adventure_equipment_service,/adventure_equipment_scuba,/adventure_waiver,/adventure_smartwaiver,/adventure_d360_migration"
-TAGS="$DEFAULT_TAGS"
+TAGS=""
 MODULES=""
 
 while [[ $# -gt 0 ]]; do
@@ -27,7 +28,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     -h|--help)
-      sed -n '2,12p' "$0"
+      sed -n '2,14p' "$0"
       exit 0
       ;;
     *)
@@ -36,6 +37,33 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+# Derive tags from modules when tags were not given (one tag per module name).
+if [[ -z "$TAGS" && -n "$MODULES" ]]; then
+  TAGS=""
+  IFS=',' read -r -a mod_array <<< "$MODULES"
+  for mod in "${mod_array[@]}"; do
+    mod="$(echo "$mod" | tr -d '[:space:]')"
+    [[ -z "$mod" ]] && continue
+    if [[ -n "$TAGS" ]]; then
+      TAGS="${TAGS},/${mod}"
+    else
+      TAGS="/${mod}"
+    fi
+  done
+fi
+
+if [[ -z "$TAGS" ]]; then
+  cat <<'EOF' >&2
+dev-test.sh: per-module tests only — pass --tags or --modules (or make test TEST_TAGS=/module_name).
+
+Examples:
+  make test TEST_TAGS=/adventure_equipment
+  bash ./scripts/dev-test.sh --tags /adventure_equipment_service
+  bash ./scripts/dev-test.sh --modules adventure_waiver
+EOF
+  exit 2
+fi
 
 bash ./scripts/ensure-docker.sh
 bash ./scripts/ensure-dotenv.sh

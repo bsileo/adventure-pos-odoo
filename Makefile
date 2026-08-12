@@ -24,8 +24,13 @@ start:
 reset:
 	bash ./scripts/dev-reset.sh $(if $(ASSUME_YES),--yes,)
 
-# Odoo module tests (optional: make test TEST_TAGS=/adventure_equipment)
+# Odoo module tests — per-module only (required: make test TEST_TAGS=/adventure_equipment)
 test:
+	@if [ -z "$(TEST_TAGS)" ] && [ -z "$(TEST_MODULES)" ]; then \
+		echo "make test requires TEST_TAGS or TEST_MODULES (per-module only)."; \
+		echo "Example: make test TEST_TAGS=/adventure_equipment"; \
+		exit 2; \
+	fi
 	bash ./scripts/dev-test.sh $(if $(TEST_TAGS),--tags $(TEST_TAGS),) $(if $(TEST_MODULES),--modules $(TEST_MODULES),)
 
 # Smoke: Tidewater login/company + POS config/UI probe

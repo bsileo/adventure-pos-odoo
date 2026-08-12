@@ -23,7 +23,7 @@ Each cloud agent VM gets its own Postgres data. Do not point agents at productio
 | Full setup | `make setup` |
 | Start | `make start` |
 | Reset + Tidewater | `make reset` / `make reset ASSUME_YES=1` |
-| Tests | `make test` |
+| Tests (per module) | `make test TEST_TAGS=/adventure_equipment` |
 | Smoke validate | `make validate` |
 
 Cursor environment hooks ([`.cursor/environment.json`](../.cursor/environment.json)):
@@ -45,6 +45,26 @@ Agent instructions: [AGENTS.md](../AGENTS.md).
 
 Leave Compose running for human review (`start` keeps logs attached in cloud).
 
+## Tests
+
+**Per-module only** — `make test` requires `TEST_TAGS` or `TEST_MODULES` (no repo-wide default suite).
+
+```bash
+make test TEST_TAGS=/adventure_equipment
+make test TEST_MODULES=adventure_waiver
+```
+
+## Do not reproduce (live / production-like)
+
+Growing list of behaviors agents must **not** wire to live systems in cloud or disposable local DBs:
+
+| Area | Rule |
+|------|------|
+| **Payment processing** | No live acquirer/terminal charges; use local/demo POS payment methods only. |
+| **Smartwaiver** | No live API sync to real Smartwaiver accounts; unit tests/mocks only unless a human supplies an explicit sandbox key for that task. |
+
+See [AGENTS.md](../AGENTS.md). Extend this table as integrations are added.
+
 ## Secrets (optional)
 
 Not required for Tidewater bootstrap today. When you enable integrations, set Cursor Cloud Secrets (or export env vars before setup); `scripts/ensure-dotenv.sh` merges them into local `.env` (gitignored):
@@ -52,7 +72,7 @@ Not required for Tidewater bootstrap today. When you enable integrations, set Cu
 | Secret | Purpose |
 |--------|---------|
 | `OPENAI_API_KEY` | Optional OpenClaw / OpenAI workflows |
-| `SMARTWAIVER_API_KEY` | Optional `adventure_smartwaiver` connector |
+| `SMARTWAIVER_API_KEY` | Optional **sandbox/mock** Smartwaiver tooling only — never a production shop key |
 | `POSTGRES_PASSWORD` | Override Compose DB password (default from `.env.example` is fine for disposable VMs) |
 
 Never commit `.env` or real production credentials.

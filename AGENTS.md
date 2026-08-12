@@ -21,7 +21,7 @@ Primary development and testing should happen in **Cursor cloud agents** with an
 | Setup (Docker, `.env`, up, init DB, Tidewater seed) | `make setup` |
 | Start stack | `make start` |
 | Reset DB + reseed Tidewater | `make reset` (non-interactive: `make reset ASSUME_YES=1`) |
-| Run module tests | `make test` |
+| Run module tests (per-module tags required) | `make test TEST_TAGS=/adventure_equipment` |
 | Smoke validate (login + POS) | `make validate` |
 | Seed only (idempotent) | `make seed-tidewater` |
 
@@ -35,7 +35,7 @@ After `make setup` / cloud start on a fresh DB:
 - Database: `odoo`
 - Login / password: **`admin` / `admin`** (Odoo default until changed)
 
-Do not commit real passwords. Optional integrations (`OPENAI_API_KEY`, `SMARTWAIVER_API_KEY`) are merged into `.env` when present as environment / Cursor Cloud Secrets; they are **not** required for Tidewater bootstrap today.
+Do not commit real passwords. Optional secrets (`OPENAI_API_KEY`, `SMARTWAIVER_API_KEY`) may be merged into `.env` when present for **future** sandbox/tooling; they are **not** required for Tidewater bootstrap and must not be used to hit live production integrations (see below).
 
 ## Browser validation
 
@@ -48,17 +48,26 @@ Keep the development server / Compose stack **running** when human review is use
 
 Automated API smoke: `make validate`.
 
-## Tests
+## Tests (per module only)
 
-Prefer scoped tags while iterating:
+Always scope tests to the module(s) under change — do not run a repo-wide default suite:
 
 ```bash
 make test TEST_TAGS=/adventure_equipment
-# or
-bash ./scripts/dev-test.sh --tags /adventure_waiver,/adventure_smartwaiver
+make test TEST_MODULES=adventure_waiver
+bash ./scripts/dev-test.sh --tags /adventure_equipment_service
 ```
 
-Default `make test` runs tags for modules that currently ship tests.
+## Do not reproduce in cloud / disposable dev (growing list)
+
+These production-like behaviors must **not** run against live/production systems from Cursor cloud or local disposable DBs unless a human explicitly overrides:
+
+| Area | Rule |
+|------|------|
+| **Payment processing** | No live card/terminal/acquirer charges. Use Odoo’s local/demo payment methods only (e.g. Tidewater seed bank method). Do not configure real payment provider credentials. |
+| **Smartwaiver** | No live Smartwaiver API sync against real customer accounts. Module code and unit tests are fine; do not enable outbound sync with a production API key. Sandbox/mock keys only when a human provides them for that purpose. |
+
+Add to this list as new external integrations land. Prefer mocks, fixtures, and Tidewater seed data.
 
 ## Git workflow
 
@@ -78,4 +87,4 @@ Before a work stream, read [docs/agent-rules.md](docs/agent-rules.md) and skim r
 
 ## Protect production
 
-Never point Compose or seeds at production. Never commit `.env` or API keys. Use development/mock/sandbox integrations only.
+Never point Compose or seeds at production. Never commit `.env` or API keys. Use development/mock/sandbox integrations only. See **Do not reproduce** above for payment processing and Smartwaiver.

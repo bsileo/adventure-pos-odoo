@@ -12,7 +12,7 @@ Custom Odoo 19 stack for retail POS, inventory, and related modules. Custom code
 make setup      # Docker, .env, up, init-db, Tidewater seed
 make start      # ensure stack is running
 make validate   # smoke: Tidewater login/company + POS
-make test       # Odoo module tests
+make test TEST_TAGS=/adventure_equipment   # per-module tests only
 make reset ASSUME_YES=1   # wipe local DB + reseed Tidewater
 ```
 
