@@ -58,16 +58,24 @@ It creates / updates:
 
 `adventure_equipment` is an Odoo **App** (`application=True`). `adventure_equipment_scuba` is also an **App**. `adventure_equipment_service` remains a supporting module (`application=False`) so it does not appear when filtering Apps alone—install it via the scuba app or Apps → Modules.
 
-## Usage (local)
+## Usage (local / Cursor cloud)
 
-PowerShell:
+Preferred full bootstrap (Docker, init DB, Tidewater):
+
+```bash
+make setup
+# wipe disposable local/cloud DB and reseed:
+make reset ASSUME_YES=1
+```
+
+PowerShell (seed only):
 
 ```powershell
 .\scripts\seed-dev-db.ps1
 .\scripts\seed-dev-db.ps1 -Profile tidewater -ResetSeed
 ```
 
-Bash / Make:
+Bash / Make (seed only):
 
 ```bash
 bash ./scripts/seed-dev-db.sh --profile tidewater
@@ -77,6 +85,8 @@ make seed-tidewater RESET_SEED=1
 ```
 
 The runner installs or updates the Tidewater standard package (`dive_shop_pos`, `adventure_equipment_scuba`) before loading the seed profile.
+
+**Do not** restore repo-root `backup.sql` for development — it is not the supported dataset.
 
 ## Sandbox
 

@@ -1,9 +1,36 @@
-.PHONY: up down logs ps shell-db init-db reset-db seed-tidewater gcp-vm-start gcp-vm-stop gcp-vm-status gcp-vm-ip remote-dev-init-ssh remote-dev-create remote-dev-start remote-dev-stop remote-dev-status remote-dev-ip remote-dev-url remote-dev-open remote-dev-ssh remote-dev-cursor remote-dev-up remote-dev-init-db remote-dev-bootstrap
+.PHONY: setup start reset test validate up down logs ps shell-db init-db reset-db seed-tidewater gcp-vm-start gcp-vm-stop gcp-vm-status gcp-vm-ip remote-dev-init-ssh remote-dev-create remote-dev-start remote-dev-stop remote-dev-status remote-dev-ip remote-dev-url remote-dev-open remote-dev-ssh remote-dev-cursor remote-dev-up remote-dev-init-db remote-dev-bootstrap
 
 # Shared GCP sandbox VM (override per developer if needed: make gcp-vm-stop GCP_ZONE=us-east1-b)
 GCP_PROJECT ?= adventure-pos-sandbox
 GCP_ZONE ?= us-central1-a
 GCP_INSTANCE ?= adventurepos-sandbox-vm
+
+# Optional overrides for make test
+TEST_TAGS ?=
+TEST_MODULES ?=
+ASSUME_YES ?=
+
+# --- Primary local / Cursor cloud workflow (same commands) ---
+
+# Docker + .env + compose up + init-db + Tidewater seed
+setup:
+	bash ./scripts/dev-setup.sh
+
+# Ensure Compose services are running
+start:
+	bash ./scripts/dev-start.sh
+
+# Wipe local Compose DB volume, re-init, Tidewater seed (disposable only)
+reset:
+	bash ./scripts/dev-reset.sh $(if $(ASSUME_YES),--yes,)
+
+# Odoo module tests (optional: make test TEST_TAGS=/adventure_equipment)
+test:
+	bash ./scripts/dev-test.sh $(if $(TEST_TAGS),--tags $(TEST_TAGS),) $(if $(TEST_MODULES),--modules $(TEST_MODULES),)
+
+# Smoke: Tidewater login/company + POS config/UI probe
+validate:
+	bash ./scripts/dev-validate.sh
 
 up:
 	docker compose up -d
@@ -26,6 +53,7 @@ init-db:
 	bash ./scripts/odoo-init-db.sh
 
 # Drop the local compose Postgres volume, restart services, and reinitialize Odoo.
+# Prefer `make reset` when you also want Tidewater reseeded.
 reset-db:
 	bash ./scripts/odoo-reset-db.sh
 
