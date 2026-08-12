@@ -10,6 +10,12 @@ cd "$ROOT_DIR"
 EXAMPLE=".env.example"
 TARGET=".env"
 
+is_cursor_cloud() {
+  [[ -n "${CURSOR_CLOUD:-}${CURSOR_AGENT:-}${CLOUD_AGENT:-}" ]] \
+    || [[ "${DEV_ENV_PROFILE:-}" == "cursor-cloud" ]] \
+    || [[ -f /.dockerenv && "$(findmnt -no FSTYPE / 2>/dev/null || true)" == "overlay" ]]
+}
+
 if [[ ! -f "$EXAMPLE" ]]; then
   echo "Missing $EXAMPLE" >&2
   exit 1
@@ -17,18 +23,11 @@ fi
 
 if [[ ! -f "$TARGET" ]]; then
   cp "$EXAMPLE" "$TARGET"
-  # Cloud / disposable VMs: unique volume name avoids colliding with shared sandbox naming.
-  if [[ -n "${CURSOR_CLOUD:-}${CURSOR_AGENT:-}" ]] || [[ -n "${CLOUD_AGENT:-}" ]] || [[ "${DEV_ENV_PROFILE:-}" == "cursor-cloud" ]]; then
-    if ! grep -q '^POSTGRES_VOLUME_NAME=' "$TARGET"; then
-      printf '\nPOSTGRES_VOLUME_NAME=adventurepos-cloud-postgres\n' >>"$TARGET"
-    fi
-  fi
   echo "Created $TARGET from $EXAMPLE"
 else
   echo "$TARGET already exists"
 fi
 
-# Merge optional secrets from the environment without printing values.
 set_or_replace_env() {
   local key="$1"
   local value="$2"
@@ -36,7 +35,6 @@ set_or_replace_env() {
     return 0
   fi
   if grep -q "^${key}=" "$TARGET"; then
-    # Replace in place without echoing the secret.
     local tmp
     tmp="$(mktemp)"
     awk -v k="$key" -v v="$value" 'BEGIN{FS=OFS="="} $1==k{$0=k"="v} {print}' "$TARGET" >"$tmp"
@@ -46,6 +44,20 @@ set_or_replace_env() {
   fi
   echo "Applied $key from environment (value not printed)."
 }
+
+# Cloud / nested overlay hosts: host-network compose + isolated volume + loopback DB host.
+if is_cursor_cloud; then
+  export DEV_ENV_PROFILE="${DEV_ENV_PROFILE:-cursor-cloud}"
+  if ! grep -q '^POSTGRES_VOLUME_NAME=' "$TARGET"; then
+    set_or_replace_env "POSTGRES_VOLUME_NAME" "${POSTGRES_VOLUME_NAME:-adventurepos-cloud-postgres}"
+  fi
+  if ! grep -q '^COMPOSE_FILE=' "$TARGET"; then
+    set_or_replace_env "COMPOSE_FILE" "${COMPOSE_FILE:-docker-compose.cloud.yml}"
+  fi
+  if ! grep -q '^ODOO_DB_HOST=' "$TARGET"; then
+    set_or_replace_env "ODOO_DB_HOST" "${ODOO_DB_HOST:-127.0.0.1}"
+  fi
+fi
 
 set_or_replace_env "OPENAI_API_KEY" "${OPENAI_API_KEY:-}"
 set_or_replace_env "SMARTWAIVER_API_KEY" "${SMARTWAIVER_API_KEY:-}"

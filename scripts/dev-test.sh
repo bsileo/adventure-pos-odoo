@@ -53,11 +53,11 @@ bash ./scripts/odoo-init-db.sh
 if [[ -n "$MODULES" ]]; then
   echo "Installing/updating modules: $MODULES"
   "${DOCKER[@]}" compose exec -T odoo sh -lc \
-    "odoo --db_host=db --db_port=5432 --db_user=\"\${POSTGRES_USER}\" --db_password=\"\${POSTGRES_PASSWORD}\" -d \"\${POSTGRES_DB:-odoo}\" -i ${MODULES} --stop-after-init"
+    "odoo --db_host=\"\${ODOO_DB_HOST:-\${HOST:-db}}\" --db_port=5432 --db_user=\"\${POSTGRES_USER}\" --db_password=\"\${POSTGRES_PASSWORD}\" -d \"\${POSTGRES_DB:-odoo}\" -i ${MODULES} --http-port=8070 --stop-after-init"
 fi
 
 echo "Running Odoo tests with --test-tags=${TAGS}"
 "${DOCKER[@]}" compose exec -T odoo sh -lc \
-  "odoo --db_host=db --db_port=5432 --db_user=\"\${POSTGRES_USER}\" --db_password=\"\${POSTGRES_PASSWORD}\" -d \"\${POSTGRES_DB:-odoo}\" --test-enable --stop-after-init --test-tags=${TAGS}"
+  "odoo --db_host=\"\${ODOO_DB_HOST:-\${HOST:-db}}\" --db_port=5432 --db_user=\"\${POSTGRES_USER}\" --db_password=\"\${POSTGRES_PASSWORD}\" -d \"\${POSTGRES_DB:-odoo}\" --test-enable --http-port=8070 --stop-after-init --test-tags=${TAGS}"
 
 echo "Tests finished."

@@ -39,6 +39,7 @@ It creates / updates:
 
 - Rebrands the database **main company** as Tidewater Dive Shop (Pittsburgh). It does **not** create a second company.
 - Sets the Tidewater company logo (`dive_shop_pos/static/img/tidewater_logo.png`) used on the main login and POS login screens.
+- A **Tidewater Front Desk** `pos.config` plus bank payment method (needed when Odoo demo data is off).
 - Rental and fee products.
 - Scuba rental package templates.
 - Physical rental assets with representative states.

@@ -26,6 +26,7 @@ class ScubaShopSeed:
         if self.reset_requested:
             self.stats["deleted"] = self.registry.reset()
         self._seed_company()
+        self._seed_pos_shop()
         self._seed_categories()
         self._seed_products()
         self._seed_customers()
@@ -127,6 +128,90 @@ class ScubaShopSeed:
                     % identity.COMPANY_NAME,
                 }
             )
+
+    def _seed_pos_shop(self):
+        """Ensure a Tidewater POS config + payment method for demos and smoke tests.
+
+        point_of_sale does not create a shop on install when demo data is off.
+        """
+        if "pos.config" not in self.env:
+            return
+
+        company = self.records["company"]
+        payment_vals = {
+            "name": "Tidewater Card/Bank",
+            "company_id": company.id,
+        }
+        if "payment_method_type" in self.env["pos.payment.method"]._fields:
+            payment_vals["payment_method_type"] = "bank"
+        bank_journal = self.env["account.journal"].sudo().search(
+            [("type", "=", "bank"), ("company_id", "=", company.id)],
+            limit=1,
+        )
+        if bank_journal and "journal_id" in self.env["pos.payment.method"]._fields:
+            payment_vals["journal_id"] = bank_journal.id
+
+        payment_method = self.registry.upsert(
+            "pos.payment.method",
+            "pos_payment_method_tidewater_bank",
+            payment_vals,
+        )
+        self.records["pos_payment_method_bank"] = payment_method
+
+        picking_type = self.env["stock.picking.type"].sudo().search(
+            [("code", "=", "outgoing"), ("company_id", "=", company.id)],
+            limit=1,
+        )
+        if not picking_type:
+            picking_type = self.env["stock.picking.type"].sudo().search(
+                [("code", "=", "outgoing")],
+                limit=1,
+            )
+
+        config_vals = {
+            "name": "Tidewater Front Desk",
+            "company_id": company.id,
+            "payment_method_ids": [(6, 0, [payment_method.id])],
+        }
+        if picking_type:
+            config_vals["picking_type_id"] = picking_type.id
+
+        # Prefer the XML-id record; if missing, adopt an existing same-named shop
+        # left from a manual create so seed stays idempotent.
+        existing_xml = self.registry.ref("pos_config_tidewater_front_desk")
+        if not existing_xml:
+            orphan = self.env["pos.config"].sudo().search(
+                [("name", "=", "Tidewater Front Desk"), ("company_id", "=", company.id)],
+                limit=1,
+            )
+            if orphan:
+                self.registry.imd.create(
+                    {
+                        "module": SEED_MODULE,
+                        "name": "pos_config_tidewater_front_desk",
+                        "model": "pos.config",
+                        "res_id": orphan.id,
+                        "noupdate": True,
+                    }
+                )
+
+        self.records["pos_config"] = self.registry.upsert(
+            "pos.config",
+            "pos_config_tidewater_front_desk",
+            config_vals,
+        )
+
+        # Remove accidental duplicate Front Desk shops (keep the seeded XML id).
+        seeded = self.records["pos_config"]
+        extras = self.env["pos.config"].sudo().search(
+            [
+                ("name", "=", "Tidewater Front Desk"),
+                ("company_id", "=", company.id),
+                ("id", "!=", seeded.id),
+            ]
+        )
+        if extras:
+            extras.unlink()
 
     def _seed_categories(self):
         categories = {
@@ -556,6 +641,7 @@ class ScubaShopSeed:
             "packages": len([key for key in self.records if key.startswith("package_")]),
             "assets": len([key for key in self.records if key.startswith("asset_")]),
             "reservations": len([key for key in self.records if key.startswith("reservation_")]),
+            "pos_configs": 1 if self.records.get("pos_config") else 0,
         }
 
 

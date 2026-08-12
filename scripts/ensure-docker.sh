@@ -94,8 +94,38 @@ ensure_socket_access() {
   fi
 }
 
+configure_storage_for_nested_hosts() {
+  # Cursor cloud VMs often run on overlayfs; nested overlay Docker fails with
+  # "operation not permitted" / "invalid argument". Prefer vfs in that case.
+  local daemon_json="/etc/docker/daemon.json"
+  local root_fs
+  root_fs="$(findmnt -no FSTYPE / 2>/dev/null || true)"
+  if [[ "$root_fs" != "overlay" && "$root_fs" != "overlay2" ]]; then
+    return 0
+  fi
+  if [[ -f "$daemon_json" ]] && grep -q '"storage-driver"[[:space:]]*:[[:space:]]*"vfs"' "$daemon_json"; then
+    return 0
+  fi
+  log "Detected overlay root filesystem; configuring Docker storage-driver=vfs for nested containers..."
+  sudo mkdir -p /etc/docker
+  if [[ -f "$daemon_json" ]]; then
+    sudo cp "$daemon_json" "${daemon_json}.bak.$(date +%s)" || true
+  fi
+  sudo tee "$daemon_json" >/dev/null <<'EOF'
+{
+  "storage-driver": "vfs"
+}
+EOF
+  # Restart daemon so the driver takes effect (safe on disposable cloud VMs).
+  if pgrep -x dockerd >/dev/null 2>&1; then
+    sudo pkill dockerd || true
+    sleep 2
+  fi
+}
+
 install_docker_packages
 ensure_docker_group
+configure_storage_for_nested_hosts
 start_dockerd
 ensure_socket_access
 

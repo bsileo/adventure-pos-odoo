@@ -10,6 +10,7 @@ Published docs: [Event Ops Developer Docs](https://bsileo.github.io/adventure-po
 |-------|--------|
 | App | Odoo **19** (`Dockerfile` / `adventure-pos-odoo:19.0`) |
 | DB | PostgreSQL **16** in Compose (volume local to the VM) |
+| Networking | **Host network** via `docker-compose.cloud.yml` (bridge often fails on nested overlay VMs) |
 | Dataset | **Tidewater Dive Shop** via `make setup` / `make seed-tidewater` |
 | Shared GCP sandbox | **Out of bounds by default** — only when a human explicitly requires it |
 

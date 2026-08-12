@@ -6,6 +6,7 @@ alwaysApply: true
 # Cursor cloud development
 
 - Prefer **Cursor cloud agents** with an **isolated** Compose stack on the VM. Do not use production DBs or the shared GCP sandbox unless a human explicitly requests sandbox work.
+- Cloud VMs use **host networking** (`docker-compose.cloud.yml`, auto-selected) because Docker bridge networking often fails on nested overlay filesystems. Local laptops keep bridge `docker-compose.yml`.
 - Use the same commands locally and in cloud: `make setup`, `make start`, `make reset`, `make test`, `make validate`.
 - Canonical dataset: **Tidewater Dive Shop** (`make seed-tidewater`). Do not restore `backup.sql`.
 - Disposable login after setup: `admin` / `admin` at http://127.0.0.1:8069 (database `odoo`).

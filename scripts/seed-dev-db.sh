@@ -50,10 +50,10 @@ if [[ "$profile" != "tidewater" && "$profile" != "tideledger" && "$profile" != "
 fi
 
 echo "Ensuring Tidewater standard package is installed (${TIDEWATER_MODULES})..."
-docker compose exec -T odoo sh -lc "odoo --db_host=db --db_port=5432 --db_user=\"\${POSTGRES_USER}\" --db_password=\"\${POSTGRES_PASSWORD}\" -d \"\${POSTGRES_DB:-odoo}\" -i ${TIDEWATER_MODULES} --stop-after-init >/tmp/tidewater_package_install.log"
+docker compose exec -T odoo sh -lc "odoo --db_host=\"\${ODOO_DB_HOST:-\${HOST:-db}}\" --db_port=5432 --db_user=\"\${POSTGRES_USER}\" --db_password=\"\${POSTGRES_PASSWORD}\" -d \"\${POSTGRES_DB:-odoo}\" -i ${TIDEWATER_MODULES} --stop-after-init >/tmp/tidewater_package_install.log"
 
 echo "Loading Tidewater seed profile (${profile})..."
-docker compose exec -T odoo sh -lc 'odoo shell --db_host=db --db_port=5432 --db_user="${POSTGRES_USER}" --db_password="${POSTGRES_PASSWORD}" -d "${POSTGRES_DB:-odoo}"' <<PY
+docker compose exec -T odoo sh -lc 'odoo shell --db_host="${ODOO_DB_HOST:-${HOST:-db}}" --db_port=5432 --db_user="${POSTGRES_USER}" --db_password="${POSTGRES_PASSWORD}" -d "${POSTGRES_DB:-odoo}"' <<PY
 from odoo.addons.dive_shop_pos.seeds.run_seed import main
 args = ["--profile", "$profile"]
 if $reset_seed:
