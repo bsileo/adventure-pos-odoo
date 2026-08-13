@@ -139,6 +139,35 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
                 elif action == "delete_list":
                     record.unlink()
                     return request.redirect("/my/equipment/lists")
+                elif action == "add_item":
+                    # Unified checklist add: link equipment if chosen, else free-text item.
+                    asset_raw = (post.get("asset_id") or "").strip()
+                    label = (post.get("label") or "").strip()
+                    if asset_raw:
+                        asset_id = int(asset_raw)
+                        asset = request.env["adventure.equipment.asset"].browse(asset_id)
+                        if (
+                            not asset.exists()
+                            or asset.partner_id != request.env.user.partner_id
+                        ):
+                            raise ValidationError(_("Invalid equipment selection."))
+                        request.env["adventure.equipment.configuration.line"].create(
+                            {
+                                "configuration_id": record.id,
+                                "line_type": "asset",
+                                "asset_id": asset.id,
+                            }
+                        )
+                    elif label:
+                        request.env["adventure.equipment.configuration.line"].create(
+                            {
+                                "configuration_id": record.id,
+                                "line_type": "text",
+                                "name": label,
+                            }
+                        )
+                    else:
+                        raise ValidationError(_("Type an item or pick equipment to add."))
                 elif action == "add_asset":
                     asset_id = int(post.get("asset_id") or 0)
                     asset = request.env["adventure.equipment.asset"].browse(asset_id)
@@ -215,7 +244,6 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
             {
                 "equipment_list": record,
                 "page_name": "equipment_lists",
-                "owned_assets": self._get_owned_assets(),
                 "error": error,
             }
         )
@@ -223,6 +251,55 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
             "adventure_equipment_configuration_portal.portal_my_equipment_list_detail",
             values,
         )
+
+    @http.route(
+        ["/my/equipment/lists/<int:list_id>/suggest"],
+        type="http",
+        auth="user",
+        website=True,
+        methods=["GET"],
+    )
+    def portal_my_equipment_list_suggest(self, list_id, q="", **kwargs):
+        """Autocomplete owned equipment for checklist add."""
+        try:
+            record = self._document_check_access(
+                "adventure.equipment.configuration", int(list_id)
+            )
+        except (AccessError, MissingError):
+            return request.make_json_response({"results": []})
+
+        query = (q or "").strip()
+        if len(query) < 1:
+            return request.make_json_response({"results": []})
+
+        already = record.line_ids.mapped("asset_id").ids
+        domain = [
+            ("partner_id", "=", request.env.user.partner_id.id),
+            "|",
+            "|",
+            "|",
+            "|",
+            ("nickname", "ilike", query),
+            ("name", "ilike", query),
+            ("display_name", "ilike", query),
+            ("brand_name", "ilike", query),
+            ("model_name", "ilike", query),
+        ]
+        if already:
+            domain = [("id", "not in", already)] + domain
+
+        assets = request.env["adventure.equipment.asset"].search(
+            domain, order="nickname, name, id desc", limit=12
+        )
+        results = [
+            {
+                "id": asset.id,
+                "label": asset.display_name,
+                "category": asset.category_id.display_name or "",
+            }
+            for asset in assets
+        ]
+        return request.make_json_response({"results": results})
 
     @http.route(
         ["/my/equipment/lists/<int:list_id>/edit"],

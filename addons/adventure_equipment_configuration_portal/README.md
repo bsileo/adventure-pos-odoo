@@ -6,8 +6,13 @@ Customer portal for packing lists and configurations.
 
 - `/my/equipment/lists` — index (filter packing / configuration)
 - `/my/equipment/lists/new` — create
-- `/my/equipment/lists/<id>` — detail, line actions, delete
+- `/my/equipment/lists/<id>` — checklist detail (free-text add + equipment autocomplete)
+- `/my/equipment/lists/<id>/suggest` — JSON autocomplete for owned equipment
 - `/my/equipment/lists/<id>/edit` — header edit
+
+## Checklist UX
+
+Type an item and press **Add** to save a plain checklist row. Matching owned equipment appears as you type; choosing a suggestion links that asset. Converting a plain item into registered equipment is deferred.
 
 ## Install
 

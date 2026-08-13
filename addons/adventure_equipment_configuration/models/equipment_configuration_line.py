@@ -178,23 +178,39 @@ class AdventureEquipmentConfigurationLine(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        Asset = self.env["adventure.equipment.asset"]
+        Asset = self.env["adventure.equipment.asset"].sudo()
+        Config = self.env["adventure.equipment.configuration"].sudo()
         for vals in vals_list:
             asset_id = vals.get("asset_id")
-            if asset_id and not vals.get("asset_snapshot_name"):
+            if asset_id:
                 asset = Asset.browse(asset_id)
-                vals["asset_snapshot_name"] = asset.display_name
+                config = Config.browse(vals.get("configuration_id"))
+                if config and asset.partner_id != config.partner_id:
+                    raise ValidationError(
+                        _(
+                            "Equipment on a list must belong to the same customer as the list."
+                        )
+                    )
+                if not vals.get("asset_snapshot_name"):
+                    vals["asset_snapshot_name"] = asset.display_name
                 if not vals.get("name"):
                     vals["name"] = asset.display_name
-            if asset_id and vals.get("line_type") not in ("asset", "text", "quantity"):
-                vals["line_type"] = "asset"
-            elif asset_id and not vals.get("line_type"):
-                vals["line_type"] = "asset"
+                if asset_id and vals.get("line_type") not in ("asset", "text", "quantity"):
+                    vals["line_type"] = "asset"
+                elif not vals.get("line_type"):
+                    vals["line_type"] = "asset"
         return super().create(vals_list)
 
     def write(self, vals):
         if vals.get("asset_id"):
-            asset = self.env["adventure.equipment.asset"].browse(vals["asset_id"])
+            asset = self.env["adventure.equipment.asset"].sudo().browse(vals["asset_id"])
+            for line in self:
+                if asset.partner_id != line.configuration_id.partner_id:
+                    raise ValidationError(
+                        _(
+                            "Equipment on a list must belong to the same customer as the list."
+                        )
+                    )
             if "asset_snapshot_name" not in vals:
                 vals = dict(vals, asset_snapshot_name=asset.display_name)
         return super().write(vals)

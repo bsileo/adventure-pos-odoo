@@ -162,184 +162,132 @@
 
     <template id="portal_my_equipment_list_detail" name="Equipment list detail">
         <t t-call="portal.portal_layout">
-            <div class="container py-3">
-                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                    <div>
-                        <h3 t-esc="equipment_list.name"/>
-                        <p class="text-muted mb-0">
-                            <t t-esc="dict(equipment_list._fields['list_kind'].selection).get(equipment_list.list_kind)"/>
-                        </p>
+            <div class="container py-3" data-equip-checklist="1">
+                <div class="o_equip_checklist mx-auto">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                        <div>
+                            <h3 class="mb-1" t-esc="equipment_list.name"/>
+                            <p class="text-muted mb-0">
+                                <t t-esc="dict(equipment_list._fields['list_kind'].selection).get(equipment_list.list_kind)"/>
+                            </p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a t-att-href="'/my/equipment/lists/%s/edit' % equipment_list.id" class="btn btn-link btn-sm">Edit details</a>
+                            <a href="/my/equipment/lists" class="btn btn-link btn-sm">All lists</a>
+                        </div>
                     </div>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a t-att-href="'/my/equipment/lists/%s/edit' % equipment_list.id" class="btn btn-secondary">Edit</a>
-                        <a href="/my/equipment/lists" class="btn btn-link">Back to lists</a>
+
+                    <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                    <div t-if="equipment_list.has_broken_references" class="alert alert-warning" role="status">
+                        One or more items are no longer available — this list may be invalid until you update it.
                     </div>
-                </div>
 
-                <div t-if="error" class="alert alert-danger" t-esc="error"/>
-                <div t-if="equipment_list.has_broken_references" class="alert alert-warning" role="status">
-                    One or more items are no longer available — this list may be invalid until you update it.
-                </div>
+                    <p t-if="equipment_list.customer_note" class="text-muted small mb-3" t-esc="equipment_list.customer_note"/>
 
-                <p t-if="equipment_list.customer_note" class="mb-3">
-                    <strong>Notes:</strong>
-                    <t t-esc="equipment_list.customer_note"/>
-                </p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">Checklist</span>
+                        <form t-if="any(equipment_list.line_ids.mapped('is_checked'))"
+                              t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="action" value="reset_checks"/>
+                            <button type="submit" class="btn btn-link btn-sm p-0">Reset checks</button>
+                        </form>
+                    </div>
 
-                <div class="mb-3 d-flex flex-wrap gap-2" t-if="equipment_list.list_kind == 'packing'">
-                    <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
-                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                        <input type="hidden" name="action" value="reset_checks"/>
-                        <button type="submit" class="btn btn-outline-secondary btn-sm">Reset checks</button>
-                    </form>
-                </div>
-
-                <t t-if="not equipment_list.line_ids">
-                    <div class="alert alert-info">No items yet. Add equipment or custom lines below.</div>
-                </t>
-                <t t-else="">
-                    <div class="table-responsive mb-4">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th t-if="equipment_list.list_kind == 'packing'" style="width: 3rem;"></th>
-                                    <th>Item</th>
-                                    <th>Status</th>
-                                    <th style="width: 12rem;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="equipment_list.line_ids" t-as="line"
-                                    t-attf-class="#{'table-warning' if line.reference_state != 'ok' else ''}">
-                                    <td t-if="equipment_list.list_kind == 'packing'">
-                                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
-                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                            <input type="hidden" name="action" value="toggle_check"/>
-                                            <input type="hidden" name="line_id" t-att-value="line.id"/>
-                                            <button type="submit" class="btn btn-sm btn-link p-0" t-att-title="line.is_checked and 'Uncheck' or 'Check'">
-                                                <t t-if="line.is_checked">☑</t>
-                                                <t t-else="">☐</t>
-                                            </button>
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <t t-if="line.asset_id">
-                                                <a t-att-href="'/my/equipment/%s' % line.asset_id.id">
-                                                    <t t-esc="line.display_label"/>
-                                                </a>
-                                            </t>
-                                            <t t-else="">
-                                                <t t-esc="line.display_label"/>
-                                            </t>
-                                            <span t-if="line.role_code" class="text-muted small"> · <t t-esc="line.role_code"/></span>
-                                            <span t-if="line.line_type == 'quantity'" class="text-muted small">
-                                                · <t t-esc="line.quantity"/> <t t-esc="line.quantity_uom_label or ''"/>
-                                            </span>
-                                        </div>
-                                        <div t-if="line.notes" class="small text-muted" t-esc="line.notes"/>
-                                    </td>
-                                    <td>
-                                        <t t-if="line.reference_state == 'ok'">
-                                            <span class="badge text-bg-success">OK</span>
-                                        </t>
-                                        <t t-elif="line.reference_state == 'archived'">
-                                            <span class="badge text-bg-warning">Archived</span>
-                                        </t>
-                                        <t t-elif="line.reference_state == 'unavailable'">
-                                            <span class="badge text-bg-danger">Unavailable</span>
+                    <t t-if="not equipment_list.line_ids">
+                        <p class="text-muted mb-0">Nothing here yet. Type an item below, or pick matching gear as you type.</p>
+                    </t>
+                    <div t-else="" class="mb-2">
+                        <t t-foreach="equipment_list.line_ids" t-as="line">
+                            <div t-attf-class="o_equip_checklist_item #{'is-checked' if line.is_checked else ''} #{'is-broken' if line.reference_state != 'ok' else ''}">
+                                <div class="o_equip_checklist_check">
+                                    <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="action" value="toggle_check"/>
+                                        <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                        <button type="submit" class="btn btn-sm btn-link p-0 text-decoration-none"
+                                                t-att-aria-pressed="'true' if line.is_checked else 'false'"
+                                                t-att-title="line.is_checked and 'Mark unchecked' or 'Mark checked'">
+                                            <t t-if="line.is_checked">☑</t>
+                                            <t t-else="">☐</t>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="o_equip_checklist_body">
+                                    <div class="o_equip_checklist_label">
+                                        <t t-if="line.asset_id">
+                                            <a t-att-href="'/my/equipment/%s' % line.asset_id.id" t-esc="line.display_label"/>
+                                            <span class="badge text-bg-light border ms-1">Equipment</span>
                                         </t>
                                         <t t-else="">
-                                            <span class="badge text-bg-danger">Missing</span>
+                                            <span t-esc="line.display_label"/>
                                         </t>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
-                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                                <input type="hidden" name="action" value="move_up"/>
-                                                <input type="hidden" name="line_id" t-att-value="line.id"/>
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">Up</button>
-                                            </form>
-                                            <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
-                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                                <input type="hidden" name="action" value="move_down"/>
-                                                <input type="hidden" name="line_id" t-att-value="line.id"/>
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">Down</button>
-                                            </form>
-                                            <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline"
-                                                  onsubmit="return confirm('Remove this item?');">
-                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                                <input type="hidden" name="action" value="delete_line"/>
-                                                <input type="hidden" name="line_id" t-att-value="line.id"/>
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        <t t-if="line.reference_state != 'ok'">
+                                            <span t-if="line.reference_state == 'archived'" class="badge text-bg-warning ms-1">Archived</span>
+                                            <span t-elif="line.reference_state == 'unavailable'" class="badge text-bg-danger ms-1">Unavailable</span>
+                                            <span t-else="" class="badge text-bg-danger ms-1">Missing</span>
+                                        </t>
+                                    </div>
+                                    <div t-if="line.notes" class="small text-muted" t-esc="line.notes"/>
+                                </div>
+                                <div class="o_equip_checklist_actions d-flex gap-1">
+                                    <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="action" value="move_up"/>
+                                        <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                        <button type="submit" class="btn btn-sm btn-link p-0" title="Move up">↑</button>
+                                    </form>
+                                    <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="action" value="move_down"/>
+                                        <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                        <button type="submit" class="btn btn-sm btn-link p-0" title="Move down">↓</button>
+                                    </form>
+                                    <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline"
+                                          onsubmit="return confirm('Remove this item?');">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="action" value="delete_line"/>
+                                        <input type="hidden" name="line_id" t-att-value="line.id"/>
+                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Remove">×</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </t>
                     </div>
-                </t>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <h5>Add from my equipment</h5>
-                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
+                    <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id"
+                          method="post"
+                          class="o_equip_checklist_add"
+                          data-checklist-add="1"
+                          t-att-data-suggest-url="'/my/equipment/lists/%s/suggest' % equipment_list.id">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="action" value="add_item"/>
+                        <input type="hidden" name="asset_id" value="" data-checklist-asset="1"/>
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   name="label"
+                                   data-checklist-input="1"
+                                   placeholder="Add an item… type freely, or pick matching equipment"
+                                   autocomplete="off"
+                                   required="required"/>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                        <div class="o_equip_checklist_suggestions" data-checklist-suggestions="1" role="listbox"></div>
+                        <p class="form-text mb-0">
+                            Press Add to save whatever you typed. If a suggestion is selected, it links your equipment.
+                        </p>
+                    </form>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post"
+                              onsubmit="return confirm('Delete this list permanently?');">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="action" value="add_asset"/>
-                            <div class="input-group">
-                                <select class="form-select" name="asset_id" required="required">
-                                    <option value="">Select…</option>
-                                    <t t-foreach="owned_assets" t-as="asset">
-                                        <option t-att-value="asset.id" t-esc="asset.display_name"/>
-                                    </t>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Add</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Add custom item</h5>
-                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="action" value="add_text"/>
-                            <div class="mb-2">
-                                <input type="text" class="form-control" name="label" placeholder="Label" required="required"/>
-                            </div>
-                            <div class="mb-2">
-                                <input type="text" class="form-control" name="notes" placeholder="Notes (optional)"/>
-                            </div>
-                            <button type="submit" class="btn btn-secondary">Add item</button>
-                        </form>
-                    </div>
-                    <div class="col-md-6" t-if="equipment_list.list_kind == 'configuration'">
-                        <h5>Add quantity (e.g. weight)</h5>
-                        <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="action" value="add_quantity"/>
-                            <div class="row g-2 mb-2">
-                                <div class="col-5">
-                                    <input type="text" class="form-control" name="label" placeholder="Label"/>
-                                </div>
-                                <div class="col-3">
-                                    <input type="number" step="any" class="form-control" name="quantity" placeholder="Qty"/>
-                                </div>
-                                <div class="col-4">
-                                    <input type="text" class="form-control" name="quantity_uom_label" placeholder="lb"/>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-secondary">Add quantity</button>
+                            <input type="hidden" name="action" value="delete_list"/>
+                            <button type="submit" class="btn btn-link btn-sm text-danger p-0">Delete list</button>
                         </form>
                     </div>
                 </div>
-
-                <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post"
-                      onsubmit="return confirm('Delete this list permanently?');">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <input type="hidden" name="action" value="delete_list"/>
-                    <button type="submit" class="btn btn-outline-danger">Delete list</button>
-                </form>
             </div>
         </t>
     </template>
