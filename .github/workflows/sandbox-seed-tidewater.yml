@@ -59,9 +59,9 @@ jobs:
           RESET_SEED: ${{ github.event_name == 'workflow_dispatch' && inputs.reset_seed || false }}
         run: |
           set -euo pipefail
-          seed_args=()
+          extra=""
           if [[ "${RESET_SEED}" == "true" ]]; then
-            seed_args+=(--reset-seed)
+            extra="--reset-seed"
           fi
           gcloud compute ssh "deploy@${INSTANCE}" \
             --project="${PROJECT}" \
@@ -69,4 +69,5 @@ jobs:
             --tunnel-through-iap \
             --quiet \
             --strict-host-key-checking=no \
-            --command="set -euo pipefail; cd \"${DEPLOY_PATH}\"; git fetch --force origin develop:refs/remotes/origin/develop; git checkout develop; git reset --hard origin/develop; bash ./scripts/gcp-sandbox-seed-tidewater.sh ${seed_args[*]+"${seed_args[*]}"}"
+            --ssh-flag="-o ForwardAgent=no" \
+            --command="export HOME=/home/deploy; unset SSH_AUTH_SOCK; export GIT_SSH_COMMAND='ssh -i /home/deploy/.ssh/github_adventurepos -o IdentitiesOnly=yes'; set -euo pipefail; cd ${DEPLOY_PATH}; git fetch origin; git checkout develop; git reset --hard origin/develop; bash ./scripts/gcp-sandbox-seed-tidewater.sh ${extra}"
