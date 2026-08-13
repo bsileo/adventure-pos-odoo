@@ -49,4 +49,5 @@ jobs:
             --tunnel-through-iap \
             --quiet \
             --strict-host-key-checking=no \
-            --command="set -euo pipefail; cd \"${DEPLOY_PATH}\"; git fetch origin; git checkout develop; git reset --hard origin/develop; docker compose up -d"
+            --ssh-flag="-o ForwardAgent=no" \
+            --command="export HOME=/home/deploy; unset SSH_AUTH_SOCK; export GIT_SSH_COMMAND='ssh -i /home/deploy/.ssh/github_adventurepos -o IdentitiesOnly=yes'; set -euo pipefail; cd ${DEPLOY_PATH}; git fetch origin; git checkout develop; git reset --hard origin/develop; docker compose up -d"
