@@ -195,16 +195,91 @@ class TestEquipmentConfiguration(TransactionCase):
                 "list_kind": "packing",
             }
         )
+        # Tied sequences (old portal default) must still move exactly one spot.
         a = self.Line.create(
-            {"configuration_id": config.id, "line_type": "text", "name": "A", "sequence": 10}
+            {
+                "configuration_id": config.id,
+                "line_type": "text",
+                "name": "A",
+                "sequence": 10,
+            }
         )
         b = self.Line.create(
-            {"configuration_id": config.id, "line_type": "text", "name": "B", "sequence": 20}
+            {
+                "configuration_id": config.id,
+                "line_type": "text",
+                "name": "B",
+                "sequence": 10,
+            }
         )
+        c = self.Line.create(
+            {
+                "configuration_id": config.id,
+                "line_type": "text",
+                "name": "C",
+                "sequence": 10,
+            }
+        )
+        self.assertEqual(
+            config.line_ids.sorted(lambda l: (l.sequence, l.id)).mapped("name"),
+            ["A", "B", "C"],
+        )
+
         b.action_move_up()
-        self.assertLessEqual(b.sequence, a.sequence)
-        b.action_move_down()
-        self.assertGreaterEqual(b.sequence, a.sequence)
+        self.assertEqual(
+            config.line_ids.sorted(lambda l: (l.sequence, l.id)).mapped("name"),
+            ["B", "A", "C"],
+        )
+
+        # After a partial resequence, moving C up must swap with A only (one spot),
+        # not jump to B via "nearest lower sequence".
+        c.action_move_up()
+        self.assertEqual(
+            config.line_ids.sorted(lambda l: (l.sequence, l.id)).mapped("name"),
+            ["B", "C", "A"],
+        )
+
+        c.action_move_down()
+        self.assertEqual(
+            config.line_ids.sorted(lambda l: (l.sequence, l.id)).mapped("name"),
+            ["B", "A", "C"],
+        )
+
+        # Ends are no-ops beyond the edge.
+        b.action_move_up()
+        self.assertEqual(
+            config.line_ids.sorted(lambda l: (l.sequence, l.id)).mapped("name"),
+            ["B", "A", "C"],
+        )
+        c.action_move_down()
+        self.assertEqual(
+            config.line_ids.sorted(lambda l: (l.sequence, l.id)).mapped("name"),
+            ["B", "A", "C"],
+        )
+
+    def test_create_assigns_increasing_sequence(self):
+        config = self.Config.create(
+            {
+                "name": "Seq create",
+                "partner_id": self.partner.id,
+                "list_kind": "packing",
+            }
+        )
+        a = self.Line.create(
+            {"configuration_id": config.id, "line_type": "text", "name": "A"}
+        )
+        b = self.Line.create(
+            {"configuration_id": config.id, "line_type": "text", "name": "B"}
+        )
+        c = self.Line.create(
+            {"configuration_id": config.id, "line_type": "text", "name": "C"}
+        )
+        self.assertLess(a.sequence, b.sequence)
+        self.assertLess(b.sequence, c.sequence)
+        self.assertEqual(
+            config.line_ids.sorted(lambda l: (l.sequence, l.id)).mapped("name"),
+            ["A", "B", "C"],
+        )
 
     def test_hard_delete_list(self):
         config = self.Config.create(

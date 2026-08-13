@@ -180,6 +180,9 @@ class AdventureEquipmentConfigurationLine(models.Model):
     def create(self, vals_list):
         Asset = self.env["adventure.equipment.asset"].sudo()
         Config = self.env["adventure.equipment.configuration"].sudo()
+        # Track next sequence per configuration within this batch so tied
+        # defaults (all sequence=10) do not leave portal adds unordered.
+        next_seq_by_config = {}
         for vals in vals_list:
             asset_id = vals.get("asset_id")
             if asset_id:
@@ -199,6 +202,17 @@ class AdventureEquipmentConfigurationLine(models.Model):
                     vals["line_type"] = "asset"
                 elif not vals.get("line_type"):
                     vals["line_type"] = "asset"
+            config_id = vals.get("configuration_id")
+            if config_id and "sequence" not in vals:
+                if config_id not in next_seq_by_config:
+                    last = self.search(
+                        [("configuration_id", "=", config_id)],
+                        order="sequence desc, id desc",
+                        limit=1,
+                    )
+                    next_seq_by_config[config_id] = (last.sequence if last else 0) + 10
+                vals["sequence"] = next_seq_by_config[config_id]
+                next_seq_by_config[config_id] += 10
         return super().create(vals_list)
 
     def write(self, vals):
@@ -215,56 +229,40 @@ class AdventureEquipmentConfigurationLine(models.Model):
                 vals = dict(vals, asset_snapshot_name=asset.display_name)
         return super().write(vals)
 
-    def action_move_up(self):
+    def _ordered_sibling_lines(self):
         self.ensure_one()
-        previous = self.search(
-            [
-                ("configuration_id", "=", self.configuration_id.id),
-                ("sequence", "<", self.sequence),
-            ],
-            order="sequence desc, id desc",
-            limit=1,
+        return self.search(
+            [("configuration_id", "=", self.configuration_id.id)],
+            order="sequence asc, id asc",
         )
-        if not previous:
-            previous = self.search(
-                [
-                    ("configuration_id", "=", self.configuration_id.id),
-                    ("sequence", "=", self.sequence),
-                    ("id", "<", self.id),
-                ],
-                order="id desc",
-                limit=1,
-            )
-        if previous:
-            seq_a, seq_b = self.sequence, previous.sequence
-            previous.sequence = seq_a
-            self.sequence = seq_b if seq_a != seq_b else seq_b - 1
+
+    def _resequence_lines(self, lines):
+        """Assign unique ascending sequences so display order matches list order."""
+        for index, line in enumerate(lines):
+            new_seq = (index + 1) * 10
+            if line.sequence != new_seq:
+                line.sequence = new_seq
+
+    def action_move_up(self):
+        """Move this line one position earlier in display order."""
+        self.ensure_one()
+        lines = list(self._ordered_sibling_lines())
+        idx = next((i for i, line in enumerate(lines) if line.id == self.id), None)
+        if idx is None or idx == 0:
+            return True
+        lines[idx - 1], lines[idx] = lines[idx], lines[idx - 1]
+        self._resequence_lines(lines)
         return True
 
     def action_move_down(self):
+        """Move this line one position later in display order."""
         self.ensure_one()
-        following = self.search(
-            [
-                ("configuration_id", "=", self.configuration_id.id),
-                ("sequence", ">", self.sequence),
-            ],
-            order="sequence asc, id asc",
-            limit=1,
-        )
-        if not following:
-            following = self.search(
-                [
-                    ("configuration_id", "=", self.configuration_id.id),
-                    ("sequence", "=", self.sequence),
-                    ("id", ">", self.id),
-                ],
-                order="id asc",
-                limit=1,
-            )
-        if following:
-            seq_a, seq_b = self.sequence, following.sequence
-            following.sequence = seq_a
-            self.sequence = seq_b if seq_a != seq_b else seq_b + 1
+        lines = list(self._ordered_sibling_lines())
+        idx = next((i for i, line in enumerate(lines) if line.id == self.id), None)
+        if idx is None or idx >= len(lines) - 1:
+            return True
+        lines[idx + 1], lines[idx] = lines[idx], lines[idx + 1]
+        self._resequence_lines(lines)
         return True
 
     def action_toggle_checked(self):

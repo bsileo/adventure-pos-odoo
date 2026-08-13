@@ -2,7 +2,7 @@
 {
     "name": "Adventure Equipment Configuration",
     "summary": "Customer packing lists and equipment configurations.",
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.0.2",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
