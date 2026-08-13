@@ -76,6 +76,10 @@
   font-size: 0.8rem;
   color: #6c757d;
 }
+.o_equip_checklist_suggestion_empty {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.85rem;
+}
 
 /* List index: broken-ref cue (icon only when needed; no Status column) */
 .o_equip_lists_table .o_equip_list_health {

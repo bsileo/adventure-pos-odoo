@@ -260,7 +260,14 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
         methods=["GET"],
     )
     def portal_my_equipment_list_suggest(self, list_id, q="", **kwargs):
-        """Autocomplete owned equipment for checklist add."""
+        """Autocomplete owned equipment for checklist add (loose wildcard)."""
+        from .equipment_suggest import (
+            asset_suggest_domain,
+            format_suggest_results,
+            rank_suggest_assets,
+            tokenize_suggest_query,
+        )
+
         try:
             record = self._document_check_access(
                 "adventure.equipment.configuration", int(list_id)
@@ -269,37 +276,21 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
             return request.make_json_response({"results": []})
 
         query = (q or "").strip()
-        if len(query) < 1:
+        if not tokenize_suggest_query(query):
             return request.make_json_response({"results": []})
 
         already = record.line_ids.mapped("asset_id").ids
-        domain = [
-            ("partner_id", "=", request.env.user.partner_id.id),
-            "|",
-            "|",
-            "|",
-            "|",
-            ("nickname", "ilike", query),
-            ("name", "ilike", query),
-            ("display_name", "ilike", query),
-            ("brand_name", "ilike", query),
-            ("model_name", "ilike", query),
-        ]
-        if already:
-            domain = [("id", "not in", already)] + domain
-
-        assets = request.env["adventure.equipment.asset"].search(
-            domain, order="nickname, name, id desc", limit=12
+        domain = asset_suggest_domain(
+            request.env.user.partner_id.id,
+            query,
+            exclude_ids=already,
         )
-        results = [
-            {
-                "id": asset.id,
-                "label": asset.display_name,
-                "category": asset.category_id.display_name or "",
-            }
-            for asset in assets
-        ]
-        return request.make_json_response({"results": results})
+        # Over-fetch then rank so category hits surface even if name order differs.
+        assets = request.env["adventure.equipment.asset"].search(domain, limit=40)
+        ranked = rank_suggest_assets(assets, query)[:12]
+        return request.make_json_response(
+            {"results": format_suggest_results(ranked, query)}
+        )
 
     @http.route(
         ["/my/equipment/lists/<int:list_id>/edit"],

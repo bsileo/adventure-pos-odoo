@@ -12,7 +12,7 @@ Customer portal for packing lists and configurations.
 
 ## Checklist UX
 
-Type an item and press **Add** to save a plain checklist row. Matching owned equipment appears as you type; choosing a suggestion links that asset. Converting a plain item into registered equipment is deferred.
+Type an item and press **Add** to save a plain checklist row. Matching owned equipment appears as you type (loose search across nickname, category, brand/model, manufacturer, serial, notes, tags, and product snapshots); choosing a suggestion links that asset. Converting a plain item into registered equipment is deferred.
 
 ## List index health
 

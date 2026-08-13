@@ -285,7 +285,8 @@
                         </div>
                         <div class="o_equip_checklist_suggestions" data-checklist-suggestions="1" role="listbox"></div>
                         <p class="form-text mb-0">
-                            Press Add to save whatever you typed. If a suggestion is selected, it links your equipment.
+                            Matching gear appears as you type (name, category, brand/model, notes).
+                            Press Add to save whatever you typed; pick a suggestion to link equipment.
                         </p>
                     </form>
 

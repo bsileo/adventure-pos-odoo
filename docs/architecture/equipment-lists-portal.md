@@ -296,6 +296,7 @@ Keep URLs under `/my/equipment/...` so the equipment portal mental model stays o
 - Linked equipment shows an **Equipment** badge and links to `/my/equipment/<id>`
 - Broken/unavailable badges only when needed; list-level banner when any line is broken
 - **Single add field:** type freely to add a plain checklist item; matching owned equipment appears as autocomplete suggestions and can be selected to link the asset
+- **Suggest search:** loose `ilike` across nickname/name/display, category name/code, brand/model/manufacturer, serial, customer notes/description, tags, and product snapshots; multi-word tokens are AND’d; results ranked with category hits first. Frontend uses a website `Interaction` (not `DOMContentLoaded`-only) so lazy assets still bind.
 - Reorder with **up/down**; each click moves the line **exactly one spot** in display order (`sequence, id`), then resequences siblings so tied sequences cannot jump multiple places; remove with confirm
 - Converting a plain typed item into a registered equipment asset is **deferred**
 - **Delete list** with confirm
