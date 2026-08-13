@@ -22,8 +22,12 @@ class SeedRegistry:
         values = self._filter_values(model, values)
         record = self.ref(xml_name)
         if record and record.exists():
-            record.write(values)
-            self.updated.append((model_name, xml_name))
+            # Only write when a value actually changed. Skipping no-op writes keeps
+            # re-seeding idempotent against records Odoo refuses to modify while in
+            # use (e.g. pos.payment.method with an open PoS session).
+            if self._values_differ(record, values):
+                record.write(values)
+                self.updated.append((model_name, xml_name))
             return record
 
         record = model.create(values)
@@ -73,3 +77,50 @@ class SeedRegistry:
 
     def _filter_values(self, model, values):
         return {key: value for key, value in values.items() if key in model._fields}
+
+    def _values_differ(self, record, values):
+        """Return True when writing ``values`` would change ``record``.
+
+        Conservative by design: any value we cannot confidently compare is
+        treated as a change so behaviour matches an unconditional ``write``.
+        """
+        for key, value in values.items():
+            try:
+                field = record._fields[key]
+                current = record[key]
+            except Exception:
+                return True
+            try:
+                if field.type == "many2one":
+                    current_id = current.id or False
+                    desired_id = value.id if hasattr(value, "id") else (value or False)
+                    if current_id != desired_id:
+                        return True
+                elif field.type in ("many2many", "one2many"):
+                    desired_ids = self._command_ids(value)
+                    if desired_ids is None:
+                        return True
+                    if sorted(current.ids) != sorted(desired_ids):
+                        return True
+                elif current != value:
+                    return True
+            except Exception:
+                return True
+        return False
+
+    @staticmethod
+    def _command_ids(value):
+        """Extract the id list from a ``[(6, 0, [ids])]`` command, else None."""
+        if not isinstance(value, (list, tuple)):
+            return None
+        ids = None
+        for command in value:
+            if (
+                isinstance(command, (list, tuple))
+                and len(command) == 3
+                and command[0] == 6
+            ):
+                ids = list(command[2])
+            else:
+                return None
+        return ids
