@@ -39,6 +39,12 @@
   padding-right: 0.5rem;
   border-radius: 0.25rem;
 }
+.o_equip_checklist_item.is-editing .o_equip_checklist_actions {
+  opacity: 1;
+}
+.o_equip_checklist_edit {
+  width: 100%;
+}
 .o_equip_checklist_add {
   position: relative;
   margin-top: 1rem;

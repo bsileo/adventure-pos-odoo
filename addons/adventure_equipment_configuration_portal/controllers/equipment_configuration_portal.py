@@ -231,6 +231,35 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
                         int(post.get("line_id") or 0),
                     )
                     line.unlink()
+                elif action == "edit_text_line":
+                    line = self._document_check_access(
+                        "adventure.equipment.configuration.line",
+                        int(post.get("line_id") or 0),
+                    )
+                    if line.asset_id or line.line_type == "asset":
+                        raise ValidationError(
+                            _("Linked equipment items are edited from your equipment record.")
+                        )
+                    label = (post.get("label") or "").strip()
+                    if not label:
+                        raise ValidationError(_("Item text cannot be empty."))
+                    vals = {"name": label, "line_type": line.line_type or "text"}
+                    if line.line_type == "quantity":
+                        notes = (post.get("notes") or "").strip()
+                        vals["notes"] = notes or False
+                        quantity = post.get("quantity")
+                        if quantity not in (None, "", False):
+                            vals["quantity"] = float(quantity)
+                        uom = (post.get("quantity_uom_label") or "").strip()
+                        if "quantity_uom_label" in post:
+                            vals["quantity_uom_label"] = uom or False
+                    else:
+                        # Keep free-text lines as text; allow optional notes.
+                        notes = (post.get("notes") or "").strip()
+                        if "notes" in post:
+                            vals["notes"] = notes or False
+                        vals["line_type"] = "text"
+                    line.write(vals)
                 return request.redirect("/my/equipment/lists/%s" % record.id)
             except AccessError:
                 error = _("You are not allowed to change this list.")
@@ -239,12 +268,21 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
             except Exception:
                 error = _("Could not update the list. Please try again.")
 
+        edit_line_id = False
+        raw_edit = post.get("edit_line")
+        if raw_edit not in (None, "", False):
+            try:
+                edit_line_id = int(raw_edit)
+            except (TypeError, ValueError):
+                edit_line_id = False
+
         values = self._prepare_portal_layout_values()
         values.update(
             {
                 "equipment_list": record,
                 "page_name": "equipment_lists",
                 "error": error,
+                "edit_line_id": edit_line_id,
             }
         )
         return request.render(

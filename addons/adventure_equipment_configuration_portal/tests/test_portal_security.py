@@ -113,3 +113,16 @@ class TestEquipmentConfigurationPortalSecurity(TransactionCase):
                     "asset_id": self.asset_b.id,
                 }
             )
+
+    def test_portal_can_edit_own_text_line(self):
+        Line = self.env["adventure.equipment.configuration.line"].with_user(self.user_a)
+        line = Line.create(
+            {
+                "configuration_id": self.list_a.id,
+                "line_type": "text",
+                "name": "Spare mask strap",
+            }
+        )
+        line.write({"name": "Spare mask strap (backup)", "notes": "in dry box"})
+        self.assertEqual(line.name, "Spare mask strap (backup)")
+        self.assertEqual(line.notes, "in dry box")
