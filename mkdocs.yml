@@ -52,6 +52,7 @@ nav:
       - Tenant provisioning: architecture/tenant-provisioning.md
       - Equipment management: architecture/equipment-management.md
       - Tidewater demo seed: architecture/tidewater-demo-seed.md
+      - Client web portal: architecture/client-web-portal.md
       - Scuba training and scheduling (future): architecture/scuba-training-scheduling.md
   - Data model:
       - Core model: data-model/core-model.md

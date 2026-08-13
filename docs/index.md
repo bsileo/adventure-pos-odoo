@@ -10,7 +10,7 @@ This site collects **evolving** product specs, technical specs, workflows, archi
 - [Cursor cloud development](cursor-cloud-development.md) — preferred cloud-agent Docker + Tidewater workflow (`make setup` / `start` / `validate` / `test`)  
 - [Agent rules](agent-rules.md) — mandatory habits, including **reviewing architecture and design docs** when starting a work stream  
 - [Setup](setup.md) — full local and tooling setup  
-- [Architecture](architecture/) — system direction (includes [Equipment management](architecture/equipment-management.md) and **future** notes such as [Scuba training and scheduling](architecture/scuba-training-scheduling.md))  
+- [Architecture](architecture/) — system direction (includes [Equipment management](architecture/equipment-management.md), [Client web portal](architecture/client-web-portal.md), and **future** notes such as [Scuba training and scheduling](architecture/scuba-training-scheduling.md))  
 - [Migrations overview](migrations/README.md) — data migration program and runbooks  
 - [Core data model](data-model/core-model.md) — domain concepts  
 

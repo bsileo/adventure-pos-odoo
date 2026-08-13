@@ -10,8 +10,8 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $RepoRoot
 
-# Standard Tidewater package: dive vertical + customer equipment scuba stack.
-$TidewaterModules = "dive_shop_pos,adventure_equipment_scuba"
+# Standard Tidewater package: dive vertical + equipment scuba + website/portal.
+$TidewaterModules = "dive_shop_pos,adventure_equipment_scuba,adventure_website,adventure_equipment_portal"
 
 $python = @"
 from odoo.addons.dive_shop_pos.seeds.run_seed import main

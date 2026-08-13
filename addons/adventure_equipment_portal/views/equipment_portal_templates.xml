@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal home entry using standard Odoo portal_docs_entry cards. -->
+    <template id="portal_my_home_equipment" name="Portal My Home: equipment" inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_client_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/adventure_equipment_portal/static/src/img/equipment.svg'"/>
+                <t t-set="title">Your Equipment</t>
+                <t t-set="url" t-value="'/my/equipment'"/>
+                <t t-set="text">View and register gear you own</t>
+                <t t-set="placeholder_count" t-value="'equipment_count'"/>
+                <!-- Always show (like Addresses) so customers with zero items can still register. -->
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_my_equipment" name="My Equipment">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Equipment</t>
+            </t>
+            <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <p class="text-muted mb-0">Gear registered to your account.</p>
+                <a href="/my/equipment/register" class="btn btn-primary">Register equipment</a>
+            </div>
+            <t t-if="not equipment_ids">
+                <div class="alert alert-info" role="status">
+                    No equipment yet.
+                    <a href="/my/equipment/register">Register an item</a>
+                    you own, or ask the shop to link purchases to your account.
+                </div>
+            </t>
+            <t t-else="">
+                <div class="table-responsive">
+                    <table class="table o_portal_my_doc_table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>Serial</th>
+                                <th>Status</th>
+                                <th>Verification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="equipment_ids" t-as="eq">
+                                <td>
+                                    <a t-att-href="'/my/equipment/%s' % eq.id">
+                                        <t t-esc="eq.display_name"/>
+                                    </a>
+                                </td>
+                                <td><t t-esc="eq.category_id.display_name or '-'"/></td>
+                                <td><t t-esc="eq.serial_number or '-'"/></td>
+                                <td><t t-esc="dict(eq._fields['lifecycle_state'].selection).get(eq.lifecycle_state)"/></td>
+                                <td><t t-esc="dict(eq._fields['ownership_verification_state'].selection).get(eq.ownership_verification_state)"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-if="pager" class="o_portal_pager text-center">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_my_equipment_detail" name="Equipment Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert" groups="adventure_equipment.group_equipment_user">
+                <t t-call="portal.portal_back_in_edit_mode">
+                    <t t-set="backend_url" t-value="'/odoo/adventure.equipment.asset/%s' % equipment.id"/>
+                </t>
+            </t>
+            <div class="container py-3">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                        <h3 t-esc="equipment.display_name"/>
+                        <p class="text-muted mb-0">
+                            <t t-esc="equipment.name"/>
+                            <t t-if="equipment.category_id"> · <t t-esc="equipment.category_id.display_name"/></t>
+                        </p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a t-att-href="'/my/equipment/%s/edit' % equipment.id" class="btn btn-secondary">Edit</a>
+                        <a href="/my/equipment" class="btn btn-link">Back to list</a>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-4">Nickname</dt>
+                                    <dd class="col-sm-8"><t t-esc="equipment.nickname or '—'"/></dd>
+                                    <dt class="col-sm-4">Brand</dt>
+                                    <dd class="col-sm-8"><t t-esc="equipment.brand_name or equipment.snapshot_brand or '—'"/></dd>
+                                    <dt class="col-sm-4">Model</dt>
+                                    <dd class="col-sm-8"><t t-esc="equipment.model_name or equipment.snapshot_model or '—'"/></dd>
+                                    <dt class="col-sm-4">Serial</dt>
+                                    <dd class="col-sm-8"><t t-esc="equipment.serial_number or '—'"/></dd>
+                                    <dt class="col-sm-4">Lifecycle</dt>
+                                    <dd class="col-sm-8"><t t-esc="dict(equipment._fields['lifecycle_state'].selection).get(equipment.lifecycle_state)"/></dd>
+                                    <dt class="col-sm-4">Verification</dt>
+                                    <dd class="col-sm-8"><t t-esc="dict(equipment._fields['ownership_verification_state'].selection).get(equipment.ownership_verification_state)"/></dd>
+                                    <dt class="col-sm-4">Your notes</dt>
+                                    <dd class="col-sm-8"><t t-esc="equipment.customer_note or '—'"/></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" t-if="equipment.image_128">
+                        <img t-att-src="'/web/image/adventure.equipment.asset/%s/image_128' % equipment.id"
+                             class="img-fluid rounded" alt="Equipment photo"/>
+                    </div>
+                </div>
+
+                <div class="mt-4" t-if="documents">
+                    <h4>Documents</h4>
+                    <ul class="list-unstyled">
+                        <li t-foreach="documents" t-as="doc" class="mb-1">
+                            <t t-esc="doc.name"/>
+                            <t t-if="doc.document_type"> (<t t-esc="doc.document_type"/>)</t>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_my_equipment_edit" name="Edit Equipment">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3" style="max-width: 40rem;">
+                <h3>Edit <t t-esc="equipment.display_name"/></h3>
+                <p class="text-muted">You can update your nickname and notes. Serial and verification are managed by the shop.</p>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <form t-att-action="'/my/equipment/%s/edit' % equipment.id" method="post" class="o_portal_wrap">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-3">
+                        <label class="form-label" for="nickname">Nickname</label>
+                        <input type="text" class="form-control" name="nickname" id="nickname"
+                               t-att-value="equipment.nickname or ''"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="customer_note">Your notes</label>
+                        <textarea class="form-control" name="customer_note" id="customer_note" rows="4"><t t-esc="equipment.customer_note or ''"/></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a t-att-href="'/my/equipment/%s' % equipment.id" class="btn btn-link">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_my_equipment_register" name="Register Equipment">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3" style="max-width: 40rem;">
+                <h3>Register equipment</h3>
+                <p class="text-muted">
+                    Add gear you own that was purchased elsewhere or not yet on your account.
+                    The shop will verify the registration.
+                </p>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <form action="/my/equipment/register" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-3">
+                        <label class="form-label" for="category_id">Category</label>
+                        <select class="form-select" name="category_id" id="category_id" required="required">
+                            <option value="">Select…</option>
+                            <t t-foreach="categories" t-as="cat">
+                                <option t-att-value="cat.id"
+                                        t-att-selected="str(cat.id) == str(post.get('category_id') or '')"
+                                        t-esc="cat.display_name"/>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="nickname">Nickname</label>
+                        <input type="text" class="form-control" name="nickname" id="nickname"
+                               t-att-value="post.get('nickname') or ''"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="brand_name">Brand</label>
+                        <input type="text" class="form-control" name="brand_name" id="brand_name"
+                               t-att-value="post.get('brand_name') or ''"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="model_name">Model</label>
+                        <input type="text" class="form-control" name="model_name" id="model_name"
+                               t-att-value="post.get('model_name') or ''"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="serial_number">Serial number</label>
+                        <input type="text" class="form-control" name="serial_number" id="serial_number"
+                               t-att-value="post.get('serial_number') or ''"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="customer_note">Notes</label>
+                        <textarea class="form-control" name="customer_note" id="customer_note" rows="3"><t t-esc="post.get('customer_note') or ''"/></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Submit for verification</button>
+                        <a href="/my/equipment" class="btn btn-link">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>

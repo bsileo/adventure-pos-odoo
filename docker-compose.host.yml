@@ -1,0 +1,16 @@
+# Host-network override for environments where Docker bridge
+# container-to-container TCP is blocked (e.g. some cloud agent VMs).
+services:
+  db:
+    network_mode: host
+    ports: []
+  odoo:
+    network_mode: host
+    ports: []
+    environment:
+      HOST: 127.0.0.1
+      POSTGRES_DB: ${POSTGRES_DB:-odoo}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}

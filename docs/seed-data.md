@@ -46,18 +46,31 @@ It creates / updates:
 - Customers with certification and waiver scenarios.
 - Reservations for pickup, return, overdue, and damaged-return workflows.
 - Condition logs and maintenance events.
-- **Customer-owned equipment** (when `adventure_equipment_scuba` is installed): kit and service history for Tidewater story customers (Maya Carter, Jon Ellis, Luis Romero, Nora Singh, Carter Family), via the module-owned contributor under `adventure_equipment_scuba/seeds/`.
+- **Customer-owned equipment** (when `adventure_equipment_scuba` is installed): kit and service history for Tidewater story customers, via the module-owned contributor under `adventure_equipment_scuba/seeds/`.
+- **Website + equipment portal** (when `adventure_website` / `adventure_equipment_portal` are installed): minimal homepage, open signup, and portal users for demo logins.
 
-### Tidewater standard package modules
+### Portal demo logins (fictional)
 
-`seed-tidewater` / sandbox bootstrap installs (when missing):
+Password for all of the following: `tidewater`
+
+| Login | Story customer |
+|-------|----------------|
+| `certified_current@example.test` | Certified current diver |
+| `nitrox@example.test` | Nitrox diver |
+| `uncertified@example.test` | Uncertified customer |
+
+Demo path: public homepage → Sign in → My Equipment → detail / register external item → staff verify in backend Equipment app.
+
+### Standard package modules
 
 | Module | Role |
 |--------|------|
-| `dive_shop_pos` | Scuba POS / rental vertical + central seed orchestrator |
+| `dive_shop_pos` | Dive vertical + seed orchestrator |
 | `adventure_equipment_scuba` | Customer equipment scuba app (pulls `adventure_equipment` + `adventure_equipment_service`) |
+| `adventure_website` | Minimal Website shell + open self-signup |
+| `adventure_equipment_portal` | Customer equipment portal (`/my/equipment`) |
 
-`adventure_equipment` is an Odoo **App** (`application=True`). `adventure_equipment_scuba` is also an **App**. `adventure_equipment_service` remains a supporting module (`application=False`) so it does not appear when filtering Apps alone—install it via the scuba app or Apps → Modules.
+`adventure_equipment` is an Odoo **App** (`application=True`). `adventure_equipment_scuba` is also an **App**. `adventure_equipment_service` remains a supporting module (`application=False`) so it does not appear when filtering Apps alone—install it via the scuba app, website/portal stack, or Apps → Modules.
 
 ## Usage (local / Cursor cloud)
 
@@ -85,7 +98,7 @@ make seed-tidewater
 make seed-tidewater RESET_SEED=1
 ```
 
-The runner installs or updates the Tidewater standard package (`dive_shop_pos`, `adventure_equipment_scuba`) before loading the seed profile.
+The runner installs or updates the Tidewater standard package (`dive_shop_pos`, `adventure_equipment_scuba`, `adventure_website`, `adventure_equipment_portal`) before loading the seed profile.
 
 **Do not** restore repo-root `backup.sql` for development — it is not the supported dataset.
 

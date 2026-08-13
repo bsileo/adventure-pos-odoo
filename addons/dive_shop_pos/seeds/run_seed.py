@@ -16,6 +16,8 @@ SUPPORTED_PROFILES = (identity.SEED_PROFILE,) + identity.LEGACY_SEED_PROFILES
 TIDEWATER_STANDARD_MODULES = (
     "dive_shop_pos",
     "adventure_equipment_scuba",
+    "adventure_website",
+    "adventure_equipment_portal",
 )
 
 
@@ -43,29 +45,45 @@ def main(env, argv=None):
 def _run_optional_contributors(env, reset=False):
     """Run module-owned Tidewater contributors when those modules are installed."""
     out = {}
-    scuba_module = (
+    out["adventure_equipment_scuba"] = _run_contributor(
+        env,
+        module_name="adventure_equipment_scuba",
+        import_path="odoo.addons.adventure_equipment_scuba.seeds.tidewater_seed",
+        reset=reset,
+    )
+    out["adventure_website"] = _run_contributor(
+        env,
+        module_name="adventure_website",
+        import_path="odoo.addons.adventure_website.seeds.tidewater_seed",
+        reset=reset,
+    )
+    out["adventure_equipment_portal"] = _run_contributor(
+        env,
+        module_name="adventure_equipment_portal",
+        import_path="odoo.addons.adventure_equipment_portal.seeds.tidewater_seed",
+        reset=reset,
+    )
+    return out
+
+
+def _run_contributor(env, module_name, import_path, reset=False):
+    module = (
         env["ir.module.module"]
         .sudo()
-        .search(
-            [("name", "=", "adventure_equipment_scuba"), ("state", "=", "installed")],
-            limit=1,
-        )
+        .search([("name", "=", module_name), ("state", "=", "installed")], limit=1)
     )
-    if scuba_module:
-        try:
-            from odoo.addons.adventure_equipment_scuba.seeds.tidewater_seed import (
-                seed_tidewater,
-            )
-        except ImportError:
-            _logger.warning(
-                "adventure_equipment_scuba installed but Tidewater seed contributor "
-                "could not be imported"
-            )
-        else:
-            out["adventure_equipment_scuba"] = seed_tidewater(env, reset=reset)
-    else:
-        out["adventure_equipment_scuba"] = {
-            "skipped": True,
-            "reason": "adventure_equipment_scuba not installed",
-        }
-    return out
+    if not module:
+        return {"skipped": True, "reason": "%s not installed" % module_name}
+    try:
+        from importlib import import_module
+
+        seed_mod = import_module(import_path)
+        seed_tidewater = getattr(seed_mod, "seed_tidewater")
+    except Exception:
+        _logger.warning(
+            "%s installed but Tidewater seed contributor could not be imported",
+            module_name,
+            exc_info=True,
+        )
+        return {"skipped": True, "reason": "import failed"}
+    return seed_tidewater(env, reset=reset)

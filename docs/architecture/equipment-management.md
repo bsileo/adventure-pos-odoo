@@ -2,7 +2,7 @@
 
 !!! warning "Partially implemented"
 
-    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment), **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service), and **scuba vertical pack** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba) are **implemented**. **Portal**, **configurations**, **notifications**, and **POS/sale bridges** remain **future** work—do not assume those behaviors exist until their modules ship.
+    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment), **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service), and **scuba vertical pack** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba) are **implemented**. **Portal** (`adventure_equipment_portal` + `adventure_website`) is **in progress** on the client web portal workstream. **Configurations**, **notifications**, and **POS/sale bridges** remain future work.
 
     Treat remaining model names and fields on this page as the **platform direction**; compare with the live modules and their READMEs when implementing or testing.
 
@@ -597,12 +597,13 @@ Complexity is relative (S/M/L), not calendar time.
 - **Acceptance:** Paying for configured products can create verified assets with serial prompt; idempotent  
 - **Complexity:** M  
 
-### Phase 4 — Portal self-service
+### Phase 4 — Portal self-service ✅ **In progress / MVP shipping**
 
 - **Purpose:** Customers view/register gear  
-- **Module:** `adventure_equipment_portal`  
-- **Acceptance:** Portal isolation tests pass; customer-claimed → staff verify flow  
+- **Modules:** [`adventure_equipment_portal`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_portal), [`adventure_website`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_website)  
+- **Acceptance:** Portal isolation tests; customer-reported → staff verify flow; Tidewater homepage + demo portal users  
 - **Complexity:** L  
+- **Design:** [Client web portal](client-web-portal.md) 
 
 ### Phase 5 — Notifications
 

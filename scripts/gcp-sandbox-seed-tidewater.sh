@@ -9,10 +9,10 @@
 # From your PC, use gcp-sandbox-seed-tidewater.ps1 instead.
 #
 # This does NOT wipe the Postgres volume. It installs the Tidewater standard
-# package (dive_shop_pos + adventure_equipment_scuba and dependencies) if needed
-# and upserts Tidewater seed records. Use --reset-seed to recreate scenario
-# records (reservations, assets, customer equipment, etc.) while keeping stable
-# products/customers.
+# package (dive_shop_pos + equipment scuba + website/portal and dependencies)
+# if needed and upserts Tidewater seed records. Use --reset-seed to recreate
+# scenario records (reservations, assets, customer equipment, etc.) while keeping
+# stable products/customers.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"

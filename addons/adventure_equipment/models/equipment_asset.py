@@ -628,7 +628,9 @@ class AdventureEquipmentAsset(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        sequence = self.env["ir.sequence"]
+        # Sequence ACL is staff-only; portal (and other create-capable non-staff)
+        # callers still need auto-numbering. Matching Odoo sale/stock pattern.
+        sequence = self.env["ir.sequence"].sudo()
         for vals in vals_list:
             name = vals.get("name") or _("New")
             if name in (_("New"), "New"):

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal users only see / edit their own partner's equipment (single owner). -->
+    <record id="equipment_asset_portal_rule" model="ir.rule">
+        <field name="name">Equipment asset: portal own partner</field>
+        <field name="model_id" ref="adventure_equipment.model_adventure_equipment_asset"/>
+        <field name="domain_force">['&amp;', ('partner_id', '=', user.partner_id.id), '|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="equipment_document_portal_rule" model="ir.rule">
+        <field name="name">Equipment document: portal own + customer visible</field>
+        <field name="model_id" ref="adventure_equipment.model_adventure_equipment_document"/>
+        <field name="domain_force">['&amp;', ('asset_id.partner_id', '=', user.partner_id.id), ('customer_visible', '=', True), '|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <record id="equipment_identifier_portal_rule" model="ir.rule">
+        <field name="name">Equipment identifier: portal own partner</field>
+        <field name="model_id" ref="adventure_equipment.model_adventure_equipment_identifier"/>
+        <field name="domain_force">['&amp;', ('asset_id.partner_id', '=', user.partner_id.id), '|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="equipment_ownership_portal_rule" model="ir.rule">
+        <field name="name">Equipment ownership: portal own partner</field>
+        <field name="model_id" ref="adventure_equipment.model_adventure_equipment_ownership"/>
+        <field name="domain_force">['&amp;', ('partner_id', '=', user.partner_id.id), '|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="equipment_event_portal_rule" model="ir.rule">
+        <field name="name">Equipment event: portal own partner</field>
+        <field name="model_id" ref="adventure_equipment.model_adventure_equipment_event"/>
+        <field name="domain_force">['&amp;', ('asset_id.partner_id', '=', user.partner_id.id), '|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Categories/tags are shared reference data; company-aware when set. -->
+    <record id="equipment_category_portal_rule" model="ir.rule">
+        <field name="name">Equipment category: portal company</field>
+        <field name="model_id" ref="adventure_equipment.model_adventure_equipment_category"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="equipment_tag_portal_rule" model="ir.rule">
+        <field name="name">Equipment tag: portal company</field>
+        <field name="model_id" ref="adventure_equipment.model_adventure_equipment_tag"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>
