@@ -4,39 +4,43 @@ import { registry } from "@web/core/registry";
 
 export class EquipmentChecklistAdd extends Interaction {
     static selector = "[data-equip-checklist]";
+    static selectorHas = "[data-checklist-add]";
+
+    dynamicContent = {
+        "[data-checklist-input]": {
+            "t-on-input": this.onInput,
+            "t-on-keydown": this.onKeydown,
+        },
+        "[data-checklist-add]": {
+            "t-on-submit": this.onSubmit,
+        },
+        _document: {
+            "t-on-click": this.onDocumentClick,
+        },
+    };
 
     setup() {
         this.form = this.el.querySelector("[data-checklist-add]");
-        if (!this.form) {
-            return;
-        }
-        this.input = this.form.querySelector("[data-checklist-input]");
-        this.assetField = this.form.querySelector("[data-checklist-asset]");
-        this.listEl = this.form.querySelector("[data-checklist-suggestions]");
-        this.suggestUrl = this.form.getAttribute("data-suggest-url");
-        if (!this.input || !this.assetField || !this.listEl || !this.suggestUrl) {
-            return;
-        }
-
+        this.input = this.form?.querySelector("[data-checklist-input]");
+        this.assetField = this.form?.querySelector("[data-checklist-asset]");
+        this.listEl = this.form?.querySelector("[data-checklist-suggestions]");
+        this.suggestUrl = this.form?.getAttribute("data-suggest-url");
         this.activeIndex = -1;
         this.results = [];
         this.timer = null;
         this.emptyHint = false;
-
-        this.addListener(this.input, "input", this.onInput);
-        this.addListener(this.input, "keydown", this.onKeydown);
-        this.addListener(this.form, "submit", this.onSubmit);
-        this.addListener(document, "click", this.onDocumentClick);
     }
 
     destroy() {
         if (this.timer) {
             window.clearTimeout(this.timer);
         }
-        super.destroy();
     }
 
     closeSuggestions() {
+        if (!this.listEl) {
+            return;
+        }
         this.listEl.classList.remove("is-open");
         this.listEl.innerHTML = "";
         this.activeIndex = -1;
@@ -45,6 +49,9 @@ export class EquipmentChecklistAdd extends Interaction {
     }
 
     setAsset(id, label) {
+        if (!this.assetField || !this.input) {
+            return;
+        }
         this.assetField.value = id || "";
         if (label) {
             this.input.value = label;
@@ -61,6 +68,9 @@ export class EquipmentChecklistAdd extends Interaction {
     }
 
     render() {
+        if (!this.listEl) {
+            return;
+        }
         this.listEl.innerHTML = "";
         if (!this.results.length) {
             if (this.emptyHint) {
@@ -102,6 +112,9 @@ export class EquipmentChecklistAdd extends Interaction {
     }
 
     fetchSuggestions(query) {
+        if (!this.suggestUrl) {
+            return;
+        }
         if (!query) {
             this.closeSuggestions();
             return;
@@ -123,6 +136,9 @@ export class EquipmentChecklistAdd extends Interaction {
     }
 
     onInput() {
+        if (!this.input || !this.assetField) {
+            return;
+        }
         this.assetField.value = "";
         const query = this.input.value.trim();
         if (this.timer) {
@@ -134,7 +150,7 @@ export class EquipmentChecklistAdd extends Interaction {
     }
 
     onKeydown(ev) {
-        if (!this.listEl.classList.contains("is-open")) {
+        if (!this.listEl || !this.listEl.classList.contains("is-open")) {
             return;
         }
         if (!this.results.length) {
@@ -152,8 +168,11 @@ export class EquipmentChecklistAdd extends Interaction {
             this.activeIndex =
                 (this.activeIndex - 1 + this.results.length) % this.results.length;
             this.render();
-        } else if (ev.key === "Enter" && this.activeIndex >= 0 && this.results[this.activeIndex]) {
-            // Bind highlighted suggestion before submit.
+        } else if (
+            ev.key === "Enter" &&
+            this.activeIndex >= 0 &&
+            this.results[this.activeIndex]
+        ) {
             this.setAsset(
                 this.results[this.activeIndex].id,
                 this.results[this.activeIndex].label
@@ -164,13 +183,13 @@ export class EquipmentChecklistAdd extends Interaction {
     }
 
     onSubmit() {
-        if (!this.assetField.value) {
+        if (this.assetField && !this.assetField.value) {
             this.assetField.value = "";
         }
     }
 
     onDocumentClick(ev) {
-        if (!this.form.contains(ev.target)) {
+        if (this.form && !this.form.contains(ev.target)) {
             this.closeSuggestions();
         }
     }

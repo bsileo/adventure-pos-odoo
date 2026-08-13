@@ -2,7 +2,7 @@
 {
     "name": "Adventure Equipment Configuration Portal",
     "summary": "Customer portal for packing lists and equipment configurations.",
-    "version": "19.0.1.0.3",
+    "version": "19.0.1.0.4",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
