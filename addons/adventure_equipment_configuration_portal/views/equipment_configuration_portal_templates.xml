@@ -46,17 +46,31 @@
             </t>
             <t t-else="">
                 <div class="table-responsive">
-                    <table class="table o_portal_my_doc_table table-hover">
+                    <table class="table o_portal_my_doc_table table-hover o_equip_lists_table">
                         <thead>
                             <tr>
+                                <th class="o_equip_list_health" scope="col">
+                                    <span class="visually-hidden">Health</span>
+                                </th>
                                 <th>Name</th>
                                 <th>Kind</th>
                                 <th>Items</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr t-foreach="equipment_lists" t-as="lst">
+                                <td class="o_equip_list_health">
+                                    <t t-if="lst.has_broken_references">
+                                        <span class="o_equip_list_attention"
+                                              tabindex="0"
+                                              role="img"
+                                              title="One or more items are no longer available. This list may be invalid until you update it."
+                                              aria-label="Needs attention: one or more items are no longer available. This list may be invalid until you update it."
+                                              data-tip="One or more items are no longer available. This list may be invalid until you update it.">
+                                            <i class="fa fa-exclamation-triangle text-warning" aria-hidden="true"/>
+                                        </span>
+                                    </t>
+                                </td>
                                 <td>
                                     <a t-att-href="'/my/equipment/lists/%s' % lst.id">
                                         <t t-esc="lst.name"/>
@@ -66,10 +80,6 @@
                                     <t t-esc="dict(lst._fields['list_kind'].selection).get(lst.list_kind)"/>
                                 </td>
                                 <td><t t-esc="lst.line_count"/></td>
-                                <td>
-                                    <span t-if="lst.has_broken_references" class="badge text-bg-warning">Needs attention</span>
-                                    <span t-else="" class="text-muted">OK</span>
-                                </td>
                             </tr>
                         </tbody>
                     </table>

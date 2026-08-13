@@ -143,7 +143,7 @@ Portal/staff UI always has something to render: “~~Primary AL80~~ — equipmen
 ### List-level health
 
 - Compute (or maintain) list flags such as `has_broken_references` / `is_incomplete` when any asset line is missing, archived, or in a non-usable lifecycle state.
-- Surface on **list index** (warning icon / “Needs attention”) and **list detail** (banner: “One or more items are no longer available — this list may be invalid until you update it.”).
+- Surface on **list index** as a **left-edge warning icon only when broken** (no dedicated Status column / no perpetual “OK”); hover or focus/tap explains the problem. On **list detail**, show a banner: “One or more items are no longer available — this list may be invalid until you update it.”
 - Customer actions: replace asset on the line, convert to a free-text reminder, or remove the line deliberately.
 
 ### Staff / merge
@@ -284,7 +284,8 @@ Keep URLs under `/my/equipment/...` so the equipment portal mental model stays o
 
 ### Index page
 
-- Table or stacked rows: name, kind badge (Packing list / Configuration), line count, updated on, broken-ref cue
+- Table or stacked rows: name, kind (Packing list / Configuration), line count; optional later: updated on
+- **Broken-ref cue:** leading warning icon on the row **only when** `has_broken_references` (tooltip / tap-focus explanation). Do not reserve a Status column that is almost always “OK”
 - Primary CTA: **Create list**
 - Empty state: short explanation of packing vs configuration + CTA
 - Optional later: duplicate list (not required for L2)
@@ -388,7 +389,7 @@ Complexity is relative (S/M/L), not calendar time.
 |-------|-------|
 | ORM | Partner integrity on lines; archive/retire/unlink leave lines + snapshots; kind validation; quantity-only lines |
 | Security | Portal record rules; staff ACL; HttpCase isolation + asset attachment tampering |
-| Portal UX | Create packing + configuration; delete with confirm; check reset; up/down reorder; empty states; broken-reference badges and list “needs attention” |
+| Portal UX | Create packing + configuration; delete with confirm; check reset; up/down reorder; empty states; broken-reference badges; index warning icon (no Status column) when list needs attention |
 | Seed | Idempotent Tidewater contributor (seed-only examples); optional sample with an archived asset line for demo |
 
 ---

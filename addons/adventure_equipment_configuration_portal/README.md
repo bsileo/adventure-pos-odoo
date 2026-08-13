@@ -14,6 +14,10 @@ Customer portal for packing lists and configurations.
 
 Type an item and press **Add** to save a plain checklist row. Matching owned equipment appears as you type; choosing a suggestion links that asset. Converting a plain item into registered equipment is deferred.
 
+## List index health
+
+There is no Status column. When linked equipment is archived, unavailable, or missing, a warning icon appears at the left of that row; hover or tap/focus explains that the list may be invalid until updated.
+
 ## Install
 
 Depends on `adventure_equipment_configuration` and `adventure_equipment_portal`.
