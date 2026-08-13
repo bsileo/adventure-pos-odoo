@@ -1,0 +1,7 @@
+{
+  "setup-worktree": [
+    "cp \"$ROOT_WORKTREE_PATH/.env\" .env 2>/dev/null || cp .env.example .env",
+    "bash ./scripts/ensure-docker.sh",
+    "echo \"Worktree ready. From this worktree run: make setup   # or make start if DB already initialized elsewhere\""
+  ]
+}

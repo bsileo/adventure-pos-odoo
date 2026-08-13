@@ -7,6 +7,7 @@ This site collects **evolving** product specs, technical specs, workflows, archi
 ## Start here
 
 - [Developer onboarding](developer-onboarding.md) — environment, first steps, and **documentation-first workflow** before coding  
+- [Cursor cloud development](cursor-cloud-development.md) — preferred cloud-agent Docker + Tidewater workflow (`make setup` / `start` / `validate` / `test`)  
 - [Agent rules](agent-rules.md) — mandatory habits, including **reviewing architecture and design docs** when starting a work stream  
 - [Setup](setup.md) — full local and tooling setup  
 - [Architecture](architecture/) — system direction (includes [Equipment management](architecture/equipment-management.md), [Client web portal](architecture/client-web-portal.md), [Equipment lists (portal, future)](architecture/equipment-lists-portal.md), and **future** notes such as [Scuba training and scheduling](architecture/scuba-training-scheduling.md))  

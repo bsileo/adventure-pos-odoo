@@ -39,6 +39,7 @@ It creates / updates:
 
 - Rebrands the database **main company** as Tidewater Dive Shop (Pittsburgh). It does **not** create a second company.
 - Sets the Tidewater company logo (`dive_shop_pos/static/img/tidewater_logo.png`) used on the main login and POS login screens.
+- A **Tidewater Front Desk** `pos.config` plus bank payment method (needed when Odoo demo data is off).
 - Rental and fee products.
 - Scuba rental package templates.
 - Physical rental assets with representative states.
@@ -74,16 +75,24 @@ Demo path: public homepage → Sign in → My Equipment → Packing & configurat
 
 `adventure_equipment` is an Odoo **App** (`application=True`). `adventure_equipment_scuba` is also an **App**. `adventure_equipment_service` remains a supporting module (`application=False`) so it does not appear when filtering Apps alone—install it via the scuba app, website/portal stack, or Apps → Modules.
 
-## Usage (local)
+## Usage (local / Cursor cloud)
 
-PowerShell:
+Preferred full bootstrap (Docker, init DB, Tidewater):
+
+```bash
+make setup
+# wipe disposable local/cloud DB and reseed:
+make reset ASSUME_YES=1
+```
+
+PowerShell (seed only):
 
 ```powershell
 .\scripts\seed-dev-db.ps1
 .\scripts\seed-dev-db.ps1 -Profile tidewater -ResetSeed
 ```
 
-Bash / Make:
+Bash / Make (seed only):
 
 ```bash
 bash ./scripts/seed-dev-db.sh --profile tidewater
@@ -93,6 +102,8 @@ make seed-tidewater RESET_SEED=1
 ```
 
 The runner installs or updates the Tidewater standard package (`dive_shop_pos`, `adventure_equipment_scuba`, `adventure_website`, `adventure_equipment_portal`) before loading the seed profile.
+
+**Do not** restore repo-root `backup.sql` for development — it is not the supported dataset.
 
 ## Sandbox
 

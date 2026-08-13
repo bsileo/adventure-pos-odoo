@@ -6,13 +6,27 @@ Custom Odoo 19 stack for retail POS, inventory, and related modules. Custom code
 
 **New developer?** Use the step-by-step guide: [docs/developer-onboarding.md](docs/developer-onboarding.md).
 
+**Cursor cloud agents (preferred):** [docs/cursor-cloud-development.md](docs/cursor-cloud-development.md) and [AGENTS.md](AGENTS.md). Same commands locally and in cloud:
+
+```bash
+make setup      # Docker, .env, up, init-db, Tidewater seed
+make start      # ensure stack is running
+make validate   # smoke: Tidewater login/company + POS
+make test TEST_TAGS=/adventure_equipment   # per-module tests only
+make reset ASSUME_YES=1   # wipe local DB + reseed Tidewater
+```
+
 **Need to offload Docker/Odoo/Postgres from your laptop?** Use the remote VM workflow: [docs/remote-development.md](docs/remote-development.md).
+
+Manual equivalent of `make setup`:
 
 1. Copy `.env.example` to `.env` and set variables as needed.
 2. Start services: `docker compose up -d` (or `make up`).
 3. **Once**, initialize the default DB: `make init-db` (installs `base` **without** Odoo demonstration/sample data; avoids HTTP 500 until `base` is installed).
-4. The Postgres database now persists across `docker compose down` / `up`. To intentionally wipe and recreate local dev data, run `make reset-db`.
-5. Open [http://localhost:8069](http://localhost:8069) and sign in; install **Adventure Base** from Apps if needed.
+4. Load the canonical dive-shop dataset: `make seed-tidewater`.
+5. Open [http://localhost:8069](http://localhost:8069) and sign in (`admin` / `admin` on a fresh disposable DB). To wipe and recreate local data with Tidewater: `make reset`. (`make reset-db` only re-inits `base` without seeding.)
+
+Do **not** use repo-root `backup.sql` for development — Tidewater seed is the supported path.
 
 Full setup (Cursor, OpenClaw, GitHub, API keys) is documented in [docs/setup.md](docs/setup.md). **Agents and developers:** follow [docs/agent-rules.md](docs/agent-rules.md) (including the **documentation-first workflow** before starting a work stream—architecture, data model, integrations, and future design pages). **Issues, Projects, branches, PRs:** [docs/development-tracking.md](docs/development-tracking.md). **Remote dev VM:** [docs/remote-development.md](docs/remote-development.md). **Shared GCP sandbox** (project, `gcloud` profile, deploy workflow): [docs/shared-environment.md](docs/shared-environment.md). **Cursor → push → sandbox:** [docs/sandbox-cursor-to-deploy.md](docs/sandbox-cursor-to-deploy.md).
 
@@ -48,7 +62,7 @@ If the **Documentation** workflow’s deploy job fails with **HTTP 404** / “Fa
 - `.github/` — Issue & PR templates; [deploy-gcp-sandbox workflow](.github/workflows/deploy-gcp-sandbox.yml) (push to `develop`); [documentation workflow](.github/workflows/docs.yml) (MkDocs build; Pages deploy from `develop`)
 - `addons/` — Odoo modules (`adventure_base`, `adventure_pos`, optional `adventure_waiver` / `adventure_smartwaiver`, planned: inventory, customers, purchase, reports); third-party App Store modules: [addons/README.md](addons/README.md)
 - `config/` — Tooling config (e.g. OpenClaw)
-- `docs/` — Setup and agent guidelines; [documentation-first workflow](docs/agent-rules.md#documentation-first-workflow-mandatory); [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md); [client web portal](docs/architecture/client-web-portal.md); [scuba training & scheduling **(future design)**](docs/architecture/scuba-training-scheduling.md); [FareHarbor booking sync (draft)](docs/integrations/fareharbor-pos-sync.md); [Smartwaiver waiver sync](docs/integrations/smartwaiver.md); [migrations (e.g. Dive Shop 360)](docs/migrations/README.md); [shared environment](docs/shared-environment.md); [sandbox deploy from Cursor](docs/sandbox-cursor-to-deploy.md)
+- `docs/` — Setup and agent guidelines; [documentation-first workflow](docs/agent-rules.md#documentation-first-workflow-mandatory); [secure GCP access](docs/gcp-secure-access.md); [development tracking (GitHub Issues)](docs/development-tracking.md); [data model](docs/data-model/core-model.md); [master catalog & sync](docs/architecture/master-catalog-and-sync.md); [tenant provisioning](docs/architecture/tenant-provisioning.md); [client web portal](docs/architecture/client-web-portal.md); [equipment lists & configurations](docs/architecture/equipment-lists-portal.md); [scuba training & scheduling **(future design)**](docs/architecture/scuba-training-scheduling.md); [FareHarbor booking sync (draft)](docs/integrations/fareharbor-pos-sync.md); [Smartwaiver waiver sync](docs/integrations/smartwaiver.md); [migrations (e.g. Dive Shop 360)](docs/migrations/README.md); [shared environment](docs/shared-environment.md); [sandbox deploy from Cursor](docs/sandbox-cursor-to-deploy.md); [Cursor cloud development](docs/cursor-cloud-development.md)
 - `scripts/` — Helper scripts (e.g. [gcp-sandbox-vm.ps1](scripts/gcp-sandbox-vm.ps1), [gcp-sandbox-reset-db.ps1](scripts/gcp-sandbox-reset-db.ps1) / [gcp-sandbox-reset-db.sh](scripts/gcp-sandbox-reset-db.sh) for shared sandbox DB wipe; [remote-dev.ps1](scripts/remote-dev.ps1) / [remote-dev.sh](scripts/remote-dev.sh) for developer-owned remote VMs)
 
 Do not store secrets in the repo; use `.env` (ignored by git).

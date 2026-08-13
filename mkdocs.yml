@@ -38,9 +38,11 @@ nav:
   - Home: index.md
   - Guides:
       - Developer onboarding: developer-onboarding.md
+      - Cursor cloud development: cursor-cloud-development.md
       - Setup: setup.md
       - Remote development: remote-development.md
       - Shared environment: shared-environment.md
+      - Secure GCP access: gcp-secure-access.md
       - Sandbox Cursor to deploy: sandbox-cursor-to-deploy.md
       - Development seed data: seed-data.md
       - Development tracking: development-tracking.md
