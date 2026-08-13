@@ -1,11 +1,11 @@
-# Deploy the shared Odoo sandbox on GCP when `develop` is updated.
-# Required repo secrets (Settings → Secrets and variables → Actions):
-#   GCP_SANDBOX_SSH_PRIVATE_KEY  — PEM private key for user `deploy` (same as your GCE SSH key; never commit)
-#   GCP_SANDBOX_SSH_HOST         — VM public IP or DNS (ephemeral IP changes after stop/start unless static)
-#   GCP_SANDBOX_KNOWN_HOSTS      — one or more lines from: ssh-keyscan -H HOST
-#   GCP_SANDBOX_DEPLOY_PATH      — e.g. /srv/adventurepos/adventure-pos-odoo
-#
-# Fork PRs do not receive secrets; only pushes to `develop` in this repo run deploy.
+# Deploy the private shared sandbox through Workload Identity Federation + IAP.
+# Required repository secrets:
+#   GCP_WORKLOAD_IDENTITY_PROVIDER
+#   GCP_DEPLOY_SERVICE_ACCOUNT
+# Required repository variables:
+#   GCP_SANDBOX_INSTANCE (default: adventurepos-sandbox-vm)
+#   GCP_SANDBOX_ZONE (default: us-central1-a)
+#   GCP_SANDBOX_DEPLOY_PATH (default: /srv/adventurepos/adventure-pos-odoo)
 
 name: Deploy GCP sandbox
 
@@ -18,27 +18,35 @@ concurrency:
   group: deploy-gcp-sandbox
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Load SSH private key
-        uses: webfactory/ssh-agent@v0.10.0
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
         with:
-          ssh-private-key: ${{ secrets.GCP_SANDBOX_SSH_PRIVATE_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
 
-      - name: Trust host key
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{ secrets.GCP_SANDBOX_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v3
 
-      - name: Pull latest and restart Docker stack
+      - name: Pull latest and restart Docker stack through IAP
         env:
-          SANDBOX_SSH_HOST: ${{ secrets.GCP_SANDBOX_SSH_HOST }}
-          SANDBOX_DEPLOY_PATH: ${{ secrets.GCP_SANDBOX_DEPLOY_PATH }}
+          PROJECT: adventure-pos-sandbox
+          INSTANCE: ${{ vars.GCP_SANDBOX_INSTANCE || 'adventurepos-sandbox-vm' }}
+          ZONE: ${{ vars.GCP_SANDBOX_ZONE || 'us-central1-a' }}
+          DEPLOY_PATH: ${{ vars.GCP_SANDBOX_DEPLOY_PATH || '/srv/adventurepos/adventure-pos-odoo' }}
         run: |
           set -euo pipefail
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "deploy@${SANDBOX_SSH_HOST}" \
-            "set -euo pipefail; cd \"${SANDBOX_DEPLOY_PATH}\"; git fetch origin; git checkout develop; git reset --hard origin/develop; docker compose up -d"
+          gcloud compute ssh "deploy@${INSTANCE}" \
+            --project="${PROJECT}" \
+            --zone="${ZONE}" \
+            --tunnel-through-iap \
+            --quiet \
+            --strict-host-key-checking=no \
+            --command="set -euo pipefail; cd \"${DEPLOY_PATH}\"; git fetch origin; git checkout develop; git reset --hard origin/develop; docker compose up -d"
