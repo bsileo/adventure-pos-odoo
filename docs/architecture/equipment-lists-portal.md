@@ -289,23 +289,15 @@ Keep URLs under `/my/equipment/...` so the equipment portal mental model stays o
 - Empty state: short explanation of packing vs configuration + CTA
 - Optional later: duplicate list (not required for L2)
 
-### Detail — packing
+### Detail — packing / configuration (checklist)
 
-- Header: name, notes, **Reset checks**; banner when `has_broken_references`; **Delete packing list** with confirm
-- Ordered checklist: checkbox, label (asset link or text), notes snippet; **broken/unavailable badge** on bad asset lines (still shown, not removed)
-- Reorder with **up/down** in L2
-- Add: “From my equipment” (multi-select or picker) · “Custom item” · optional category
-- Asset rows link through to `/my/equipment/<asset_id>` when the asset is still readable; otherwise show snapshot label only
-
-### Detail — configuration
-
-- Header: name, customer notes (emphasized—setup journal); banner when the configuration has broken members
-- Ordered members: asset display name (or snapshot), role, quantity label, line notes, reference-state badge
-- Add from owned equipment; add quantity-only row (weights via `quantity` + `quantity_uom_label`)
-- Reorder with **up/down** controls in L2 (drag-and-drop later)
-- No requirement to check off items in MVP (optional later “pre-dive check” mode)
-- Customer may replace or remove a broken line explicitly — never as a side effect of deleting the asset elsewhere
-- **Delete configuration** action with confirm
+- Compact checklist rows with checkboxes (both kinds), label, optional notes
+- Linked equipment shows an **Equipment** badge and links to `/my/equipment/<id>`
+- Broken/unavailable badges only when needed; list-level banner when any line is broken
+- **Single add field:** type freely to add a plain checklist item; matching owned equipment appears as autocomplete suggestions and can be selected to link the asset
+- Reorder with **up/down**; remove with confirm
+- Converting a plain typed item into a registered equipment asset is **deferred**
+- **Delete list** with confirm
 
 ### Create flow (keep short)
 
