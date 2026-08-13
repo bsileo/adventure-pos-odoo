@@ -28,6 +28,9 @@ services:
     build: .
     image: adventure-pos-odoo:19.0
     network_mode: host
+    # Cursor preview / agent.cvm.dev terminates TLS and forwards X-Forwarded-*.
+    # Without proxy_mode, Odoo sees plain HTTP and can mishandle sessions behind HTTPS.
+    command: ["odoo", "--proxy-mode"]
     depends_on:
       db:
         condition: service_healthy

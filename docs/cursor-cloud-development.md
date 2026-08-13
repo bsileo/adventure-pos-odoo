@@ -37,6 +37,19 @@ Agent instructions: [AGENTS.md](../AGENTS.md).
 
 - http://127.0.0.1:8069 — database `odoo`
 - **`admin` / `admin`** after fresh `init-db` unless you changed it
+- Portal demo (Tidewater): see [seed data](seed-data.md) (e.g. `certified_current@example.test` / `tidewater`)
+
+### Preview URL CSRF (`Session expired (invalid CSRF token)`)
+
+The Cursor HTTPS preview (`*.agent.cvm.dev`) sits in front of Odoo. A **400 Bad Request** with `Session expired (invalid CSRF token)` on `/web/login` is almost always a **stale or dropped `session_id` cookie**, not an application bug.
+
+Try, in order:
+
+1. Hard-refresh the login page (or clear site data for the preview host) and submit again.
+2. Open the preview as a **top-level** browser tab (not an embedded WebView/iframe), then log in.
+3. Confirm Compose is up (`make start`) — a restart invalidates in-memory expectations if you kept an old login form open.
+
+Cloud Compose enables Odoo `--proxy-mode` so `X-Forwarded-Proto` / `X-Forwarded-Host` from the preview proxy are honored.
 
 ## Browser checks
 
