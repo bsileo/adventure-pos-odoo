@@ -126,3 +126,16 @@ class TestEquipmentConfigurationPortalSecurity(TransactionCase):
         line.write({"name": "Spare mask strap (backup)", "notes": "in dry box"})
         self.assertEqual(line.name, "Spare mask strap (backup)")
         self.assertEqual(line.notes, "in dry box")
+
+    def test_portal_can_set_list_note_on_equipment_line(self):
+        Line = self.env["adventure.equipment.configuration.line"].with_user(self.user_a)
+        line = Line.create(
+            {
+                "configuration_id": self.list_a.id,
+                "line_type": "asset",
+                "asset_id": self.asset_a.id,
+            }
+        )
+        line.write({"notes": "Rinse after quarry dive"})
+        self.assertEqual(line.notes, "Rinse after quarry dive")
+        self.assertTrue(line.asset_id)

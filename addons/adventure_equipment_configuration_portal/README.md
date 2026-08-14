@@ -14,7 +14,7 @@ Customer portal for packing lists and configurations.
 
 Type an item and press **Add** to save a plain checklist row. Matching owned equipment appears as you type (loose search across nickname, category, brand/model, manufacturer, serial, notes, tags, and product snapshots); choosing a suggestion links that asset. Converting a plain item into registered equipment is deferred.
 
-Free-text (and quantity) rows show an **Edit** control to change the label/notes inline. Linked equipment rows stay tied to the asset record.
+Free-text (and quantity) rows can rename via **Edit**; **every** row (including linked equipment) can set a list-specific note that shows as subtext under the label. Equipment names still come from the gear record.
 
 ## List index health
 

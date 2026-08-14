@@ -231,39 +231,56 @@
                                     </t>
                                 </div>
                                 <div class="o_equip_checklist_body">
-                                    <t t-if="is_editing and is_manual_line">
+                                    <t t-if="is_editing">
                                         <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post"
                                               class="o_equip_checklist_edit">
                                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                            <input type="hidden" name="action" value="edit_text_line"/>
+                                            <input type="hidden" name="action" value="edit_line"/>
                                             <input type="hidden" name="line_id" t-att-value="line.id"/>
-                                            <label class="visually-hidden" t-att-for="'edit_label_%s' % line.id">Item text</label>
-                                            <input type="text"
-                                                   class="form-control form-control-sm mb-2"
-                                                   name="label"
-                                                   t-att-id="'edit_label_%s' % line.id"
-                                                   t-att-value="line.name or line.display_label"
-                                                   required="required"
-                                                   autofocus="autofocus"/>
-                                            <t t-if="line.line_type == 'quantity'">
-                                                <div class="d-flex flex-wrap gap-2 mb-2">
-                                                    <input type="number" step="any" class="form-control form-control-sm"
-                                                           name="quantity" placeholder="Qty"
-                                                           t-att-value="line.quantity or ''"
-                                                           style="max-width: 6rem;"/>
-                                                    <input type="text" class="form-control form-control-sm"
-                                                           name="quantity_uom_label" placeholder="Unit (lb, kg…)"
-                                                           t-att-value="line.quantity_uom_label or ''"
-                                                           style="max-width: 8rem;"/>
-                                                </div>
+                                            <t t-if="is_manual_line">
+                                                <label class="visually-hidden" t-att-for="'edit_label_%s' % line.id">Item text</label>
+                                                <input type="text"
+                                                       class="form-control form-control-sm mb-2"
+                                                       name="label"
+                                                       t-att-id="'edit_label_%s' % line.id"
+                                                       t-att-value="line.name or line.display_label"
+                                                       required="required"
+                                                       autofocus="autofocus"/>
+                                                <t t-if="line.line_type == 'quantity'">
+                                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                                        <input type="number" step="any" class="form-control form-control-sm"
+                                                               name="quantity" placeholder="Qty"
+                                                               t-att-value="line.quantity or ''"
+                                                               style="max-width: 6rem;"/>
+                                                        <input type="text" class="form-control form-control-sm"
+                                                               name="quantity_uom_label" placeholder="Unit (lb, kg…)"
+                                                               t-att-value="line.quantity_uom_label or ''"
+                                                               style="max-width: 8rem;"/>
+                                                    </div>
+                                                </t>
                                             </t>
-                                            <label class="visually-hidden" t-att-for="'edit_notes_%s' % line.id">Notes</label>
+                                            <t t-else="">
+                                                <div class="o_equip_checklist_label mb-2">
+                                                    <t t-if="line.asset_id">
+                                                        <a t-att-href="'/my/equipment/%s' % line.asset_id.id" t-esc="line.display_label"/>
+                                                        <span class="badge text-bg-light border ms-1">Equipment</span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span t-esc="line.display_label"/>
+                                                    </t>
+                                                </div>
+                                                <p class="form-text small mb-2">
+                                                    Equipment name comes from your gear record. Add a note for this list only.
+                                                </p>
+                                            </t>
+                                            <label class="visually-hidden" t-att-for="'edit_notes_%s' % line.id">Note for this list</label>
                                             <input type="text"
                                                    class="form-control form-control-sm mb-2"
                                                    name="notes"
                                                    t-att-id="'edit_notes_%s' % line.id"
                                                    t-att-value="line.notes or ''"
-                                                   placeholder="Optional note"/>
+                                                   t-att-autofocus="'autofocus' if not is_manual_line else None"
+                                                   placeholder="Note for this list (optional)"/>
                                             <div class="d-flex flex-wrap gap-2">
                                                 <button type="submit" class="btn btn-sm btn-primary">Save</button>
                                                 <a t-att-href="'/my/equipment/lists/%s' % equipment_list.id"
@@ -291,11 +308,9 @@
                                 </div>
                                 <div class="o_equip_checklist_actions d-flex gap-1">
                                     <t t-if="not is_editing">
-                                        <t t-if="is_manual_line">
-                                            <a t-att-href="'/my/equipment/lists/%s?edit_line=%s' % (equipment_list.id, line.id)"
-                                               class="btn btn-sm btn-link p-0"
-                                               title="Edit item">✎</a>
-                                        </t>
+                                        <a t-att-href="'/my/equipment/lists/%s?edit_line=%s' % (equipment_list.id, line.id)"
+                                           class="btn btn-sm btn-link p-0"
+                                           t-att-title="is_manual_line and 'Edit item' or 'Edit list note'">✎</a>
                                         <form t-att-action="'/my/equipment/lists/%s' % equipment_list.id" method="post" class="d-inline">
                                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                             <input type="hidden" name="action" value="move_up"/>
@@ -340,9 +355,13 @@
                             <button type="submit" class="btn btn-primary">Add</button>
                         </div>
                         <div class="o_equip_checklist_suggestions" data-checklist-suggestions="1" role="listbox"></div>
+                        <input type="text"
+                               class="form-control form-control-sm mt-2"
+                               name="notes"
+                               placeholder="Note for this list (optional) — shows under the item"
+                               autocomplete="off"/>
                         <p class="form-text mb-0">
-                            Matching gear appears as you type (name, category, brand/model, notes).
-                            Press Add to save whatever you typed; pick a suggestion to link equipment.
+                            Matching gear appears as you type. Optional note is list-specific (works for free-text and equipment).
                         </p>
                     </form>
 

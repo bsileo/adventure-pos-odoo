@@ -141,8 +141,10 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
                     return request.redirect("/my/equipment/lists")
                 elif action == "add_item":
                     # Unified checklist add: link equipment if chosen, else free-text item.
+                    # Optional list-specific subtext (notes) applies to either kind.
                     asset_raw = (post.get("asset_id") or "").strip()
                     label = (post.get("label") or "").strip()
+                    notes = (post.get("notes") or "").strip() or False
                     if asset_raw:
                         asset_id = int(asset_raw)
                         asset = request.env["adventure.equipment.asset"].browse(asset_id)
@@ -156,6 +158,7 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
                                 "configuration_id": record.id,
                                 "line_type": "asset",
                                 "asset_id": asset.id,
+                                "notes": notes,
                             }
                         )
                     elif label:
@@ -164,6 +167,7 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
                                 "configuration_id": record.id,
                                 "line_type": "text",
                                 "name": label,
+                                "notes": notes,
                             }
                         )
                     else:
@@ -173,11 +177,13 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
                     asset = request.env["adventure.equipment.asset"].browse(asset_id)
                     if not asset.exists() or asset.partner_id != request.env.user.partner_id:
                         raise ValidationError(_("Invalid equipment selection."))
+                    notes = (post.get("notes") or "").strip() or False
                     request.env["adventure.equipment.configuration.line"].create(
                         {
                             "configuration_id": record.id,
                             "line_type": "asset",
                             "asset_id": asset.id,
+                            "notes": notes,
                         }
                     )
                 elif action == "add_text":
@@ -231,34 +237,30 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
                         int(post.get("line_id") or 0),
                     )
                     line.unlink()
-                elif action == "edit_text_line":
+                elif action in ("edit_line", "edit_text_line"):
+                    # Any list line may carry list-specific subtext (notes).
+                    # Manual text/quantity rows can also rename; linked equipment keeps its asset label.
                     line = self._document_check_access(
                         "adventure.equipment.configuration.line",
                         int(post.get("line_id") or 0),
                     )
-                    if line.asset_id or line.line_type == "asset":
-                        raise ValidationError(
-                            _("Linked equipment items are edited from your equipment record.")
-                        )
-                    label = (post.get("label") or "").strip()
-                    if not label:
-                        raise ValidationError(_("Item text cannot be empty."))
-                    vals = {"name": label, "line_type": line.line_type or "text"}
-                    if line.line_type == "quantity":
-                        notes = (post.get("notes") or "").strip()
-                        vals["notes"] = notes or False
-                        quantity = post.get("quantity")
-                        if quantity not in (None, "", False):
-                            vals["quantity"] = float(quantity)
-                        uom = (post.get("quantity_uom_label") or "").strip()
-                        if "quantity_uom_label" in post:
-                            vals["quantity_uom_label"] = uom or False
-                    else:
-                        # Keep free-text lines as text; allow optional notes.
-                        notes = (post.get("notes") or "").strip()
-                        if "notes" in post:
-                            vals["notes"] = notes or False
-                        vals["line_type"] = "text"
+                    notes = (post.get("notes") or "").strip() or False
+                    vals = {"notes": notes}
+                    is_manual = not line.asset_id and line.line_type in ("text", "quantity")
+                    if is_manual:
+                        label = (post.get("label") or "").strip()
+                        if not label:
+                            raise ValidationError(_("Item text cannot be empty."))
+                        vals["name"] = label
+                        if line.line_type == "quantity":
+                            quantity = post.get("quantity")
+                            if quantity not in (None, "", False):
+                                vals["quantity"] = float(quantity)
+                            if "quantity_uom_label" in post:
+                                uom = (post.get("quantity_uom_label") or "").strip()
+                                vals["quantity_uom_label"] = uom or False
+                        else:
+                            vals["line_type"] = "text"
                     line.write(vals)
                 return request.redirect("/my/equipment/lists/%s" % record.id)
             except AccessError:
