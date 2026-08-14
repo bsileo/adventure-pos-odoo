@@ -2,7 +2,7 @@
 
 !!! warning "Partially implemented"
 
-    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment), **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service), and **scuba vertical pack** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba) are **implemented**. **Portal** (`adventure_equipment_portal` + `adventure_website`) is **in progress** on the client web portal workstream. **Configurations**, **notifications**, and **POS/sale bridges** remain future work.
+    The **core registry** [`adventure_equipment`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment), **generic service engine** [`adventure_equipment_service`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_service), and **scuba vertical pack** [`adventure_equipment_scuba`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_scuba) are **implemented**. **Portal** (`adventure_equipment_portal` + `adventure_website`) is **in progress** on the client web portal workstream. **Configurations / packing lists** ([Phase 6A](equipment-lists-portal.md)) are **implemented** (`adventure_equipment_configuration` + portal). **Notifications** and **POS/sale bridges** remain future work.
 
     Treat remaining model names and fields on this page as the **platform direction**; compare with the live modules and their READMEs when implementing or testing.
 
@@ -210,7 +210,7 @@ Equipment should follow **waiver-style privilege groups** plus **portal record r
 | **`adventure_equipment`** | Core domain: assets, categories, ownership, identifiers, documents/images metadata, events, basic staff UI | Any shop using customer equipment |
 | **`adventure_equipment_service`** | **Implemented (Phase 3A):** generic service types, policies, requirements, records, date aging cron, staff service UI (sport-neutral; no scuba rules) | Shops doing equipment maintenance forecasting |
 | **`adventure_equipment_portal`** | Portal/website controllers, customer UX, portal security | Customer self-service enabled |
-| **`adventure_equipment_configuration`** | Kits/configurations, membership, scenarios, readiness evaluation | Configurations / trip prep |
+| **`adventure_equipment_configuration`** | Kits/configurations, packing lists, membership lines; later scenarios & readiness evaluation ([portal design](equipment-lists-portal.md)) | Configurations / trip packing |
 | **`adventure_equipment_notifications`** | Mail templates, cron reminders, activity scheduling | Reminders / campaigns |
 | **`adventure_equipment_scuba`** | **Implemented (Phase 3B):** scuba service types/policies (VIP, hydro, regulator/BCD, …), cylinder/regulator asset fields, scuba service-record metadata | Dive shops |
 | **`adventure_equipment_pos`** (optional thin) | POS hooks: create equipment from POS sale, open customer equipment from register | POS-driven registration |
@@ -351,19 +351,24 @@ Completed (or in-progress) work:
 
 #### Equipment Configuration — `adventure.equipment.configuration`
 
-Named kit/setup owned by a partner (“Travel set”, “Cold water”).
+Named **equipment list** owned by a partner. Discriminated by `list_kind`:
+
+- **`configuration`** — named setup (UI: “Configuration”) of owned assets (+ quantity lines such as weight)
+- **`packing`** — trip packing checklist (assets and/or free-text reminders)
+
+See [Equipment lists & configurations (portal)](equipment-lists-portal.md) for portal UX, confirmed packaging (Option A), and Phase 6A vs 6B split.
 
 #### Configuration Membership — `adventure.equipment.configuration.line`
 
-Asset membership with role (`primary_reg`, `backup_computer`, …) via sport-agnostic `role_code` + payload.
+List lines: optional asset link, denormalized asset snapshots, label, role (`primary_reg`, …), quantity/uom label, notes, packing check state, broken-reference state when the asset is archived/retired/missing (never auto-purge lines).
 
 #### Scenario — `adventure.equipment.scenario`
 
-Reusable readiness template (“Recreational boat dive”, “Altitude lake”, later “Backcountry ski day”).
+Reusable readiness template (“Recreational boat dive”, “Altitude lake”, later “Backcountry ski day”). **Deferred to Phase 6B** (not required for packing/kit portal MVP).
 
 #### Readiness Evaluation — `adventure.equipment.readiness.result`
 
-Snapshot of evaluating a configuration (or partner’s selected assets) against a scenario: pass/warn/fail lines (service overdue, missing component, cert gate deferred to other modules).
+Snapshot of evaluating a configuration (or partner’s selected assets) against a scenario: pass/warn/fail lines (service overdue, missing component, cert gate deferred to other modules). **Deferred to Phase 6B**.
 
 ### Explicit non-entities (avoid early)
 
@@ -465,7 +470,7 @@ Follow Odoo 19 `res.groups.privilege` pattern from waivers.
 | **Customer registration** | Portal creates `customer_claimed` asset; staff verifies serial/photos |
 | **External purchases** | Same as customer registration; optional receipt attachment |
 | **Transfers** | Wizard: old owner history close + new owner open; keep same asset id |
-| **Retirement** | State `retired`; keep history; remove from active configurations |
+| **Retirement** | State `retired`; keep history; **do not** auto-remove configuration/packing list lines — leave broken/unavailable indicators ([lists design](equipment-lists-portal.md#broken-references-confirmed)) |
 | **Duplicates** | Manager merge wizard: surviving asset keeps history; identifiers moved; loser archived with pointer |
 | **Serial numbers** | Soft uniqueness by category/type; allow duplicates only with manager override + event (real-world collisions / unknown serials) |
 | **Shared ownership** | Phase 1: single `partner_id` (**contact-only**; no commercial-partner rollup on smart-button counts). Later: household sharing via partner child or explicit share table—do not invent multi-owner without product decision |
@@ -478,7 +483,7 @@ Follow Odoo 19 `res.groups.privilege` pattern from waivers.
 
 | Extension | How architecture supports it |
 |-----------|------------------------------|
-| **Configurations / trip planning** | `adventure_equipment_configuration` + scenarios |
+| **Configurations / trip packing** | `adventure_equipment_configuration` + portal lists ([design](equipment-lists-portal.md)); scenarios/readiness later |
 | **Service forecasting** | Policies + requirements + cron in notifications/service |
 | **Dive scenarios / readiness** | Scenario + readiness result; scuba module supplies rules |
 | **AI recommendations** | Read-only analytics on assets/service; no core schema dependency |
@@ -612,12 +617,25 @@ Complexity is relative (S/M/L), not calendar time.
 - **Acceptance:** Cron creates activities/mails per policy lead time; customer opt-out respected  
 - **Complexity:** M  
 
-### Phase 6 — Configurations & scenarios
+### Phase 6 — Configurations, packing lists & scenarios
 
-- **Purpose:** Kits and readiness  
-- **Module:** `adventure_equipment_configuration`  
-- **Acceptance:** Build config; evaluate scenario; surface overdue members  
+Split for delivery clarity ([portal design](equipment-lists-portal.md)):
+
+#### Phase 6A — Packing lists & configurations (portal-first) ✅ **Implemented**
+
+- **Purpose:** Customer packing checklists and named equipment configurations  
+- **Modules:** [`adventure_equipment_configuration`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_configuration) + [`adventure_equipment_configuration_portal`](https://github.com/bsileo/adventure-pos-odoo/tree/develop/addons/adventure_equipment_configuration_portal) (Option A)  
+- **Acceptance:** Create packing + configuration lists; line notes; packing check-off; up/down reorder; portal hard-delete; portal ACL isolation; Tidewater seed-only samples; **broken-reference indicators** when member equipment is archived/retired/deleted (lines retained)  
 - **Complexity:** L  
+- **Deferred in 6A:** scenario templates, readiness pass/fail engine, drag-and-drop reorder, manager-authored templates  
+
+#### Phase 6B — Scenarios & readiness
+
+- **Purpose:** Evaluate configurations (or selected assets) against reusable scenarios; surface overdue members  
+- **Module:** extends `adventure_equipment_configuration` (and optionally service/scuba rules)  
+- **Acceptance:** Build/evaluate scenario; surface overdue / missing component lines  
+- **Complexity:** L  
+- **Depends on:** 6A  
 
 ### Phase 7 — Scuba vertical pack ✅ **Shipped as Phase 3B**
 

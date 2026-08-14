@@ -19,7 +19,7 @@ fi
 wait_for_postgres() {
   local attempt max_attempts=90 sleep_seconds=2
   for attempt in $(seq 1 "${max_attempts}"); do
-    if docker compose exec -T db sh -lc 'pg_isready -U "${POSTGRES_USER}" -d postgres' >/dev/null 2>&1; then
+    if docker compose exec -T db sh -lc 'pg_isready -U "${POSTGRES_USER}" -d postgres -h 127.0.0.1 || pg_isready -U "${POSTGRES_USER}" -d postgres' >/dev/null 2>&1; then
       return 0
     fi
     sleep "${sleep_seconds}"
@@ -36,12 +36,13 @@ wait_for_postgres() {
 }
 
 database_initialized() {
-  docker compose exec -T db sh -lc 'PGPASSWORD="${POSTGRES_PASSWORD}" psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB:-odoo}" -tAc "SELECT 1 FROM information_schema.tables WHERE table_schema = '\''public'\'' AND table_name = '\''ir_module_module'\''" | grep -q 1' >/dev/null 2>&1
+  docker compose exec -T db sh -lc 'PGPASSWORD="${POSTGRES_PASSWORD}" psql -h 127.0.0.1 -U "${POSTGRES_USER}" -d "${POSTGRES_DB:-odoo}" -tAc "SELECT 1 FROM information_schema.tables WHERE table_schema = '\''public'\'' AND table_name = '\''ir_module_module'\''" 2>/dev/null | grep -q 1 || PGPASSWORD="${POSTGRES_PASSWORD}" psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB:-odoo}" -tAc "SELECT 1 FROM information_schema.tables WHERE table_schema = '\''public'\'' AND table_name = '\''ir_module_module'\''" | grep -q 1' >/dev/null 2>&1
 }
 
 initialize_database() {
   # --without-demo=all skips Odoo sample/demonstration data (shared sandbox and local init-db).
-  docker compose exec odoo sh -lc 'db_user="${POSTGRES_USER:-$USER}"; db_password="${POSTGRES_PASSWORD:-$PASSWORD}"; db_name="${POSTGRES_DB:-odoo}"; odoo --db_host=db --db_port=5432 --db_user="$db_user" --db_password="$db_password" -d "$db_name" -i base --without-demo=all --stop-after-init'
+  # ODOO_DB_HOST is db on Compose bridge; 127.0.0.1 on Cursor cloud host networking.
+  docker compose exec odoo sh -lc 'db_host="${ODOO_DB_HOST:-${HOST:-db}}"; db_user="${POSTGRES_USER:-$USER}"; db_password="${POSTGRES_PASSWORD:-$PASSWORD}"; db_name="${POSTGRES_DB:-odoo}"; odoo --db_host="$db_host" --db_port=5432 --db_user="$db_user" --db_password="$db_password" -d "$db_name" -i base --without-demo=all --stop-after-init'
 }
 
 wait_for_postgres

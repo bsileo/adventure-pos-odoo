@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_adventure_equipment_lists"
+              name="Packing &amp; Configurations"
+              parent="adventure_equipment.menu_adventure_equipment_root"
+              action="action_adventure_equipment_configuration"
+              groups="adventure_equipment.group_equipment_viewer"
+              sequence="15"/>
+</odoo>

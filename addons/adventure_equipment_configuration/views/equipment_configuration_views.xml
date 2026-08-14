@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_adventure_equipment_configuration_list" model="ir.ui.view">
+        <field name="name">adventure.equipment.configuration.list</field>
+        <field name="model">adventure.equipment.configuration</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="has_broken_references"
+                  decoration-muted="not active">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="list_kind"/>
+                <field name="partner_id"/>
+                <field name="line_count"/>
+                <field name="has_broken_references"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_configuration_form" model="ir.ui.view">
+        <field name="name">adventure.equipment.configuration.form</field>
+        <field name="model">adventure.equipment.configuration</field>
+        <field name="arch" type="xml">
+            <form string="Equipment List">
+                <header>
+                    <button name="action_reset_checks"
+                            type="object"
+                            string="Reset checks"
+                            invisible="list_kind != 'packing'"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Cold water configuration"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="list_kind"/>
+                            <field name="partner_id"/>
+                            <field name="sequence"/>
+                            <field name="has_broken_references" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Optional description"/>
+                        <field name="customer_note" placeholder="Notes about this setup over time"/>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom"
+                                      decoration-danger="reference_state in ('missing', 'unavailable', 'archived')">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="line_type"/>
+                                    <field name="asset_id"
+                                             domain="[('partner_id', '=', parent.partner_id)]"
+                                             options="{'no_create': True}"/>
+                                    <field name="name"/>
+                                    <field name="asset_snapshot_name" optional="hide"/>
+                                    <field name="category_id" optional="hide"/>
+                                    <field name="role_code" optional="hide"/>
+                                    <field name="quantity" optional="show"/>
+                                    <field name="quantity_uom_label" optional="show"/>
+                                    <field name="is_checked" optional="show"/>
+                                    <field name="reference_state" widget="badge"
+                                             decoration-success="reference_state == 'ok'"
+                                             decoration-warning="reference_state == 'archived'"
+                                             decoration-danger="reference_state in ('missing', 'unavailable')"/>
+                                    <field name="notes" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_adventure_equipment_configuration_search" model="ir.ui.view">
+        <field name="name">adventure.equipment.configuration.search</field>
+        <field name="model">adventure.equipment.configuration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter string="Packing lists" name="packing" domain="[('list_kind', '=', 'packing')]"/>
+                <filter string="Configurations" name="configuration" domain="[('list_kind', '=', 'configuration')]"/>
+                <filter string="Needs attention" name="broken" domain="[('has_broken_references', '=', True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Kind" name="group_kind" context="{'group_by': 'list_kind'}"/>
+                    <filter string="Customer" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_adventure_equipment_configuration" model="ir.actions.act_window">
+        <field name="name">Packing &amp; Configurations</field>
+        <field name="res_model">adventure.equipment.configuration</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a packing list or equipment configuration.
+            </p>
+        </field>
+    </record>
+</odoo>

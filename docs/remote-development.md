@@ -1,5 +1,7 @@
 # Remote development on GCP
 
+> **Security baseline:** This workflow uses private VMs, OS Login, 2FA, and IAP. Public VM IPs, metadata SSH keys, and public port 8069 are prohibited. See [gcp-secure-access.md](gcp-secure-access.md).
+
 Use this workflow when you want **Cursor on your laptop** but want **Odoo, Postgres, and Docker** to run on a **developer-owned GCP VM** instead of your machine.
 
 This is a **developer convenience** workflow for lowering local CPU/RAM usage. It is **separate from** the shared sandbox documented in [shared-environment.md](shared-environment.md).

@@ -8,3 +8,7 @@ venv/
 .vscode/
 sample_data/
 site/
+# Local/ad-hoc SQL dumps are not the development dataset; use Tidewater seed.
+backup.sql
+*.sql.backup
+

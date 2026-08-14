@@ -46,6 +46,7 @@ flowchart TD
 | Domain records (rentals, waivers, future training, etc.) | The module that owns those models |
 | Customer-owned scuba equipment + service history | `adventure_equipment_scuba` Tidewater contributor (`seeds/tidewater_seed.py`) |
 | Customer portal users and website chrome | `adventure_website` / `adventure_equipment_portal` contributors — see [Client web portal](client-web-portal.md) |
+| Packing lists & configurations | `adventure_equipment_configuration` contributor — see [Equipment lists portal](equipment-lists-portal.md) |
 | Optional integration fixtures (e.g. Smartwaiver) | That integration module — only when installed |
 
 ### Standard package install set
@@ -55,6 +56,7 @@ Sandbox / `seed-tidewater` bootstrap installs these when missing (soft-coupled�
 - `dive_shop_pos`
 - `adventure_equipment_scuba` (and thus `adventure_equipment_service`, `adventure_equipment`)
 - `adventure_website` / `adventure_equipment_portal` (customer website + equipment portal)
+- `adventure_equipment_configuration` / `adventure_equipment_configuration_portal` (packing lists & configurations)
 
 ## Ongoing development checklist (agents and humans)
 

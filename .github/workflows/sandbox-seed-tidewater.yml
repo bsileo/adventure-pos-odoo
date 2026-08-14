@@ -1,9 +1,13 @@
 # Install Tidewater standard package modules (if needed) and upsert Tidewater
-# seed data on the shared GCP sandbox.
+# seed data on the shared GCP sandbox through Workload Identity Federation + IAP.
 #
 # Required secrets (same as Deploy GCP sandbox):
-#   GCP_SANDBOX_SSH_PRIVATE_KEY, GCP_SANDBOX_SSH_HOST,
-#   GCP_SANDBOX_KNOWN_HOSTS, GCP_SANDBOX_DEPLOY_PATH
+#   GCP_WORKLOAD_IDENTITY_PROVIDER
+#   GCP_DEPLOY_SERVICE_ACCOUNT
+# Required repository variables:
+#   GCP_SANDBOX_INSTANCE (default: adventurepos-sandbox-vm)
+#   GCP_SANDBOX_ZONE (default: us-central1-a)
+#   GCP_SANDBOX_DEPLOY_PATH (default: /srv/adventurepos/adventure-pos-odoo)
 #
 # Does NOT wipe Postgres. Normal develop deploys still do not reseed —
 # use workflow_dispatch for day-to-day refresh, or push a change to this file
@@ -28,33 +32,42 @@ concurrency:
   group: sandbox-seed-tidewater
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   seed:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Load SSH private key
-        uses: webfactory/ssh-agent@v0.10.0
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
         with:
-          ssh-private-key: ${{ secrets.GCP_SANDBOX_SSH_PRIVATE_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
 
-      - name: Trust host key
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{ secrets.GCP_SANDBOX_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Install package modules and seed Tidewater
         env:
-          SANDBOX_SSH_HOST: ${{ secrets.GCP_SANDBOX_SSH_HOST }}
-          SANDBOX_DEPLOY_PATH: ${{ secrets.GCP_SANDBOX_DEPLOY_PATH }}
+          PROJECT: adventure-pos-sandbox
+          INSTANCE: ${{ vars.GCP_SANDBOX_INSTANCE || 'adventurepos-sandbox-vm' }}
+          ZONE: ${{ vars.GCP_SANDBOX_ZONE || 'us-central1-a' }}
+          DEPLOY_PATH: ${{ vars.GCP_SANDBOX_DEPLOY_PATH || '/srv/adventurepos/adventure-pos-odoo' }}
           RESET_SEED: ${{ github.event_name == 'workflow_dispatch' && inputs.reset_seed || false }}
         run: |
           set -euo pipefail
-          seed_args=()
+          extra=""
           if [[ "${RESET_SEED}" == "true" ]]; then
-            seed_args+=(--reset-seed)
+            extra="--reset-seed"
           fi
-          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "deploy@${SANDBOX_SSH_HOST}" \
-            "set -euo pipefail; cd \"${SANDBOX_DEPLOY_PATH}\"; git fetch --force origin develop:refs/remotes/origin/develop; git checkout develop; git reset --hard origin/develop; bash ./scripts/gcp-sandbox-seed-tidewater.sh ${seed_args[*]+"${seed_args[*]}"}"
+          gcloud compute ssh "deploy@${INSTANCE}" \
+            --project="${PROJECT}" \
+            --zone="${ZONE}" \
+            --tunnel-through-iap \
+            --quiet \
+            --strict-host-key-checking=no \
+            --ssh-flag="-o ForwardAgent=no" \
+            --command="export HOME=/home/deploy; unset SSH_AUTH_SOCK; export GIT_SSH_COMMAND='ssh -i /home/deploy/.ssh/github_adventurepos -o IdentitiesOnly=yes'; set -euo pipefail; cd ${DEPLOY_PATH}; git fetch origin; git checkout develop; git reset --hard origin/develop; bash ./scripts/gcp-sandbox-seed-tidewater.sh ${extra}"

@@ -11,7 +11,7 @@ $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $RepoRoot
 
 # Standard Tidewater package: dive vertical + equipment scuba + website/portal.
-$TidewaterModules = "dive_shop_pos,adventure_equipment_scuba,adventure_website,adventure_equipment_portal"
+$TidewaterModules = "dive_shop_pos,adventure_equipment_scuba,adventure_website,adventure_equipment_portal,adventure_equipment_configuration,adventure_equipment_configuration_portal"
 
 $python = @"
 from odoo.addons.dive_shop_pos.seeds.run_seed import main

@@ -1,5 +1,7 @@
 # Shared sandbox environment (Google Cloud)
 
+> **Security update:** Public VM IPs, metadata SSH keys, and public Odoo/SSH/RDP firewall rules are retired. Follow [Secure Google Cloud developer access](gcp-secure-access.md); older examples below remain only as historical context until the full runbook migration is complete.
+
 Notes for **humans and agents** working on the team’s shared Odoo sandbox on **GCP**. This is **not** local Docker and **not** the developer-owned remote VM workflow; it complements [developer-onboarding.md](developer-onboarding.md) and [remote-development.md](remote-development.md).
 
 **Do not** put passwords, API keys, or private SSH keys in this file. Operational identities below are for **project/account selection** only.
@@ -76,7 +78,7 @@ gcloud auth application-default login
 
 ## SSH access model (Option B — instance / project metadata keys)
 
-This sandbox uses **classic SSH keys** in **Compute Engine metadata** (not OS Login). GitHub Actions will use the same pattern: **private key** in a GitHub Actions secret; **public key** on the VM.
+This sandbox uses OS Login with 2FA and IAP. Do not put SSH keys in Compute Engine metadata; see [gcp-secure-access.md](gcp-secure-access.md).
 
 **Local key files (example paths — do not commit private key):**
 
@@ -232,7 +234,7 @@ nano .env   # set POSTGRES_PASSWORD to a strong value; optional OPENAI_API_KEY
 
 ### 4. GCP firewall for Odoo (port **8069**)
 
-Default VPC allows **SSH**; it does **not** automatically allow **8069**. Create a rule (Console **VPC network → Firewall** or `gcloud`) allowing **tcp:8069** from **your IP** / team / `0.0.0.0/0` for a wide-open dev sandbox.
+Do not expose **8069**. Run the repo helper's `tunnel` action and browse to `http://127.0.0.1:8069`; see [gcp-secure-access.md](gcp-secure-access.md).
 
 ### 5. Start the stack (current repo compose)
 
@@ -327,30 +329,32 @@ See [Makefile](../Makefile) targets `gcp-vm-*` and [scripts/gcp-sandbox-vm.ps1](
 
 ## GitHub Actions → auto-deploy to the sandbox (`develop`)
 
-When **`develop`** receives a **push** (e.g. after you merge a PR), workflow **[`.github/workflows/deploy-gcp-sandbox.yml`](../.github/workflows/deploy-gcp-sandbox.yml)** SSHs as **`deploy`**, runs **`git fetch` / `reset --hard origin/develop`**, and **`docker compose up -d`** in the deploy directory so **bind-mounted `addons/`** match the branch.
+When **`develop`** receives a **push** (e.g. after you merge a PR), workflow **[`.github/workflows/deploy-gcp-sandbox.yml`](../.github/workflows/deploy-gcp-sandbox.yml)** authenticates with Workload Identity Federation, SSHs through IAP as **`deploy`**, runs **`git fetch` / `reset --hard origin/develop`**, and **`docker compose up -d`** so **bind-mounted `addons/`** match the branch.
 
 **Requirements**
 
 - VM is **running** (start it with **`make gcp-vm-start`** or **`scripts/gcp-sandbox-vm.ps1 start`**).
-- Repo **Settings → Secrets and variables → Actions → New repository secret**:
+- Repo **Settings → Secrets and variables → Actions**:
 
-| Secret | Value |
+| Secret / variable | Value |
 |--------|--------|
-| `GCP_SANDBOX_SSH_PRIVATE_KEY` | Full contents of the **private** key that logs in as `deploy` on the VM (e.g. `adventurepos_gcp_deploy` from your PC — **never** commit this file). |
-| `GCP_SANDBOX_SSH_HOST` | Current VM **public IP** or hostname (from **`make gcp-vm-ip`** / **`gcp-sandbox-vm.ps1 ip`**). **Update** when the ephemeral IP changes after stop/start. |
-| `GCP_SANDBOX_KNOWN_HOSTS` | Output of **`ssh-keyscan -H YOUR_IP`** (run on your PC; paste **all** lines GitHub shows). **Update** if the host key changes (new VM / IP). |
-| `GCP_SANDBOX_DEPLOY_PATH` | **`/srv/adventurepos/adventure-pos-odoo`** (or your real clone path on the VM). |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | WIF provider resource name (`projects/48830482503/locations/global/workloadIdentityPools/github-pool/providers/github-provider`) |
+| `GCP_DEPLOY_SERVICE_ACCOUNT` | `adventurepos-sandbox-deploy@adventure-pos-sandbox.iam.gserviceaccount.com` |
+| `GCP_SANDBOX_INSTANCE` | `adventurepos-sandbox-vm` (repository variable; optional if default matches) |
+| `GCP_SANDBOX_ZONE` | `us-central1-a` |
+| `GCP_SANDBOX_DEPLOY_PATH` | `/srv/adventurepos/adventure-pos-odoo` |
+
+See [gcp-secure-access.md](gcp-secure-access.md) for the IAM and IAP baseline. Obsolete SSH-host secrets (`GCP_SANDBOX_SSH_PRIVATE_KEY`, `GCP_SANDBOX_SSH_HOST`, `GCP_SANDBOX_KNOWN_HOSTS`) can be deleted after the WIF workflow succeeds.
 
 **Manual run:** **Actions** → **Deploy GCP sandbox** → **Run workflow**.
 
-**Developing:** open a feature branch → PR → merge to **`develop`** → workflow deploys → refresh **`http://SANDBOX_IP:8069`** (upgrade modules in Odoo only when needed for schema/XML changes).
-
-**Optional:** Reserve a **static external IP** in GCP and attach it to the VM so **`GCP_SANDBOX_SSH_HOST`** rarely changes.
+**Developing:** open a feature branch → PR → merge to **`develop`** → workflow deploys → open Odoo through an IAP tunnel at **`http://127.0.0.1:8069`** (upgrade modules in Odoo only when needed for schema/XML changes).
 
 ---
 
 ## Related
 
+- [gcp-secure-access.md](gcp-secure-access.md) — private VMs, OS Login, IAP, and GitHub WIF
 - [sandbox-cursor-to-deploy.md](sandbox-cursor-to-deploy.md) — short path: Cursor, PR to `develop`, verify sandbox
 - [remote-development.md](remote-development.md) — developer-owned remote VMs for offloading Docker/Odoo/Postgres from a laptop
 - [agent-rules.md](agent-rules.md) — repo-wide agent behavior

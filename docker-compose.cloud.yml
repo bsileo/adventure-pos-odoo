@@ -1,0 +1,50 @@
+# Cursor cloud / nested-container hosts: Docker bridge networking is often
+# broken (container DNS / iptables). Use host networking so Odoo ↔ Postgres
+# talk on 127.0.0.1. Local laptops keep using docker-compose.yml (bridge).
+#
+# Selected via COMPOSE_FILE=docker-compose.cloud.yml (see ensure-dotenv.sh).
+name: adventurepos
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-odoo}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+    # Bind Postgres to loopback only (Odoo shares the host network namespace).
+    command: ["postgres", "-c", "listen_addresses=127.0.0.1"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\" -h 127.0.0.1"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  odoo:
+    build: .
+    image: adventure-pos-odoo:19.0
+    network_mode: host
+    # Cursor preview / agent.cvm.dev terminates TLS and forwards X-Forwarded-*.
+    # Without proxy_mode, Odoo sees plain HTTP and can mishandle sessions behind HTTPS.
+    command: ["odoo", "--proxy-mode"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: 127.0.0.1
+      ODOO_DB_HOST: 127.0.0.1
+      POSTGRES_DB: ${POSTGRES_DB:-odoo}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+    volumes:
+      - ./addons:/mnt/extra-addons
+
+volumes:
+  postgres_data:
+    name: ${POSTGRES_VOLUME_NAME:-adventurepos-cloud-postgres}
