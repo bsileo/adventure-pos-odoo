@@ -275,6 +275,7 @@ Extend authenticated portal (same shell as today):
 | Portal home card | “Packing & configurations” (or “Your gear lists”) | Sibling to “Your Equipment”; show count |
 | List index | `/my/equipment/lists` | Filter chips: All / Packing lists / Configurations |
 | List detail | `/my/equipment/lists/<id>` | Lines, notes, actions |
+| Print | `/my/equipment/lists/<id>/print` | Printable sheet (new tab); empty checkboxes + labels/notes |
 | Create | `/my/equipment/lists/new` | Kind + name |
 | Edit header | `/my/equipment/lists/<id>/edit` | Name, notes, description; kind only if no lines |
 | Manage lines | Same detail via POST actions or `/lines` sub-routes | Add asset/text (+ optional list note), **edit note on any line** / rename free-text, up/down reorder, check, delete line |
@@ -301,6 +302,7 @@ Keep URLs under `/my/equipment/...` so the equipment portal mental model stays o
 - Reorder with **up/down**; each click moves the line **exactly one spot** in display order (`sequence, id`), then resequences siblings so tied sequences cannot jump multiple places; remove with confirm
 - Converting a plain typed item into a registered equipment asset is **deferred**
 - **Delete list** with confirm
+- **Print** opens `/my/equipment/lists/<id>/print` in a new tab: title, kind, list notes/description, and each line with an empty checkbox + label + list-specific subtext (print CSS hides chrome)
 
 ### Create flow (keep short)
 

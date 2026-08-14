@@ -139,3 +139,10 @@ class TestEquipmentConfigurationPortalSecurity(TransactionCase):
         line.write({"notes": "Rinse after quarry dive"})
         self.assertEqual(line.notes, "Rinse after quarry dive")
         self.assertTrue(line.asset_id)
+
+    def test_portal_print_access_own_list_only(self):
+        """Owner can read own list for print; other portal user cannot."""
+        own = self.list_a.with_user(self.user_a)
+        self.assertEqual(own.name, "A packing")
+        with self.assertRaises(AccessError):
+            self.list_a.with_user(self.user_b).read(["name"])

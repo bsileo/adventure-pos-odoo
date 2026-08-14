@@ -7,6 +7,7 @@ Customer portal for packing lists and configurations.
 - `/my/equipment/lists` — index (filter packing / configuration)
 - `/my/equipment/lists/new` — create
 - `/my/equipment/lists/<id>` — checklist detail (free-text add + equipment autocomplete)
+- `/my/equipment/lists/<id>/print` — printable checklist (new tab)
 - `/my/equipment/lists/<id>/suggest` — JSON autocomplete for owned equipment
 - `/my/equipment/lists/<id>/edit` — header edit
 
@@ -15,6 +16,8 @@ Customer portal for packing lists and configurations.
 Type an item and press **Add** to save a plain checklist row. Matching owned equipment appears as you type (loose search across nickname, category, brand/model, manufacturer, serial, notes, tags, and product snapshots); choosing a suggestion links that asset. Converting a plain item into registered equipment is deferred.
 
 Free-text (and quantity) rows can rename via **Edit**; **every** row (including linked equipment) can set a list-specific note that shows as subtext under the label. Equipment names still come from the gear record.
+
+**Print** opens a clean printable checklist in a new tab (`/print`) with empty checkboxes for packing.
 
 ## List index health
 

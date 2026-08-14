@@ -182,6 +182,10 @@
                             </p>
                         </div>
                         <div class="d-flex flex-wrap gap-2">
+                            <a t-att-href="'/my/equipment/lists/%s/print' % equipment_list.id"
+                               class="btn btn-outline-secondary btn-sm"
+                               target="_blank"
+                               rel="noopener noreferrer">Print</a>
                             <a t-att-href="'/my/equipment/lists/%s/edit' % equipment_list.id" class="btn btn-link btn-sm">Edit details</a>
                             <a href="/my/equipment/lists" class="btn btn-link btn-sm">All lists</a>
                         </div>
@@ -376,5 +380,56 @@
                 </div>
             </div>
         </t>
+    </template>
+
+    <template id="portal_my_equipment_list_print" name="Print equipment list">
+        <html t-att-lang="lang or 'en_US'">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <title t-esc="equipment_list.name"/>
+                <link rel="stylesheet" type="text/css"
+                      href="/adventure_equipment_configuration_portal/static/src/css/print_list.css"/>
+            </head>
+            <body class="o_equip_list_print">
+                <div class="o_equip_list_print_toolbar">
+                    <span t-esc="equipment_list.name"/>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn" onclick="window.print()">Print</button>
+                        <a class="btn btn-secondary"
+                           t-att-href="'/my/equipment/lists/%s' % equipment_list.id">Back to list</a>
+                    </div>
+                </div>
+                <main class="o_equip_list_print_sheet">
+                    <h1 t-esc="equipment_list.name"/>
+                    <p class="o_equip_list_print_meta">
+                        <t t-esc="dict(equipment_list._fields['list_kind'].selection).get(equipment_list.list_kind)"/>
+                        <t t-if="equipment_list.line_ids">
+                            · <t t-esc="len(equipment_list.line_ids)"/> items
+                        </t>
+                    </p>
+                    <p t-if="equipment_list.customer_note" class="o_equip_list_print_note" t-esc="equipment_list.customer_note"/>
+                    <p t-if="equipment_list.description" class="o_equip_list_print_desc" t-esc="equipment_list.description"/>
+
+                    <t t-if="not equipment_list.line_ids">
+                        <p class="o_equip_list_print_empty">This list has no items yet.</p>
+                    </t>
+                    <ul t-else="" class="o_equip_list_print_items">
+                        <t t-foreach="equipment_list.line_ids" t-as="line">
+                            <li class="o_equip_list_print_item">
+                                <span class="o_equip_list_print_box" aria-hidden="true"/>
+                                <div class="o_equip_list_print_body">
+                                    <div class="o_equip_list_print_label" t-esc="line.display_label"/>
+                                    <div t-if="line.notes" class="o_equip_list_print_sub" t-esc="line.notes"/>
+                                </div>
+                            </li>
+                        </t>
+                    </ul>
+                    <div class="o_equip_list_print_footer">
+                        Printable checklist · mark items as you pack
+                    </div>
+                </main>
+            </body>
+        </html>
     </template>
 </odoo>

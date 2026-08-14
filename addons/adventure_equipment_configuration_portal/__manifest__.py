@@ -2,7 +2,7 @@
 {
     "name": "Adventure Equipment Configuration Portal",
     "summary": "Customer portal for packing lists and equipment configurations.",
-    "version": "19.0.1.0.6",
+    "version": "19.0.1.0.7",
     "category": "Adventure POS",
     "author": "Adventure POS",
     "license": "LGPL-3",
@@ -15,6 +15,7 @@ Portal self-service for packing lists and configurations:
 * /my/equipment/lists — checklist UX with free-text add + equipment autocomplete
 * Loose suggest search across name, category, brand/model, notes, and related fields
 * Line check / edit free-text / remove / up-down reorder / hard delete
+* Printable checklist view (/print) for packing sheets
 * Broken-reference indicators when equipment is unavailable
 
 Depends on adventure_equipment_configuration and adventure_equipment_portal.

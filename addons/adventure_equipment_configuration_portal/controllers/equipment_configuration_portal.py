@@ -333,6 +333,30 @@ class EquipmentConfigurationCustomerPortal(CustomerPortal):
         )
 
     @http.route(
+        ["/my/equipment/lists/<int:list_id>/print"],
+        type="http",
+        auth="user",
+        website=True,
+        methods=["GET"],
+    )
+    def portal_my_equipment_list_print(self, list_id, **kwargs):
+        """Printable checklist view (opens in a separate tab from list detail)."""
+        try:
+            record = self._document_check_access(
+                "adventure.equipment.configuration", int(list_id)
+            )
+        except (AccessError, MissingError):
+            return request.redirect("/my/equipment/lists")
+
+        return request.render(
+            "adventure_equipment_configuration_portal.portal_my_equipment_list_print",
+            {
+                "equipment_list": record,
+                "lang": request.env.lang,
+            },
+        )
+
+    @http.route(
         ["/my/equipment/lists/<int:list_id>/edit"],
         type="http",
         auth="user",
